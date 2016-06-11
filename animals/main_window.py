@@ -11,6 +11,7 @@ from animal import Gender
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     _PERFORMANCE_CALC_INTERVAL = 20
+    TIMER_INTERVAL = 1
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -32,7 +33,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.timer = QTimer(self)
         self.connect(self.timer, SIGNAL("timeout()"), self.on_timer_timeout)
-        self.timer.start(1)
+        self.timer.start(self.TIMER_INTERVAL)
 
         self._prev_time = time.time()
 
@@ -41,7 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.timer.isActive():
             self.timer.stop()
         else:
-            self.timer.start(1)
+            self.timer.start(self.TIMER_INTERVAL)
 
     @Slot()
     def on_timer_timeout(self):
