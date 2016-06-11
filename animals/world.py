@@ -46,12 +46,12 @@ class World(object):
             self.workers.append(t)
 
     def restart(self):
-        self.animals = [Animal(self) for _ in range(55)]
+        self.animals = [Animal(self) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)]
         self.animals_to_add = []
         self.dead_animals = []
         self.empty_food = []
         self.dead_mammoths = []
-        self.food = [self._make_random_food() for _ in range(250)]
+        self.food = [self._make_random_food() for _ in range(self.constants.INITIAL_FOOD_COUNT)]
         self.mammoths = [self._make_random_mammoth() for _ in range(self.constants.MAMMOTH_COUNT)]
         self.time = 0
 
