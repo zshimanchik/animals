@@ -1,7 +1,6 @@
 ﻿from __future__ import division
 import math
 from random import random, randint
-from threading import Lock
 
 from neural_network.neural_network import NeuralNetwork
 
@@ -17,14 +16,11 @@ class Food(object):
         self._smell = (0, 1, 0,)
         self._smell_size = self._size * self._world.constants.FOOD_SMELL_SIZE_RATIO
         self.beated = False
-        # self.lock = Lock()
 
     def beating(self, value):
-        # self.lock.acquire()
         self.beated = True
         real_value = min(self.size, value)
         self.size -= real_value
-        # self.lock.release()
         return value
 
     @property
@@ -86,7 +82,6 @@ class Animal(object):
         self.energy = self.world.constants.ENERGY_FOR_BIRTH
         self.readiness_to_sex = 0
         self.close_females = []
-        self.lock = Lock()
         self.answer = []
 
         if not self._dna:
@@ -140,8 +135,7 @@ class Animal(object):
                 break
 
     def _thread_safe_request_for_sex(self, female):
-        with female.lock:
-            success = female.be_requested_for_sex(self)
+        success = female.be_requested_for_sex(self)
         return success
 
     def be_requested_for_sex(self, male):
