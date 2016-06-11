@@ -1,7 +1,5 @@
-﻿from queue import Queue
-from math import sqrt
+﻿from math import sqrt
 from random import randint, random, gauss
-from threading import Thread
 
 from animal import Animal, Food, Mammoth, Gender
 
@@ -26,9 +24,6 @@ class World(object):
         self.restart()
         self.food_timer = self.constants.DEFAULT_TIMER
 
-        self.queue = Queue()
-        self._init_workers()
-
     def _calculate_chunks_sizes(self):
         self.food_chunk_size = self.constants.EATING_DISTANCE + self.constants.ANIMAL_SIZE
         self.female_chunk_size = self.constants.SEX_DISTANCE + self.constants.ANIMAL_SIZE * 2
@@ -36,14 +31,6 @@ class World(object):
         food_max_smell_size = self.constants.APPEAR_FOOD_SIZE_MAX * self.constants.FOOD_SMELL_SIZE_RATIO
         animal_max_smell_size = self.constants.MAX_ANIMAL_SMELL_SIZE
         self.smell_chunk_size = max(food_max_smell_size, animal_max_smell_size)
-
-    def _init_workers(self):
-        self.workers = []
-        for _ in range(self.thread_count):
-            t = Thread(target=self._animal_worker, args=[self.queue])
-            t.daemon = True
-            t.start()
-            self.workers.append(t)
 
     def restart(self):
         self.animals = [Animal(self) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)]
@@ -73,14 +60,6 @@ class World(object):
             randint(self.constants.APPEAR_FOOD_SIZE_MIN, self.constants.APPEAR_FOOD_SIZE_MAX)
         )
 
-    @property
-    def food_timer(self):
-        return int(self._food_timer * (200 * 500) // (self.width * self.height))
-
-    @food_timer.setter
-    def food_timer(self, value):
-        self._food_timer = int(value * (self.width * self.height) // (200 * 500))
-
     def update(self):
         self.time += 1
         self._prepare_empty_chunks()
@@ -92,8 +71,7 @@ class World(object):
             mammoth.update()
 
         for animal in self.animals:
-            self.queue.put(animal)
-        self.queue.join()
+            self._update_animal(animal)
 
         self.animals.extend(self.animals_to_add)
         self.animals_to_add = []
@@ -149,13 +127,6 @@ class World(object):
     def _add_mammoth_if_necessary(self):
         if self.time % self.food_timer == 0 and len(self.mammoths) < self.constants.MAMMOTH_COUNT:
             self.mammoths.append(self._make_random_mammoth())
-
-
-    def _animal_worker(self, queue):
-        while True:
-            animal = queue.get()
-            self._update_animal(animal)
-            queue.task_done()
 
     def _update_animal(self, animal):
         animal.sensor_values = self._get_sensors_values(animal)
