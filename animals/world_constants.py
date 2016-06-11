@@ -1,3 +1,6 @@
+from cached_property import cached_property
+
+
 class WorldConstants(object):
     WORLD_WIDTH = 900
     WORLD_HEIGHT = 200
@@ -57,28 +60,28 @@ class WorldConstants(object):
 
     # todo create cached properties instead of this for optimization
 
-    @property
+    @cached_property
     def INPUT_LAYER_SIZE(self):
         return self.ANIMAL_SENSOR_COUNT * self.ANIMAL_SENSOR_DIMENSION
 
-    @property
+    @cached_property
     def NEURAL_NETWORK_SHAPE(self):
         return [self.INPUT_LAYER_SIZE] + self.MIDDLE_LAYERS_SIZES + [self.OUTPUT_LAYER_SIZE]
 
-    @property
+    @cached_property
     def DNA_MAX_VALUE(self):
         return self.DNA_BASE ** self.DNA_BRAIN_VALUE_LEN
 
-    @property
+    @cached_property
     def DNA_HALF_MAX_VALUE(self):
         return int(self.DNA_MAX_VALUE / 2)
 
-    @property
+    @cached_property
     def DNA_FOR_BRAIN_LEN(self):
         shape = self.NEURAL_NETWORK_SHAPE
         connection_count = sum([ shape[i] * (shape[i+1] + 1) for i in range(len(shape)-1)])
         return connection_count * self.DNA_BRAIN_VALUE_LEN
 
-    @property
+    @cached_property
     def DNA_LEN(self):
         return 1 + self.DNA_FOR_BRAIN_LEN
