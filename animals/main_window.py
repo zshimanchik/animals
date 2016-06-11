@@ -57,6 +57,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _update_text_info(self):
         self.world_time_label.setText(str(self.world.time))
+        self.food_timer_label.setText(str(self.world.food_timer))
         self.animal_count_label.setText(str(len(self.world.animals)))
         self.food_count_label.setText(str(len(self.world.food)))
         self.mammoth_count_label.setText(str(len(self.world.mammoths)))
@@ -115,8 +116,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         painter.setBrush(self._mammoth_brush)
         size = mammoth.size * 2
         painter.drawEllipse(QRect(mammoth.x - mammoth.size, mammoth.y - mammoth.size, size, size))
-
-
 
 
 if __name__ == "__main__":

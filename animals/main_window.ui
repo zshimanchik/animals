@@ -456,6 +456,39 @@
        </size>
       </property>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0" colspan="3">
+        <widget class="QPushButton" name="timer_button">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Run/Pause</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QCheckBox" name="eat_distance_checkbox">
+         <property name="text">
+          <string>Eat distance</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="mammoth_count_label_lbl">
+         <property name="text">
+          <string>Mammoth count</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="performance_label_lbl">
          <property name="text">
@@ -477,7 +510,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="5" column="1">
         <widget class="QLabel" name="food_count_label">
          <property name="text">
           <string>TextLabel</string>
@@ -491,28 +524,28 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="animal_count_label_lbl">
          <property name="text">
           <string>Animal count</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="1">
         <widget class="QLabel" name="animal_count_label">
          <property name="text">
           <string>TextLabel</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="food_count_label_lbl">
          <property name="text">
           <string>Food count</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
+       <item row="7" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -525,43 +558,24 @@
          </property>
         </spacer>
        </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="mammoth_count_label_lbl">
-         <property name="text">
-          <string>Mammoth count</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
+       <item row="6" column="1">
         <widget class="QLabel" name="mammoth_count_label">
          <property name="text">
           <string>TextLabel</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QCheckBox" name="eat_distance_checkbox">
+       <item row="3" column="0">
+        <widget class="QLabel" name="food_timer_label_lbl">
          <property name="text">
-          <string>Eat distance</string>
+          <string>Food timer</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0" colspan="3">
-        <widget class="QPushButton" name="timer_button">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
+       <item row="3" column="1">
+        <widget class="QLabel" name="food_timer_label">
          <property name="text">
-          <string>Run/Pause</string>
+          <string>TextLabel</string>
          </property>
         </widget>
        </item>
