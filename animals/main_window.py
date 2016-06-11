@@ -52,22 +52,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.performance_label.setText(str(self.performance))
 
         self.world.update()
+        self._update_text_info()
+        self.draw_widget.repaint()
+
+    def _update_text_info(self):
         self.world_time_label.setText(str(self.world.time))
         self.animal_count_label.setText(str(len(self.world.animals)))
         self.food_count_label.setText(str(len(self.world.food)))
-        self.draw_widget.repaint()
+        self.mammoth_count_label.setText(str(len(self.world.mammoths)))
 
     def on_draw_widget_paintEvent(self, event):
         painter = QPainter()
         painter.begin(self.draw_widget)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.drawText(QRect(0, 0, 100, 100), Qt.AlignCenter, "Qt")
-        for animal in self.world.animals:
-            self._draw_animal(painter, animal)
         for food in self.world.food:
             self._draw_food(painter, food)
         for mammoth in self.world.mammoths:
             self._draw_mammoth(painter, mammoth)
+        for animal in self.world.animals:
+            self._draw_animal(painter, animal)
 
         painter.end()
 
