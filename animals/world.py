@@ -26,7 +26,6 @@ class World(object):
         self.food_timer = self.constants.DEFAULT_TIMER
 
     def _calculate_chunks_sizes(self):
-        self.food_chunk_size = self.constants.EATING_DISTANCE + self.constants.ANIMAL_SIZE
         self.female_chunk_size = self.constants.SEX_DISTANCE + self.constants.ANIMAL_SIZE * 2
 
     def restart(self):
@@ -60,11 +59,12 @@ class World(object):
     def update(self):
         self.time += 1
         self._prepare_empty_chunks()
-        self._split_food_to_chunks()
-        self._split_mammoths_to_chunks()
+        self._update_food()
+        self._update_mammoths()
         self._split_animals_to_chunks()
 
         self._calculate_values_of_animals_sensors()
+        self._calculate_closest_food()
 
         for mammoth in self.mammoths:
             mammoth.update()
@@ -82,23 +82,16 @@ class World(object):
         self._add_mammoth_if_necessary()
 
     def _prepare_empty_chunks(self):
-        self.food_chunks = self._make_empty_chunks(self.food_chunk_size)
         self.female_chunks = self._make_empty_chunks(self.female_chunk_size)
 
-    def _split_food_to_chunks(self):
+    def _update_food(self):
         for food in self.food:
             food.beated = False
             self._check_in_bounds(food)
-            # food chunks
-            chunk_row, chunk_col = self.get_chunk_index(food.x, food.y, self.food_chunk_size)
-            self.food_chunks[chunk_row][chunk_col].append(food)
 
-    def _split_mammoths_to_chunks(self):
+    def _update_mammoths(self):
         for mammoth in self.mammoths:
             self._check_in_bounds(mammoth)
-            # food chunks
-            chunk_row, chunk_col = self.get_chunk_index(mammoth.x, mammoth.y, self.food_chunk_size)
-            self.food_chunks[chunk_row][chunk_col].append(mammoth)
 
     def _split_animals_to_chunks(self):
         for animal in self.animals:
@@ -132,6 +125,17 @@ class World(object):
             sensor_id = i % self.constants.ANIMAL_SENSOR_COUNT
             self.animals[animal_id].sensor_values.extend(sensor_values)
 
+    def _calculate_closest_food(self):
+        eatable = self.food + self.mammoths
+        food_positions = np.array([[food.x, food.y] for food in eatable], dtype=np.float64)
+        animals_positions = np.array([[animal.x, animal.y] for animal in self.animals], dtype=np.float64)
+        distances = cdist(animals_positions, food_positions)
+        closest_food_indexes = np.argmin(distances, axis=1)
+        for animal_i, food_i in enumerate(closest_food_indexes):
+            if distances[animal_i, food_i] <= self.constants.EATING_DISTANCE + self.animals[animal_i].size + eatable[food_i].size:
+                self.animals[animal_i].closest_food = eatable[food_i]
+            else:
+                self.animals[animal_i].closest_food = None
 
     def _add_food_if_necessary(self):
         if self.time % self.food_timer == 0:
@@ -143,22 +147,11 @@ class World(object):
             self.mammoths.append(self._make_random_mammoth())
 
     def _update_animal(self, animal):
-        food = self.get_closest_food(animal.x, animal.y, self.constants.EATING_DISTANCE + animal.size)
-        if food:
-            animal.eat(food)
+        if animal.closest_food:
+            animal.eat(animal.closest_food)
         animal.close_females = [female for female in self._adjacent_females(animal.x, animal.y) if
                                 close_enough(animal, female, self.constants.SEX_DISTANCE)]
         animal.update()
-
-    def get_closest_food(self, x, y, max_distance):
-        min_dist = 10000
-        res = None
-        for food in self._adjacent_food(x, y):
-            dist = distance(x, y, food.x, food.y)
-            if dist <= food.size + max_distance and dist < min_dist:
-                min_dist = dist
-                res = food
-        return res
 
     def _check_in_bounds(self, animal):
         if animal.x > self.width:
@@ -176,9 +169,6 @@ class World(object):
             chunk = chunks[chunk_row][chunk_col]
             for element in chunk:
                 yield element
-
-    def _adjacent_food(self, x, y):
-        return self._adjacent_elements(self.food_chunks, self.food_chunk_size, x, y)
 
     def _adjacent_females(self, x, y):
         return self._adjacent_elements(self.female_chunks, self.female_chunk_size, x, y)

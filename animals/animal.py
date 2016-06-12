@@ -73,6 +73,7 @@ class Animal(object):
         self.angle = 0
         self._smell = (0.0, 0.0, 1.0, )
         self.smell_size = 0
+        self.closest_food = None
 
         self.sensor_values = []
         self._sensors_positions = []
