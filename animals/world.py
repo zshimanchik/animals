@@ -19,9 +19,6 @@ class World(object):
     def restart(self):
         self.animals = [Animal(self) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)]
         self.animals_to_add = []
-        self.dead_animals = []
-        self.empty_food = []
-        self.dead_mammoths = []
         self.food = [self._make_random_food() for _ in range(self.constants.INITIAL_FOOD_COUNT)]
         self.mammoths = [self._make_random_mammoth() for _ in range(self.constants.MAMMOTH_COUNT)]
         self.time = 0
@@ -148,25 +145,19 @@ class World(object):
         self.animals_to_add = []
 
     def _remove_dead_animals(self):
-        self.dead_animals = []
         for animal in self.animals[:]:
             if animal.energy <= 0:
                 self.animals.remove(animal)
-                self.dead_animals.append(animal)
 
     def _clear_empty_food(self):
-        self.empty_food = []
         for food in self.food[:]:
             if food.size <= 0:
                 self.food.remove(food)
-                self.empty_food.append(food)
 
     def _transform_dead_mammoths(self):
-        self.dead_mammoths = []
         for mammoth in self.mammoths[:]:
             if mammoth.life <= 0:
                 self.mammoths.remove(mammoth)
-                self.dead_mammoths.append(mammoth)
                 self._make_food_from_mammoth(mammoth)
 
     def _make_food_from_mammoth(self, mammoth):
