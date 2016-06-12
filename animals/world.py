@@ -1,5 +1,7 @@
 ﻿from math import sqrt
 from random import randint, random, gauss
+import numpy as np
+from scipy.spatial.distance import cdist
 
 from animal import Animal, Food, Mammoth, Gender
 
@@ -26,10 +28,6 @@ class World(object):
     def _calculate_chunks_sizes(self):
         self.food_chunk_size = self.constants.EATING_DISTANCE + self.constants.ANIMAL_SIZE
         self.female_chunk_size = self.constants.SEX_DISTANCE + self.constants.ANIMAL_SIZE * 2
-
-        food_max_smell_size = self.constants.APPEAR_FOOD_SIZE_MAX * self.constants.FOOD_SMELL_SIZE_RATIO
-        animal_max_smell_size = self.constants.MAX_ANIMAL_SMELL_SIZE
-        self.smell_chunk_size = max(food_max_smell_size, animal_max_smell_size)
 
     def restart(self):
         self.animals = [Animal(self) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)]
@@ -66,6 +64,8 @@ class World(object):
         self._split_mammoths_to_chunks()
         self._split_animals_to_chunks()
 
+        self._calculate_values_of_animals_sensors()
+
         for mammoth in self.mammoths:
             mammoth.update()
 
@@ -84,7 +84,6 @@ class World(object):
     def _prepare_empty_chunks(self):
         self.food_chunks = self._make_empty_chunks(self.food_chunk_size)
         self.female_chunks = self._make_empty_chunks(self.female_chunk_size)
-        self.smell_chunks = self._make_empty_chunks(self.smell_chunk_size)
 
     def _split_food_to_chunks(self):
         for food in self.food:
@@ -93,9 +92,6 @@ class World(object):
             # food chunks
             chunk_row, chunk_col = self.get_chunk_index(food.x, food.y, self.food_chunk_size)
             self.food_chunks[chunk_row][chunk_col].append(food)
-            # smell chunks
-            chunk_row, chunk_col = self.get_chunk_index(food.x, food.y, self.smell_chunk_size)
-            self.smell_chunks[chunk_row][chunk_col].append(food)
 
     def _split_mammoths_to_chunks(self):
         for mammoth in self.mammoths:
@@ -103,9 +99,6 @@ class World(object):
             # food chunks
             chunk_row, chunk_col = self.get_chunk_index(mammoth.x, mammoth.y, self.food_chunk_size)
             self.food_chunks[chunk_row][chunk_col].append(mammoth)
-            # smell chunks
-            chunk_row, chunk_col = self.get_chunk_index(mammoth.x, mammoth.y, self.smell_chunk_size)
-            self.smell_chunks[chunk_row][chunk_col].append(mammoth)
 
     def _split_animals_to_chunks(self):
         for animal in self.animals:
@@ -114,9 +107,31 @@ class World(object):
             if animal.gender == Gender.FEMALE:
                 chunk_row, chunk_col = self.get_chunk_index(animal.x, animal.y, self.female_chunk_size)
                 self.female_chunks[chunk_row][chunk_col].append(animal)
-            # smell chunks
-            chunk_row, chunk_col = self.get_chunk_index(animal.x, animal.y, self.smell_chunk_size)
-            self.smell_chunks[chunk_row][chunk_col].append(animal)
+
+    def _calculate_values_of_animals_sensors(self):
+        self.smellers = self.animals + self.food + self.mammoths
+        smellers_pos = np.array([[smeller.x, smeller.y] for smeller in self.smellers], dtype=np.float64)
+        smells_sizes = np.array([smeller.smell_size for smeller in self.smellers], dtype=np.float64)
+        smells = np.array([smeller.smell for smeller in self.smellers], dtype=np.float64)
+        smells = np.transpose(smells)
+
+        sensors_pos = []
+        for animal in self.animals:
+            sensors_pos.extend(animal.sensors_positions)
+        sensors_pos = np.array(sensors_pos, dtype=np.float64)
+
+        self.incidence = cdist(sensors_pos, smellers_pos)
+        self.smells_strength = np.maximum(0, 1 - self.incidence / smells_sizes) ** 2
+
+        for animal in self.animals:
+            animal.sensor_values = []
+
+        for i, sensor_smell_strength in enumerate(self.smells_strength):
+            sensor_values = np.max(sensor_smell_strength * smells, axis=1)
+            animal_id = i // self.constants.ANIMAL_SENSOR_COUNT
+            sensor_id = i % self.constants.ANIMAL_SENSOR_COUNT
+            self.animals[animal_id].sensor_values.extend(sensor_values)
+
 
     def _add_food_if_necessary(self):
         if self.time % self.food_timer == 0:
@@ -128,33 +143,12 @@ class World(object):
             self.mammoths.append(self._make_random_mammoth())
 
     def _update_animal(self, animal):
-        animal.sensor_values = self._get_sensors_values(animal)
         food = self.get_closest_food(animal.x, animal.y, self.constants.EATING_DISTANCE + animal.size)
         if food:
             animal.eat(food)
         animal.close_females = [female for female in self._adjacent_females(animal.x, animal.y) if
                                 close_enough(animal, female, self.constants.SEX_DISTANCE)]
         animal.update()
-
-    def _get_sensors_values(self, animal):
-        sensor_values = []
-        for pos in animal.sensors_positions:
-            sensor_values.extend(self.get_sensor_value(pos))
-        return sensor_values
-
-    def get_sensor_value(self, pos):
-        res = [0] * self.constants.ANIMAL_SENSOR_DIMENSION
-        for smeller in self._adjacent_smells(*pos):
-            try:
-                smell_strength = max(0,
-                                     (1.0 - distance(smeller.x, smeller.y, pos[0], pos[1]) / smeller.smell_size)) ** 2
-                for i, v in enumerate(smeller.smell):
-                    val = v * smell_strength
-                    if val > res[i]:
-                        res[i] = val
-            except ZeroDivisionError:
-                pass
-        return res
 
     def get_closest_food(self, x, y, max_distance):
         min_dist = 10000
@@ -188,9 +182,6 @@ class World(object):
 
     def _adjacent_females(self, x, y):
         return self._adjacent_elements(self.female_chunks, self.female_chunk_size, x, y)
-
-    def _adjacent_smells(self, x, y):
-        return self._adjacent_elements(self.smell_chunks, self.smell_chunk_size, x, y)
 
     def _adjacent_chunks(self, chunks, row, col):
         r, c = row - 1, col - 1
