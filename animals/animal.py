@@ -1,5 +1,4 @@
-﻿from __future__ import division
-import math
+﻿import math
 from random import random, randint
 
 from neural_network.neural_network import NeuralNetwork
