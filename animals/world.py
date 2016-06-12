@@ -13,8 +13,7 @@ def close_enough(animal1, animal2, max_distance):
 
 
 class World(object):
-    def __init__(self, constants, thread_count=3):
-        self.thread_count = thread_count
+    def __init__(self, constants):
         self.constants = constants
         self._calculate_chunks_sizes()
 

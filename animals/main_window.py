@@ -28,7 +28,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.draw_widget.setFixedWidth(self.world_constants.WORLD_WIDTH)
         self.draw_widget.setFixedHeight(self.world_constants.WORLD_HEIGHT)
 
-        self.world = world.World(constants=self.world_constants, thread_count=1)
+        self.world = world.World(constants=self.world_constants)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
 
         self.timer = QTimer(self)
