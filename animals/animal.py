@@ -109,6 +109,9 @@ class Animal(object):
             sensor_angle += angle_between_sensors
 
     def update(self):
+        if self.closest_food:
+            self.eat(self.closest_food)
+
         self.answer = self.brain.calculate(self.sensor_values)
 
         self.energy -= self.world.constants.ENERGY_FOR_EXIST

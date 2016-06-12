@@ -46,22 +46,18 @@ class World(object):
 
     def update(self):
         self.time += 1
-        self._check_animals_in_bounds()
+        self._check_all_in_bounds()
+
         self._update_food()
         self._update_mammoths()
 
         self._calculate_values_of_animals_sensors()
-        self._calculate_closest_food()
-        self._calculate_close_females()
+        self._calculate_animals_closest_food()
+        self._calculate_animals_close_females()
 
-        for mammoth in self.mammoths:
-            mammoth.update()
+        self._update_animals()
 
-        for animal in self.animals:
-            self._update_animal(animal)
-
-        self.animals.extend(self.animals_to_add)
-        self.animals_to_add = []
+        self._add_new_animals()
         self._remove_dead_animals()
         self._clear_empty_food()
         self._transform_dead_mammoths()
@@ -69,18 +65,32 @@ class World(object):
         self._add_food_if_necessary()
         self._add_mammoth_if_necessary()
 
+    def _check_all_in_bounds(self):
+        for food in self.food:
+            self._check_in_bounds(food)
+        for mammoth in self.mammoths:
+            self._check_in_bounds(mammoth)
+        for animal in self.animals:
+            self._check_in_bounds(animal)
+
+    def _check_in_bounds(self, animal):
+        if animal.x > self.width:
+            animal.x = self.width
+        if animal.x < 0:
+            animal.x = 0
+
+        if animal.y > self.height:
+            animal.y = self.height
+        if animal.y < 0:
+            animal.y = 0
+
     def _update_food(self):
         for food in self.food:
             food.beated = False
-            self._check_in_bounds(food)
 
     def _update_mammoths(self):
         for mammoth in self.mammoths:
-            self._check_in_bounds(mammoth)
-
-    def _check_animals_in_bounds(self):
-        for animal in self.animals:
-            self._check_in_bounds(animal)
+            mammoth.update()
 
     def _calculate_values_of_animals_sensors(self):
         self.smellers = self.animals + self.food + self.mammoths
@@ -106,7 +116,7 @@ class World(object):
             sensor_id = i % self.constants.ANIMAL_SENSOR_COUNT
             self.animals[animal_id].sensor_values.extend(sensor_values)
 
-    def _calculate_closest_food(self):
+    def _calculate_animals_closest_food(self):
         eatable = self.food + self.mammoths
         food_positions = np.array([[food.x, food.y] for food in eatable], dtype=np.float64)
         animals_positions = np.array([[animal.x, animal.y] for animal in self.animals], dtype=np.float64)
@@ -118,7 +128,7 @@ class World(object):
             else:
                 self.animals[animal_i].closest_food = None
 
-    def _calculate_close_females(self):
+    def _calculate_animals_close_females(self):
         """
         method doesn't respect individual animal's sizes, so SEX_DISTANCE must involve ANIMAL_SIZE
         """
@@ -129,30 +139,13 @@ class World(object):
             females = [self.animals[i] for i in females_indexes if i != animal_i and self.animals[i].gender == Gender.FEMALE]
             self.animals[animal_i].close_females = females
 
-    def _add_food_if_necessary(self):
-        if self.time % self.food_timer == 0:
-            for _ in range(self.constants.APPEAR_FOOD_COUNT):
-                self.food.append(self._make_random_food())
+    def _update_animals(self):
+        for animal in self.animals:
+            animal.update()
 
-    def _add_mammoth_if_necessary(self):
-        if self.time % self.food_timer == 0 and len(self.mammoths) < self.constants.MAMMOTH_COUNT:
-            self.mammoths.append(self._make_random_mammoth())
-
-    def _update_animal(self, animal):
-        if animal.closest_food:
-            animal.eat(animal.closest_food)
-        animal.update()
-
-    def _check_in_bounds(self, animal):
-        if animal.x > self.width:
-            animal.x = self.width
-        if animal.x < 0:
-            animal.x = 0
-
-        if animal.y > self.height:
-            animal.y = self.height
-        if animal.y < 0:
-            animal.y = 0
+    def _add_new_animals(self):
+        self.animals.extend(self.animals_to_add)
+        self.animals_to_add = []
 
     def _remove_dead_animals(self):
         self.dead_animals = []
@@ -181,6 +174,15 @@ class World(object):
             x = mammoth.x + (mammoth.smell_size*random()*2 - mammoth.smell_size)*0.5
             y = mammoth.y + (mammoth.smell_size*random()*2 - mammoth.smell_size)*0.5
             self.food.append(Food(self, x, y, mammoth.size))
+
+    def _add_food_if_necessary(self):
+        if self.time % self.food_timer == 0:
+            for _ in range(self.constants.APPEAR_FOOD_COUNT):
+                self.food.append(self._make_random_food())
+
+    def _add_mammoth_if_necessary(self):
+        if self.time % self.food_timer == 0 and len(self.mammoths) < self.constants.MAMMOTH_COUNT:
+            self.mammoths.append(self._make_random_mammoth())
 
     def add_animal(self, animal):
         self.animals_to_add.append(animal)
