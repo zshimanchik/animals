@@ -24,8 +24,6 @@ class WorldConstants(object):
     MAMMOTH_REGENERATION_VALUE = 0.01
     FOOD_FROM_MAMMOTH_COUNT = 5
 
-    SEX_DISTANCE = 20
-
     # Animal
 
     ANIMAL_MAX_ENERGY = 30
@@ -54,6 +52,8 @@ class WorldConstants(object):
 
     ANIMAL_SIZE = 10
     MAX_ANIMAL_SMELL_SIZE = 100
+
+    SEX_DISTANCE = 20 + ANIMAL_SIZE * 2
 
     def __init__(self):
         pass

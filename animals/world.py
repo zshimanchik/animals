@@ -1,4 +1,4 @@
-﻿from math import sqrt
+﻿from math import hypot
 from random import randint, random, gauss
 import numpy as np
 from scipy.spatial.distance import cdist
@@ -6,27 +6,15 @@ from scipy.spatial.distance import cdist
 from animal import Animal, Food, Mammoth, Gender
 
 
-def distance(x1, y1, x2, y2):
-    return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
-
-
-def close_enough(animal1, animal2, max_distance):
-    return distance(animal1.x, animal1.y, animal2.x, animal2.y) < max_distance + animal1.size + animal2.size
-
-
 class World(object):
     def __init__(self, constants):
         self.constants = constants
-        self._calculate_chunks_sizes()
 
         self.width = constants.WORLD_WIDTH
         self.height = constants.WORLD_HEIGHT
 
         self.restart()
         self.food_timer = self.constants.DEFAULT_TIMER
-
-    def _calculate_chunks_sizes(self):
-        self.female_chunk_size = self.constants.SEX_DISTANCE + self.constants.ANIMAL_SIZE * 2
 
     def restart(self):
         self.animals = [Animal(self) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)]
@@ -58,13 +46,13 @@ class World(object):
 
     def update(self):
         self.time += 1
-        self._prepare_empty_chunks()
+        self._check_animals_in_bounds()
         self._update_food()
         self._update_mammoths()
-        self._split_animals_to_chunks()
 
         self._calculate_values_of_animals_sensors()
         self._calculate_closest_food()
+        self._calculate_close_females()
 
         for mammoth in self.mammoths:
             mammoth.update()
@@ -81,9 +69,6 @@ class World(object):
         self._add_food_if_necessary()
         self._add_mammoth_if_necessary()
 
-    def _prepare_empty_chunks(self):
-        self.female_chunks = self._make_empty_chunks(self.female_chunk_size)
-
     def _update_food(self):
         for food in self.food:
             food.beated = False
@@ -93,13 +78,9 @@ class World(object):
         for mammoth in self.mammoths:
             self._check_in_bounds(mammoth)
 
-    def _split_animals_to_chunks(self):
+    def _check_animals_in_bounds(self):
         for animal in self.animals:
             self._check_in_bounds(animal)
-            # female chunks
-            if animal.gender == Gender.FEMALE:
-                chunk_row, chunk_col = self.get_chunk_index(animal.x, animal.y, self.female_chunk_size)
-                self.female_chunks[chunk_row][chunk_col].append(animal)
 
     def _calculate_values_of_animals_sensors(self):
         self.smellers = self.animals + self.food + self.mammoths
@@ -137,6 +118,17 @@ class World(object):
             else:
                 self.animals[animal_i].closest_food = None
 
+    def _calculate_close_females(self):
+        """
+        method doesn't respect individual animal's sizes, so SEX_DISTANCE must involve ANIMAL_SIZE
+        """
+        animals_pos = np.array([[animal.x, animal.y] for animal in self.animals], dtype=np.float64)
+        distances = cdist(animals_pos, animals_pos)
+        for animal_i, distance_to_others in enumerate(distances):
+            females_indexes = np.nonzero(distance_to_others < self.constants.SEX_DISTANCE)[0]
+            females = [self.animals[i] for i in females_indexes if i != animal_i and self.animals[i].gender == Gender.FEMALE]
+            self.animals[animal_i].close_females = females
+
     def _add_food_if_necessary(self):
         if self.time % self.food_timer == 0:
             for _ in range(self.constants.APPEAR_FOOD_COUNT):
@@ -149,8 +141,6 @@ class World(object):
     def _update_animal(self, animal):
         if animal.closest_food:
             animal.eat(animal.closest_food)
-        animal.close_females = [female for female in self._adjacent_females(animal.x, animal.y) if
-                                close_enough(animal, female, self.constants.SEX_DISTANCE)]
         animal.update()
 
     def _check_in_bounds(self, animal):
@@ -163,26 +153,6 @@ class World(object):
             animal.y = self.height
         if animal.y < 0:
             animal.y = 0
-
-    def _adjacent_elements(self, chunks, chunk_size, x, y):
-        for chunk_row, chunk_col in self._adjacent_chunks(chunks, *self.get_chunk_index(x, y, chunk_size)):
-            chunk = chunks[chunk_row][chunk_col]
-            for element in chunk:
-                yield element
-
-    def _adjacent_females(self, x, y):
-        return self._adjacent_elements(self.female_chunks, self.female_chunk_size, x, y)
-
-    def _adjacent_chunks(self, chunks, row, col):
-        r, c = row - 1, col - 1
-        for i in range(9):
-            ri = r + i // 3
-            ci = c + i % 3
-            if 0 <= ri < len(chunks) and 0 <= ci < len(chunks[0]):
-                yield (r + i // 3, c + i % 3)
-
-    def get_chunk_index(self, x, y, chunk_size):
-        return (int(y // chunk_size), int(x // chunk_size))
 
     def _remove_dead_animals(self):
         self.dead_animals = []
@@ -219,14 +189,8 @@ class World(object):
         closest_animal = None
         closest_dist = self.constants.ANIMAL_SIZE + 10
         for animal in self.animals:
-            dist = distance(x, y, animal.x, animal.y)
+            dist = hypot(x - animal.x, y - animal.y)
             if dist < closest_dist:
                 closest_animal = animal
                 closest_dist = dist
         return closest_animal
-
-    def _make_empty_chunks(self, chunk_size):
-        return [
-            [[] for _ in range(int(self.width / chunk_size) + 1)]
-            for _ in range(int(self.height / chunk_size) + 1)
-            ]
