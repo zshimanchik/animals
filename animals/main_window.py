@@ -35,7 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.timer, SIGNAL("timeout()"), self.on_timer_timeout)
         self.timer.start(self.TIMER_INTERVAL)
 
-        self._prev_time = time.time()
+        self._prev_time = time.clock()
 
     @Slot()
     def on_timer_button_clicked(self):
@@ -47,9 +47,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @Slot()
     def on_timer_timeout(self):
         if self.world.time % self._PERFORMANCE_CALC_INTERVAL == 0:
-            self.performance = (time.time() - self._prev_time) / self._PERFORMANCE_CALC_INTERVAL
-            self._prev_time = time.time()
-            self.performance_label.setText(str(self.performance))
+            self.performance = (time.clock() - self._prev_time) / self._PERFORMANCE_CALC_INTERVAL
+            self._prev_time = time.clock()
+            self.performance_label.setText("{:.6f}".format(self.performance))
 
         self.world.update()
         self._update_text_info()
