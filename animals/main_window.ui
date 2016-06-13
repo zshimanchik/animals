@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>868</width>
-    <height>265</height>
+    <width>879</width>
+    <height>277</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -438,7 +438,6 @@
         </disabled>
        </palette>
       </property>
-      <zorder>widget_2</zorder>
      </widget>
     </item>
     <item>
@@ -461,7 +460,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>0</height>
+           <height>20</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -475,77 +474,77 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
+       <item row="3" column="2">
         <widget class="QCheckBox" name="eat_distance_checkbox">
          <property name="text">
           <string>Eat distance</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="mammoth_count_label_lbl">
          <property name="text">
           <string>Mammoth count</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0">
         <widget class="QLabel" name="performance_label_lbl">
          <property name="text">
           <string>Performance</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="2" column="1">
         <widget class="QLabel" name="performance_label">
          <property name="text">
           <string>TextLabel</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="world_time_label_lbl">
          <property name="text">
           <string>World time</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="6" column="1">
         <widget class="QLabel" name="food_count_label">
          <property name="text">
           <string>TextLabel</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="3" column="1">
         <widget class="QLabel" name="world_time_label">
          <property name="text">
           <string>TextLabel</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="animal_count_label_lbl">
          <property name="text">
           <string>Animal count</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="5" column="1">
         <widget class="QLabel" name="animal_count_label">
          <property name="text">
           <string>TextLabel</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="food_count_label_lbl">
          <property name="text">
           <string>Food count</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
+       <item row="8" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -558,24 +557,51 @@
          </property>
         </spacer>
        </item>
-       <item row="6" column="1">
+       <item row="7" column="1">
         <widget class="QLabel" name="mammoth_count_label">
          <property name="text">
           <string>TextLabel</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="food_timer_label_lbl">
          <property name="text">
           <string>Food timer</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="1">
         <widget class="QLabel" name="food_timer_label">
          <property name="text">
           <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QSlider" name="draw_each_times_slider">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="draw_each_times_label">
+         <property name="text">
+          <string>Draw each</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLCDNumber" name="draw_each_times_lcd">
+         <property name="intValue" stdset="0">
+          <number>1</number>
          </property>
         </widget>
        </item>
@@ -589,8 +615,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>868</width>
-     <height>30</height>
+     <width>879</width>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuRestart_world">
@@ -608,5 +634,22 @@
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>draw_each_times_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>draw_each_times_lcd</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>784</x>
+     <y>82</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>671</x>
+     <y>82</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

@@ -53,7 +53,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.world.update()
         self._update_text_info()
-        self.draw_widget.repaint()
+        if self.world.time % self.draw_each_times_slider.value() == 0:
+            self.draw_widget.repaint()
 
     def _update_text_info(self):
         self.world_time_label.setText(str(self.world.time))
