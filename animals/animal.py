@@ -89,7 +89,7 @@ class Animal(object):
             print(self._dna)
 
         self.gender = int(self._dna[0], base=4) % 2
-        self.brain = Animal.create_brain(self._dna[1:], self.world.constants)
+        self.brain = create_brain(self._dna[1:], self.world.constants)
         
     @property
     def sensors_positions(self):
@@ -170,7 +170,7 @@ class Animal(object):
     def make_child(mother, father):
         mother.energy -= mother.world.constants.ENERGY_FOR_BIRTH
         father.energy -= mother.world.constants.ENERGY_FOR_BIRTH
-        child = Animal(mother.world, Animal.mix_dna(mother.dna, father.dna, mother.world.constants))
+        child = Animal(mother.world, mix_dna(mother.dna, father.dna, mother.world.constants))
         print(child.dna)
         child.x = mother.x + randint(-30, 30)
         child.y = mother.y + randint(-30, 30)
@@ -219,50 +219,50 @@ class Animal(object):
     def dna(self):
         return self._dna
 
-    @staticmethod
-    def create_brain(dna, world_constants):
-        def dna_iter(dna):
-            for i in range(0, len(dna), world_constants.DNA_BRAIN_VALUE_LEN):
-                cur = dna[i:i+world_constants.DNA_BRAIN_VALUE_LEN]
-                yield (int(cur, world_constants.DNA_BASE) - world_constants.DNA_HALF_MAX_VALUE) / world_constants.DNA_HALF_MAX_VALUE
 
-        dna = dna_iter(dna)
-        brain = NeuralNetwork(world_constants.NEURAL_NETWORK_SHAPE)
-        for layer in brain:
-            for neuron in layer:
-                neuron.w = [dna.__next__() for _ in range(len(neuron.w))]
-        return brain
+def create_brain(dna, constants):
+    def dna_iter(dna):
+        for i in range(0, len(dna), constants.DNA_BRAIN_VALUE_LEN):
+            cur = dna[i:i + constants.DNA_BRAIN_VALUE_LEN]
+            yield (int(cur, constants.DNA_BASE) - constants.DNA_HALF_MAX_VALUE) / constants.DNA_HALF_MAX_VALUE
 
-    # for debug
-    @staticmethod
-    def brain_to_dna(brain, world_constants):
-        def val_to_dna(x):
-            x = max(0, int((x*world_constants.DNA_HALF_MAX_VALUE) + world_constants.DNA_HALF_MAX_VALUE))
-            res = []
-            while x:
-                res.insert(0, str(x % world_constants.DNA_BASE))
-                x /= world_constants.DNA_BASE
-            return "".join(res)
+    dna = dna_iter(dna)
+    brain = NeuralNetwork(constants.NEURAL_NETWORK_SHAPE)
+    for layer in brain:
+        for neuron in layer:
+            neuron.w = [dna.__next__() for _ in range(len(neuron.w))]
+    return brain
 
-        dna = []
-        for layer in brain:
-            for neuron in layer:
-                for w in neuron.w:                
-                    dna.append(val_to_dna(w))
-        return "".join(dna)
 
-    @staticmethod
-    def mutate_dna(dna, world_constants):
-        dna_ba = bytearray(dna, 'utf8')
-        for i in range(len(dna_ba)):
-            if random() < world_constants.MUTATE_CHANCE:
-                dna_ba[i] = ord(str(randint(0, world_constants.DNA_BASE-1)))
-        return dna_ba.decode('utf8')
+# for debug
+def brain_to_dna(brain, constants):
+    def val_to_dna(x):
+        x = max(0, int((x * constants.DNA_HALF_MAX_VALUE) + constants.DNA_HALF_MAX_VALUE))
+        res = []
+        while x:
+            res.insert(0, str(x % constants.DNA_BASE))
+            x /= constants.DNA_BASE
+        return "".join(res)
 
-    @staticmethod
-    def mix_dna(dna1, dna2, world_constants):
-        m = randint(0, len(dna1))
-        if randint(0, 1):
-            return Animal.mutate_dna(dna1[:m] + dna2[m:], world_constants)
-        else:
-            return Animal.mutate_dna(dna2[:m] + dna1[m:], world_constants)
+    dna = []
+    for layer in brain:
+        for neuron in layer:
+            for w in neuron.w:
+                dna.append(val_to_dna(w))
+    return "".join(dna)
+
+
+def mutate_dna(dna, constants):
+    dna_ba = bytearray(dna, 'utf8')
+    for i in range(len(dna_ba)):
+        if random() < constants.MUTATE_CHANCE:
+            dna_ba[i] = ord(str(randint(0, constants.DNA_BASE - 1)))
+    return dna_ba.decode('utf8')
+
+
+def mix_dna(dna1, dna2, constants):
+    m = randint(0, len(dna1))
+    if randint(0, 1):
+        return mutate_dna(dna1[:m] + dna2[m:], constants)
+    else:
+        return mutate_dna(dna2[:m] + dna1[m:], constants)
