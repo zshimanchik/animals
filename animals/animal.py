@@ -85,7 +85,7 @@ class Animal(object):
         self.answer = []
 
         if not self._dna:
-            self._dna = "".join([ str(randint(0, self.world.constants.DNA_BASE-1)) for _ in range(self.world.constants.DNA_LEN) ])
+            self._dna = create_random_dna(self.world.constants)
             print(self._dna)
 
         self.gender = int(self._dna[0], base=4) % 2
@@ -148,7 +148,10 @@ class Animal(object):
         return False
 
     def sex(mother, father):
-        child_count = randint(mother.world.constants.MIN_AMOUNT_OF_CHILDREN, mother.world.constants.MAX_AMOUNT_OF_CHILDREN)
+        child_count = randint(
+            mother.world.constants.MIN_AMOUNT_OF_CHILDREN,
+            mother.world.constants.MAX_AMOUNT_OF_CHILDREN
+        )
         # if it tries to birth more child than it can - bud so many as it can and die.
         if not mother.can_make_n_children(child_count):
             child_count = int(mother.energy / mother.world.constants.ENERGY_FOR_BIRTH)
@@ -221,9 +224,9 @@ class Animal(object):
 
 
 def create_brain(dna, constants):
-    def dna_iter(dna):
-        for i in range(0, len(dna), constants.DNA_BRAIN_VALUE_LEN):
-            cur = dna[i:i + constants.DNA_BRAIN_VALUE_LEN]
+    def dna_iter(_dna):
+        for i in range(0, len(_dna), constants.DNA_BRAIN_VALUE_LEN):
+            cur = _dna[i:i + constants.DNA_BRAIN_VALUE_LEN]
             yield (int(cur, constants.DNA_BASE) - constants.DNA_HALF_MAX_VALUE) / constants.DNA_HALF_MAX_VALUE
 
     dna = dna_iter(dna)
@@ -250,6 +253,10 @@ def brain_to_dna(brain, constants):
             for w in neuron.w:
                 dna.append(val_to_dna(w))
     return "".join(dna)
+
+
+def create_random_dna(constants):
+    return "".join([str(randint(0, constants.DNA_BASE - 1)) for _ in range(constants.DNA_LEN)])
 
 
 def mutate_dna(dna, constants):
