@@ -1,7 +1,7 @@
 ﻿import math
 from random import random, randint
 
-from neural_network.neural_network import NeuralNetwork
+from brain import create_brain
 
 TWO_PI = math.pi * 2
 
@@ -221,38 +221,6 @@ class Animal(object):
     @property
     def dna(self):
         return self._dna
-
-
-def create_brain(dna, constants):
-    def dna_iter(_dna):
-        for i in range(0, len(_dna), constants.DNA_BRAIN_VALUE_LEN):
-            cur = _dna[i:i + constants.DNA_BRAIN_VALUE_LEN]
-            yield (int(cur, constants.DNA_BASE) - constants.DNA_HALF_MAX_VALUE) / constants.DNA_HALF_MAX_VALUE
-
-    dna = dna_iter(dna)
-    brain = NeuralNetwork(constants.NEURAL_NETWORK_SHAPE)
-    for layer in brain:
-        for neuron in layer:
-            neuron.w = [dna.__next__() for _ in range(len(neuron.w))]
-    return brain
-
-
-# for debug
-def brain_to_dna(brain, constants):
-    def val_to_dna(x):
-        x = max(0, int((x * constants.DNA_HALF_MAX_VALUE) + constants.DNA_HALF_MAX_VALUE))
-        res = []
-        while x:
-            res.insert(0, str(x % constants.DNA_BASE))
-            x /= constants.DNA_BASE
-        return "".join(res)
-
-    dna = []
-    for layer in brain:
-        for neuron in layer:
-            for w in neuron.w:
-                dna.append(val_to_dna(w))
-    return "".join(dna)
 
 
 def create_random_dna(constants):
