@@ -2,6 +2,7 @@ import sys
 import time
 from PySide.QtCore import QTimer, SIGNAL, Slot, QRect, Qt
 from PySide.QtGui import QMainWindow, QPainter, QApplication, QBrush, QPen, QColor
+from PySide.QtOpenGL import QGLWidget
 
 from main_window_ui import Ui_MainWindow
 import world
@@ -23,6 +24,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._animal_pen = Qt.NoPen
 
         self.setupUi(self)
+        self.centralwidget_layout.removeWidget(self.draw_widget)
+        self.draw_widget = QGLWidget()
+        self.centralwidget_layout.insertWidget(0, self.draw_widget)
 
         self.world_constants = WorldConstants()
         self.draw_widget.setFixedWidth(self.world_constants.WORLD_WIDTH)
