@@ -58,8 +58,6 @@ class WorldConstants(object):
     def __init__(self):
         pass
 
-    # todo create cached properties instead of this for optimization
-
     @cached_property
     def INPUT_LAYER_SIZE(self):
         return self.ANIMAL_SENSOR_COUNT * self.ANIMAL_SENSOR_DIMENSION
