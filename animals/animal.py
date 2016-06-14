@@ -12,7 +12,7 @@ class Food(object):
         self.x = x
         self.y = y
         self._size = size
-        self._smell = (0, 1, 0,)
+        self._smell = (0.0, 1.0, 0.0,)
         self._smell_size = self._size * self._world.constants.FOOD_SMELL_SIZE_RATIO
         self.beated = False
 
@@ -46,7 +46,7 @@ class Mammoth(object):
         self.x = x
         self.y = y
         self.size = size
-        self.smell = (1, 0, 0,)
+        self.smell = (0.0, 0.0, 1.0,)
         self.smell_size = self.size * self._world.constants.MAMMOTH_SMELL_SIZE_RATIO
         self.life = 1
 
@@ -71,7 +71,7 @@ class Animal(object):
         self._y = randint(0, self.world.height)
         self.size = self.world.constants.ANIMAL_SIZE
         self.angle = 0
-        self._smell = (0.0, 0.0, 1.0, )
+        self._smell = (1.0, 0.0, 0.0, )
         self.smell_size = 0
         self.closest_food = None
 

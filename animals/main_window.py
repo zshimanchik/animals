@@ -55,6 +55,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._prev_time = time.clock()
             self.performance_label.setText("{:.6f}".format(self.performance))
 
+        if self.world.time == 200:
+            print(self.performance)
+
         self.world.update()
         self._update_text_info()
         if self.world.time % self.draw_each_times_slider.value() == 0:
@@ -72,6 +75,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         painter.begin(self.draw_widget)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.drawText(QRect(0, 0, 100, 100), Qt.AlignCenter, "Qt")
+        if self.smells_checkbox.isChecked():
+            self._draw_smells(painter)
+
         for food in self.world.food:
             self._draw_food(painter, food)
         for mammoth in self.world.mammoths:
@@ -80,6 +86,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._draw_animal(painter, animal)
 
         painter.end()
+
+    def _draw_smells(self, painter):
+        for smeller in self.world.animals + self.world.mammoths + self.world.food:
+            self._draw_smell(painter, smeller)
+
+    def _draw_smell(self, painter, smeller):
+        smell_color = QColor(smeller.smell[0] * 255, smeller.smell[1] * 255, smeller.smell[2] * 255, 15)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QBrush(smell_color))
+        painter.drawEllipse(QRect(
+            smeller.x - smeller.smell_size,
+            smeller.y - smeller.smell_size,
+            smeller.smell_size*2,
+            smeller.smell_size*2
+        ))
 
     def _draw_animal(self, painter, animal):
         painter.setPen(self._animal_pen)

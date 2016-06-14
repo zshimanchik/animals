@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Wed Jun 15 01:18:31 2016
+# Created: Wed Jun 15 01:29:25 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -86,6 +86,9 @@ class Ui_MainWindow(object):
         self.draw_each_times_lcd.setProperty("intValue", 1)
         self.draw_each_times_lcd.setObjectName("draw_each_times_lcd")
         self.gridLayout.addWidget(self.draw_each_times_lcd, 1, 1, 1, 1)
+        self.smells_checkbox = QtGui.QCheckBox(self.groupBox)
+        self.smells_checkbox.setObjectName("smells_checkbox")
+        self.gridLayout.addWidget(self.smells_checkbox, 4, 2, 1, 1)
         self.centralwidget_layout.addWidget(self.groupBox)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
@@ -122,6 +125,7 @@ class Ui_MainWindow(object):
         self.food_timer_label_lbl.setText(QtGui.QApplication.translate("MainWindow", "Food timer", None, QtGui.QApplication.UnicodeUTF8))
         self.food_timer_label.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.draw_each_times_label.setText(QtGui.QApplication.translate("MainWindow", "Draw each", None, QtGui.QApplication.UnicodeUTF8))
+        self.smells_checkbox.setText(QtGui.QApplication.translate("MainWindow", "Smells", None, QtGui.QApplication.UnicodeUTF8))
         self.menuRestart_world.setTitle(QtGui.QApplication.translate("MainWindow", "restart wor&ld", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRestart.setText(QtGui.QApplication.translate("MainWindow", "restart", None, QtGui.QApplication.UnicodeUTF8))
 
