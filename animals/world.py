@@ -90,10 +90,10 @@ class World(object):
             mammoth.update()
 
     def _calculate_values_of_animals_sensors(self):
-        self.smellers = self.animals + self.food + self.mammoths
-        smellers_pos = np.array([[smeller.x, smeller.y] for smeller in self.smellers], dtype=np.float64)
-        smells_sizes = np.array([smeller.smell_size for smeller in self.smellers], dtype=np.float64)
-        smells = np.array([smeller.smell for smeller in self.smellers], dtype=np.float64)
+        smellers = self.animals + self.food + self.mammoths
+        smellers_pos = np.array([[smeller.x, smeller.y] for smeller in smellers], dtype=np.float64)
+        smells_sizes = np.array([smeller.smell_size for smeller in smellers], dtype=np.float64)
+        smells = np.array([smeller.smell for smeller in smellers], dtype=np.float64)
         smells = np.transpose(smells)
 
         sensors_pos = []
@@ -101,16 +101,15 @@ class World(object):
             sensors_pos.extend(animal.sensors_positions)
         sensors_pos = np.array(sensors_pos, dtype=np.float64)
 
-        self.incidence = cdist(sensors_pos, smellers_pos)
-        self.smells_strength = np.maximum(0, 1 - self.incidence / smells_sizes) ** 2
+        incidence = cdist(sensors_pos, smellers_pos)
+        smells_strength = np.nan_to_num(np.maximum(0, 1 - incidence / smells_sizes)) ** 2
 
         for animal in self.animals:
             animal.sensor_values = []
 
-        for i, sensor_smell_strength in enumerate(self.smells_strength):
+        for i, sensor_smell_strength in enumerate(smells_strength):
             sensor_values = np.max(sensor_smell_strength * smells, axis=1)
             animal_id = i // self.constants.ANIMAL_SENSOR_COUNT
-            sensor_id = i % self.constants.ANIMAL_SENSOR_COUNT
             self.animals[animal_id].sensor_values.extend(sensor_values)
 
     def _calculate_animals_closest_food(self):
