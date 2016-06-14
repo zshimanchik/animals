@@ -128,12 +128,19 @@ class World(object):
         """
         method doesn't respect individual animal's sizes, so SEX_DISTANCE must involve ANIMAL_SIZE
         """
-        animals_pos = np.array([[animal.x, animal.y] for animal in self.animals], dtype=np.float64)
-        distances = cdist(animals_pos, animals_pos)
-        for animal_i, distance_to_others in enumerate(distances):
-            females_indexes = np.nonzero(distance_to_others < self.constants.SEX_DISTANCE)[0]
-            females = [self.animals[i] for i in females_indexes if i != animal_i and self.animals[i].gender == Gender.FEMALE]
-            self.animals[animal_i].close_females = females
+        males, females = [], []
+        for animal in self.animals:
+            if animal.gender == Gender.MALE:
+                males.append(animal)
+            else:
+                females.append(animal)
+
+        males_pos = np.array([[animal.x, animal.y] for animal in males], dtype=np.float64)
+        females_pos = np.array([[animal.x, animal.y] for animal in females], dtype=np.float64)
+        distances = cdist(males_pos, females_pos)
+        for male, distance_to_females in zip(males, distances):
+            females_indexes = np.nonzero(distance_to_females < self.constants.SEX_DISTANCE)[0]
+            male.close_females = [females[i] for i in females_indexes]
 
     def _update_animals(self):
         for animal in self.animals:
