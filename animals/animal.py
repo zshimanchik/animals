@@ -20,7 +20,7 @@ class Food(object):
         self.beated = True
         real_value = min(self.size, value)
         self.size -= real_value
-        return value
+        return real_value
 
     @property
     def size(self):
