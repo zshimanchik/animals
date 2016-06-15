@@ -12,15 +12,21 @@ class World(object):
 
         self.width = constants.WORLD_WIDTH
         self.height = constants.WORLD_HEIGHT
+        self.food_timer = self.constants.DEFAULT_TIMER
+
+        self.animals = []
+        self.animals_to_add = []
+        self.food = []
+        self.mammoths = []
+        self.time = 0
 
         self.restart()
-        self.food_timer = self.constants.DEFAULT_TIMER
 
     def restart(self):
         self.animals = [Animal(self) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)]
         self.animals_to_add = []
         self.food = [self._make_random_food() for _ in range(self.constants.INITIAL_FOOD_COUNT)]
-        self.mammoths = [self._make_random_mammoth() for _ in range(self.constants.MAMMOTH_COUNT)]
+        self.mammoths = []
         self.time = 0
 
     def _make_random_food(self):
@@ -34,12 +40,19 @@ class World(object):
         )
 
     def _make_random_mammoth(self):
+        x, y = randint(self.width / 2, self.width), randint(self.height / 2, self.height)
+        while self._is_close_to_others_mammoths(x, y):
+            x, y = randint(self.width / 2, self.width), randint(self.height / 2, self.height)
         return Mammoth(
-            self,
-            randint(self.width / 2, self.width),
-            randint(self.height / 2, self.height),
+            self, x, y,
             randint(self.constants.APPEAR_FOOD_SIZE_MIN, self.constants.APPEAR_FOOD_SIZE_MAX)
         )
+
+    def _is_close_to_others_mammoths(self, x, y):
+        if not self.mammoths:
+            return False
+        distances = cdist([[x,y]], [[m.x, m.y] for m in self.mammoths])
+        return np.min(distances) < self.constants.MAMMOTH_MIN_DISTANCE_TO_OTHERS
 
     def update(self):
         self.time += 1
