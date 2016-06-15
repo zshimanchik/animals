@@ -1,6 +1,7 @@
 import sys
 import time
-from PySide.QtCore import QTimer, SIGNAL, Slot, QRect, Qt
+import math
+from PySide.QtCore import QTimer, SIGNAL, Slot, QRect, Qt, QPointF
 from PySide.QtGui import QMainWindow, QPainter, QApplication, QBrush, QPen, QColor
 from PySide.QtOpenGL import QGLWidget
 
@@ -111,6 +112,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         size = animal.size * 2
         painter.drawEllipse(QRect(animal.x - animal.size, animal.y - animal.size, size, size))
+
+        self._draw_animal_energy_fullness(painter, animal)
+        if self.animal_direction_checkbox.isChecked():
+            self._draw_animal_direction(painter, animal)
+
+    def _draw_animal_energy_fullness(self, painter, animal):
+        painter.setBrush(QColor(*[255*animal.energy_fullness]*3))
+        painter.drawEllipse(QRect(
+            animal.x - animal.size/2,
+            animal.y - animal.size/2,
+            animal.size,
+            animal.size
+        ))
+
+    def _draw_animal_direction(self, painter, animal):
+        painter.setPen(QPen(QColor(0, 0, 0), 2))
+        painter.drawLine(
+            QPointF(animal.x, animal.y),
+            QPointF(
+                animal.x + math.cos(animal.angle) * animal.size,
+                animal.y + math.sin(animal.angle) * animal.size
+            )
+        )
 
     def _draw_food(self, painter, food):
         painter.setPen(Qt.NoPen)

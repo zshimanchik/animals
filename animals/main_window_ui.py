@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Wed Jun 15 01:29:25 2016
+# Created: Wed Jun 15 14:54:07 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(879, 284)
+        MainWindow.resize(879, 288)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.centralwidget_layout = QtGui.QHBoxLayout(self.centralwidget)
@@ -89,6 +89,9 @@ class Ui_MainWindow(object):
         self.smells_checkbox = QtGui.QCheckBox(self.groupBox)
         self.smells_checkbox.setObjectName("smells_checkbox")
         self.gridLayout.addWidget(self.smells_checkbox, 4, 2, 1, 1)
+        self.animal_direction_checkbox = QtGui.QCheckBox(self.groupBox)
+        self.animal_direction_checkbox.setObjectName("animal_direction_checkbox")
+        self.gridLayout.addWidget(self.animal_direction_checkbox, 5, 2, 1, 1)
         self.centralwidget_layout.addWidget(self.groupBox)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
@@ -126,6 +129,7 @@ class Ui_MainWindow(object):
         self.food_timer_label.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.draw_each_times_label.setText(QtGui.QApplication.translate("MainWindow", "Draw each", None, QtGui.QApplication.UnicodeUTF8))
         self.smells_checkbox.setText(QtGui.QApplication.translate("MainWindow", "Smells", None, QtGui.QApplication.UnicodeUTF8))
+        self.animal_direction_checkbox.setText(QtGui.QApplication.translate("MainWindow", "Animal direction", None, QtGui.QApplication.UnicodeUTF8))
         self.menuRestart_world.setTitle(QtGui.QApplication.translate("MainWindow", "restart wor&ld", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRestart.setText(QtGui.QApplication.translate("MainWindow", "restart", None, QtGui.QApplication.UnicodeUTF8))
 
