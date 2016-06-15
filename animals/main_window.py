@@ -122,9 +122,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         painter.drawEllipse(QRect(food.x - food.size, food.y - food.size, size, size))
 
         if self.eat_distance_checkbox.isChecked():
-            self._draw_food_eating_distance(painter, food)
+            self._draw_eating_distance(painter, food)
 
-    def _draw_food_eating_distance(self, painter, food):
+    def _draw_mammoth(self, painter, mammoth):
+        r = 255 * (1.0 - mammoth.life)
+        g = 215 * (1.0 - mammoth.life)
+        b = 255 * mammoth.life
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QBrush(QColor(r,g,b)))
+        size = mammoth.size * 2
+        painter.drawEllipse(QRect(mammoth.x - mammoth.size, mammoth.y - mammoth.size, size, size))
+
+        if self.eat_distance_checkbox.isChecked():
+            self._draw_eating_distance(painter, mammoth)
+
+    def _draw_eating_distance(self, painter, food):
         painter.setPen(QPen(
             QColor(100, 100, 100),
             0.4,
@@ -136,12 +148,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         painter.drawEllipse(QRect(
             food.x - radius, food.y - radius, radius * 2, radius * 2
         ))
-
-    def _draw_mammoth(self, painter, mammoth):
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self._mammoth_brush)
-        size = mammoth.size * 2
-        painter.drawEllipse(QRect(mammoth.x - mammoth.size, mammoth.y - mammoth.size, size, size))
 
 
 if __name__ == "__main__":
