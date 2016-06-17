@@ -10,7 +10,7 @@ class WorldConstants(object):
 
     EATING_DISTANCE = 20
     EATING_VALUE = 0.03
-    FOOD_SMELL_SIZE_RATIO = 7.0
+    FOOD_SMELL_SIZE_RATIO = 14.0
 
     DEFAULT_TIMER = 1000 * (100 * 100) // (WORLD_WIDTH * WORLD_HEIGHT)
 
@@ -20,7 +20,7 @@ class WorldConstants(object):
 
     MAMMOTH_COUNT = 5
     MAMMOTH_MIN_DISTANCE_TO_OTHERS = 80
-    MAMMOTH_SMELL_SIZE_RATIO = 5.0
+    MAMMOTH_SMELL_SIZE_RATIO = 14.0
     MAMMOTH_BEAT_VALUE = 0.007
     MAMMOTH_REGENERATION_VALUE = 0.01
     FOOD_FROM_MAMMOTH_COUNT = 5
@@ -33,10 +33,10 @@ class WorldConstants(object):
 
     # neural_network shape
     ANIMAL_SENSOR_COUNT = 7
-    ANIMAL_SENSOR_DIMENSION = 3  # how many values in one sensor
+    ANIMAL_SENSOR_DIMENSION = 2  # how many values in one sensor
 
-    MIDDLE_LAYERS_SIZES = [3, 3]
-    OUTPUT_LAYER_SIZE = 3
+    MIDDLE_LAYERS_SIZES = [2]
+    OUTPUT_LAYER_SIZE = 2
 
     # DNA
     DNA_BASE = 4  # must be less or equals than 10, but greater than 1
