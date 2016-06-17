@@ -40,9 +40,9 @@ class World(object):
         )
 
     def _make_random_mammoth(self):
-        x, y = randint(self.width / 2, self.width), randint(self.height / 2, self.height)
+        x, y = randint(self.width / 2, self.width), randint(1, self.height)
         while self._is_close_to_others_mammoths(x, y):
-            x, y = randint(self.width / 2, self.width), randint(self.height / 2, self.height)
+            x, y = randint(self.width / 2, self.width), randint(1, self.height)
         return Mammoth(
             self, x, y,
             randint(self.constants.APPEAR_FOOD_SIZE_MIN, self.constants.APPEAR_FOOD_SIZE_MAX)
