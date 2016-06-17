@@ -21,7 +21,7 @@ class WorldConstants(object):
 
     MAMMOTH_COUNT = 5
     MAMMOTH_MIN_DISTANCE_TO_OTHERS = 80
-    MAMMOTH_SMELL_SIZE_RATIO = 14.0
+    MAMMOTH_SMELL_SIZE_RATIO = 5.0
     MAMMOTH_BEAT_VALUE = 0.007
     MAMMOTH_REGENERATION_VALUE = 0.01
     FOOD_FROM_MAMMOTH_COUNT = 5
@@ -33,8 +33,8 @@ class WorldConstants(object):
     MOVE_DISTANCE_TO_CONSUMED_ENERGY_RATIO = 0.01
 
     # neural_network shape
-    ANIMAL_SENSOR_COUNT = 3
-    ANIMAL_SENSOR_DIMENSION = 2  # how many values in one sensor
+    ANIMAL_SENSOR_COUNT = 7
+    ANIMAL_SENSOR_DIMENSION = 1  # how many values in one sensor
 
     MIDDLE_LAYERS_SIZES = [2]
     OUTPUT_LAYER_SIZE = 2

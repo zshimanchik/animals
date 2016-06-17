@@ -12,7 +12,7 @@ class Food(object):
         self.x = x
         self.y = y
         self._size = size
-        self._smell = (0.0, 1.0,)
+        self._smell = (1.0,)
         self._smell_size = self._size * self._world.constants.FOOD_SMELL_SIZE_RATIO
         self.beated = False
 
@@ -46,7 +46,7 @@ class Mammoth(object):
         self.x = x
         self.y = y
         self.size = size
-        self.smell = (1.0, 0.0,)
+        self.smell = (0.0,)
         self.smell_size = self.size * self._world.constants.MAMMOTH_SMELL_SIZE_RATIO
         self.life = 1
 
@@ -114,7 +114,6 @@ class Animal(object):
         if self.is_ready_to_sex():
             self._search_partner_and_try_to_sex()
 
-        # self.smell_size = (max(-1, self.answer[2]) + 1) / 2.0 * self.world.constants.MAX_ANIMAL_SMELL_SIZE
         self.move(self.answer[0], self.answer[1])
 
     def is_ready_to_sex(self):
@@ -197,10 +196,6 @@ class Animal(object):
     def y(self, value):
         self._y = value
         self._sensors_positions_calculated = False
-
-    @property
-    def smell(self):
-        return self._smell
 
     @property
     def energy_fullness(self):

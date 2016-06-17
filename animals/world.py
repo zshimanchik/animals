@@ -72,7 +72,7 @@ class World(object):
         self._transform_dead_mammoths()
 
         self._add_food_if_necessary()
-        self._add_mammoth_if_necessary()
+        # self._add_mammoth_if_necessary()
 
     def _check_all_in_bounds(self):
         for food in self.food:
@@ -102,7 +102,7 @@ class World(object):
             mammoth.update()
 
     def _calculate_values_of_animals_sensors(self):
-        smellers = self.food + self.mammoths
+        smellers = self.food
         smellers_pos = np.array([[smeller.x, smeller.y] for smeller in smellers], dtype=np.float64)
         smells_sizes = np.array([smeller.smell_size for smeller in smellers], dtype=np.float64)
         smells = np.array([smeller.smell for smeller in smellers], dtype=np.float64)
@@ -125,7 +125,7 @@ class World(object):
             self.animals[animal_id].sensor_values.extend(sensor_values)
 
     def _calculate_animals_closest_food(self):
-        eatable = self.food + self.mammoths
+        eatable = self.food
         food_positions = np.array([[food.x, food.y] for food in eatable], dtype=np.float64)
         animals_positions = np.array([[animal.x, animal.y] for animal in self.animals], dtype=np.float64)
         distances = cdist(animals_positions, food_positions)
