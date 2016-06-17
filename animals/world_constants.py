@@ -32,7 +32,7 @@ class WorldConstants(object):
     MOVE_DISTANCE_TO_CONSUMED_ENERGY_RATIO = 0.01
 
     # neural_network shape
-    ANIMAL_SENSOR_COUNT = 7
+    ANIMAL_SENSOR_COUNT = 3
     ANIMAL_SENSOR_DIMENSION = 2  # how many values in one sensor
 
     MIDDLE_LAYERS_SIZES = [2]
