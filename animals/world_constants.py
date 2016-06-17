@@ -3,7 +3,7 @@ from cached_property import cached_property
 
 class WorldConstants(object):
     WORLD_WIDTH = 900
-    WORLD_HEIGHT = 200
+    WORLD_HEIGHT = 400
 
     INITIAL_ANIMAL_COUNT = 55
     INITIAL_FOOD_COUNT = 250
