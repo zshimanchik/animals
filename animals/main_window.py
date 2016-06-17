@@ -23,6 +23,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._food_beated_brush = QBrush(QColor(180, 140, 100))
         self._mammoth_brush = QBrush(QColor(50, 50, 200))
         self._animal_pen = Qt.NoPen
+        self._selected_animal_pen = QPen(QColor(255, 180, 0), 2)
+        self.selected_animal = None
 
         self.setupUi(self)
         self.centralwidget_layout.removeWidget(self.draw_widget)
@@ -35,6 +37,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.world = world.World(constants=self.world_constants)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
+        self.draw_widget.mousePressEvent = self.on_draw_widget_mousePressEvent
 
         self.timer = QTimer(self)
         self.connect(self.timer, SIGNAL("timeout()"), self.on_timer_timeout)
@@ -88,6 +91,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         painter.end()
 
+    def on_draw_widget_mousePressEvent(self, event):
+        self.selected_animal = self.world.get_animal(event.x(), event.y())
+
     def _draw_smells(self, painter):
         for smeller in self.world.mammoths + self.world.food:
             self._draw_smell(painter, smeller)
@@ -104,7 +110,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ))
 
     def _draw_animal(self, painter, animal):
-        painter.setPen(self._animal_pen)
+        if animal == self.selected_animal:
+            painter.setPen(self._selected_animal_pen)
+        else:
+            painter.setPen(self._animal_pen)
         if animal.gender == Gender.FEMALE:
             painter.setBrush(self._animal_female_brush)
         else:
