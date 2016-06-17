@@ -58,11 +58,6 @@ class Mammoth(object):
         self.life = min(1.0, self.life + self._world.constants.MAMMOTH_REGENERATION_VALUE)
 
 
-class Gender:
-    FEMALE = 0
-    MALE = 1
-
-
 class Animal(object):
     def __init__(self, world, dna=""):
         self.world = world
@@ -79,15 +74,14 @@ class Animal(object):
 
         self.energy = self.world.constants.ENERGY_FOR_BIRTH
         self.readiness_to_sex = 0
-        self.close_females = []
+        self.close_partners = []
         self.answer = []
 
         if not self._dna:
             self._dna = create_random_dna(self.world.constants)
             print(self._dna)
 
-        self.gender = int(self._dna[0], base=4) % 2
-        self.brain = create_brain(self._dna[1:], self.world.constants)
+        self.brain = create_brain(self._dna, self.world.constants)
         
     @property
     def sensors_positions(self):
@@ -117,31 +111,24 @@ class Animal(object):
         if self.energy_fullness > self.world.constants.ENERGY_FULLNESS_TO_INCREASE_READINESS_TO_SEX:
             self.readiness_to_sex += self.world.constants.READINESS_TO_SEX_INCREMENT
 
-        if self.can_request_for_sex():
+        if self.is_ready_to_sex():
             self._search_partner_and_try_to_sex()
 
         # self.smell_size = (max(-1, self.answer[2]) + 1) / 2.0 * self.world.constants.MAX_ANIMAL_SMELL_SIZE
         self.move(self.answer[0], self.answer[1])
 
-    def can_request_for_sex(self):
-        return self.gender == Gender.MALE and self.is_ready_do_sex()
-
-    def is_ready_do_sex(self):
+    def is_ready_to_sex(self):
         return self.readiness_to_sex >= self.world.constants.READINESS_TO_SEX_THRESHOLD
 
     def _search_partner_and_try_to_sex(self):
-        for female in self.close_females:
-            success = self._thread_safe_request_for_sex(female)
+        for partner in self.close_partners:
+            success = partner.be_requested_for_sex(self)
             if success:
                 break
 
-    def _thread_safe_request_for_sex(self, female):
-        success = female.be_requested_for_sex(self)
-        return success
-
-    def be_requested_for_sex(self, male):
-        if self.is_ready_do_sex():
-            self.sex(male)
+    def be_requested_for_sex(self, partner):
+        if self.is_ready_to_sex():
+            self.sex(partner)
             return True
         return False
 

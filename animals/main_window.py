@@ -8,7 +8,6 @@ from PySide.QtOpenGL import QGLWidget
 from main_window_ui import Ui_MainWindow
 import world
 from world_constants import WorldConstants
-from animal import Gender
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -17,8 +16,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._animal_female_brush = QBrush(QColor(200, 50, 50))
-        self._animal_male_brush = QBrush(QColor(50, 200, 50))
+        self._animal_brush = QBrush(QColor(74, 172, 225))
         self._food_brush = QBrush(QColor(100, 100, 100))
         self._food_beated_brush = QBrush(QColor(180, 140, 100))
         self._mammoth_brush = QBrush(QColor(50, 50, 200))
@@ -114,10 +112,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             painter.setPen(self._selected_animal_pen)
         else:
             painter.setPen(self._animal_pen)
-        if animal.gender == Gender.FEMALE:
-            painter.setBrush(self._animal_female_brush)
-        else:
-            painter.setBrush(self._animal_male_brush)
+        painter.setBrush(self._animal_brush)
 
         size = animal.size * 2
         painter.drawEllipse(QRect(animal.x - animal.size, animal.y - animal.size, size, size))

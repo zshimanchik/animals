@@ -83,4 +83,4 @@ class WorldConstants(object):
 
     @cached_property
     def DNA_LEN(self):
-        return 1 + self.DNA_FOR_BRAIN_LEN
+        return self.DNA_FOR_BRAIN_LEN

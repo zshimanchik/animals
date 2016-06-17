@@ -3,7 +3,7 @@ from random import randint, random, gauss
 import numpy as np
 from scipy.spatial.distance import cdist
 
-from animal import Animal, Food, Mammoth, Gender
+from animal import Animal, Food, Mammoth
 
 
 class World(object):
@@ -63,7 +63,7 @@ class World(object):
 
         self._calculate_values_of_animals_sensors()
         self._calculate_animals_closest_food()
-        self._calculate_animals_close_females()
+        self._calculate_animals_close_partners()
 
         self._update_animals()
 
@@ -137,23 +137,15 @@ class World(object):
             else:
                 self.animals[animal_i].closest_food = None
 
-    def _calculate_animals_close_females(self):
+    def _calculate_animals_close_partners(self):
         """
         method doesn't respect individual animal's sizes, so SEX_DISTANCE must involve ANIMAL_SIZE
         """
-        males, females = [], []
-        for animal in self.animals:
-            if animal.gender == Gender.MALE:
-                males.append(animal)
-            else:
-                females.append(animal)
-
-        males_pos = np.array([[animal.x, animal.y] for animal in males], dtype=np.float64)
-        females_pos = np.array([[animal.x, animal.y] for animal in females], dtype=np.float64)
-        distances = cdist(males_pos, females_pos)
-        for male, distance_to_females in zip(males, distances):
-            females_indexes = np.nonzero(distance_to_females < self.constants.SEX_DISTANCE)[0]
-            male.close_females = [females[i] for i in females_indexes]
+        animals_pos = np.array([[animal.x, animal.y] for animal in self.animals], dtype=np.float64)
+        distances = cdist(animals_pos, animals_pos)
+        for animal, distance_to_partners in zip(self.animals, distances):
+            partners_indexes = np.nonzero(distance_to_partners < self.constants.SEX_DISTANCE)[0]
+            animal.close_partners = [self.animals[i] for i in partners_indexes if self.animals[i] != animal]
 
     def _update_animals(self):
         for animal in self.animals:
