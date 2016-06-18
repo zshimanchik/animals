@@ -12,7 +12,6 @@ class World(object):
 
         self.width = constants.WORLD_WIDTH
         self.height = constants.WORLD_HEIGHT
-        self.food_timer = self.constants.DEFAULT_TIMER
 
         self.animals = []
         self.animals_to_add = []
@@ -178,12 +177,12 @@ class World(object):
             self.food.append(Food(self, x, y, mammoth.size))
 
     def _add_food_if_necessary(self):
-        if self.time % self.food_timer == 0:
+        if self.time % self.constants.FOOD_TIMER == 0:
             for _ in range(self.constants.APPEAR_FOOD_COUNT):
                 self.food.append(self._make_random_food())
 
     def _add_mammoth_if_necessary(self):
-        if self.time % self.food_timer == 0 and len(self.mammoths) < self.constants.MAMMOTH_COUNT:
+        if self.time % self.constants.FOOD_TIMER == 0 and len(self.mammoths) < self.constants.MAMMOTH_COUNT:
             self.mammoths.append(self._make_random_mammoth())
 
     def add_animal(self, animal):

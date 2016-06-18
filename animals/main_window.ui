@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>879</width>
-    <height>288</height>
+    <height>307</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -211,13 +211,14 @@
      <x>0</x>
      <y>0</y>
      <width>879</width>
-     <height>30</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuRestart_world">
     <property name="title">
-     <string>restart wor&amp;ld</string>
+     <string>windows</string>
     </property>
+    <addaction name="constants_action"/>
    </widget>
    <addaction name="menuRestart_world"/>
   </widget>
@@ -225,6 +226,11 @@
   <action name="actionRestart">
    <property name="text">
     <string>restart</string>
+   </property>
+  </action>
+  <action name="constants_action">
+   <property name="text">
+    <string>constants</string>
    </property>
   </action>
  </widget>

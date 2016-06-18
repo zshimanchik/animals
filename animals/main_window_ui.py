@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Wed Jun 15 14:54:07 2016
+# Created: Sat Jun 18 22:00:39 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(879, 288)
+        MainWindow.resize(879, 307)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.centralwidget_layout = QtGui.QHBoxLayout(self.centralwidget)
@@ -95,7 +95,7 @@ class Ui_MainWindow(object):
         self.centralwidget_layout.addWidget(self.groupBox)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 879, 30))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 879, 28))
         self.menubar.setObjectName("menubar")
         self.menuRestart_world = QtGui.QMenu(self.menubar)
         self.menuRestart_world.setObjectName("menuRestart_world")
@@ -105,6 +105,9 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
         self.actionRestart = QtGui.QAction(MainWindow)
         self.actionRestart.setObjectName("actionRestart")
+        self.constants_action = QtGui.QAction(MainWindow)
+        self.constants_action.setObjectName("constants_action")
+        self.menuRestart_world.addAction(self.constants_action)
         self.menubar.addAction(self.menuRestart_world.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -130,6 +133,7 @@ class Ui_MainWindow(object):
         self.draw_each_times_label.setText(QtGui.QApplication.translate("MainWindow", "Draw each", None, QtGui.QApplication.UnicodeUTF8))
         self.smells_checkbox.setText(QtGui.QApplication.translate("MainWindow", "Smells", None, QtGui.QApplication.UnicodeUTF8))
         self.animal_direction_checkbox.setText(QtGui.QApplication.translate("MainWindow", "Animal direction", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuRestart_world.setTitle(QtGui.QApplication.translate("MainWindow", "restart wor&ld", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuRestart_world.setTitle(QtGui.QApplication.translate("MainWindow", "windows", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRestart.setText(QtGui.QApplication.translate("MainWindow", "restart", None, QtGui.QApplication.UnicodeUTF8))
+        self.constants_action.setText(QtGui.QApplication.translate("MainWindow", "constants", None, QtGui.QApplication.UnicodeUTF8))
 

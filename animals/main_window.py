@@ -6,6 +6,7 @@ from PySide.QtGui import QMainWindow, QPainter, QApplication, QBrush, QPen, QCol
 from PySide.QtOpenGL import QGLWidget
 
 from main_window_ui import Ui_MainWindow
+from constants_window import ConstantsWindow
 import world
 from world_constants import WorldConstants
 
@@ -23,6 +24,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._animal_pen = Qt.NoPen
         self._selected_animal_pen = QPen(QColor(255, 180, 0), 2)
         self.selected_animal = None
+        self.constants_window = None
 
         self.setupUi(self)
         self.centralwidget_layout.removeWidget(self.draw_widget)
@@ -51,6 +53,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.timer.start(self.TIMER_INTERVAL)
 
     @Slot()
+    def on_constants_action_triggered(self):
+        if not self.constants_window:
+            self.constants_window = ConstantsWindow(self.world_constants, parent=self)
+        if self.constants_window.isVisible():
+            self.constants_window.hide()
+        else:
+            self.constants_window.show()
+
+    @Slot()
     def on_timer_timeout(self):
         if self.world.time % self._PERFORMANCE_CALC_INTERVAL == 0:
             self.performance = (time.clock() - self._prev_time) / self._PERFORMANCE_CALC_INTERVAL
@@ -67,7 +78,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _update_text_info(self):
         self.world_time_label.setText(str(self.world.time))
-        self.food_timer_label.setText(str(self.world.food_timer))
+        self.food_timer_label.setText(str(self.world_constants.FOOD_TIMER))
         self.animal_count_label.setText(str(len(self.world.animals)))
         self.food_count_label.setText(str(len(self.world.food)))
         self.mammoth_count_label.setText(str(len(self.world.mammoths)))
