@@ -20,7 +20,7 @@ class Food(object):
         self.beated = True
         real_value = min(self.size, value)
         self.size -= real_value
-        return real_value
+        return real_value * self._world.constants.FOOD_SIZE_TO_ENERGY_RATIO
 
     @property
     def size(self):
@@ -165,9 +165,12 @@ class Animal(object):
         mother.world.add_animal(child)
 
     def eat(self, food):
-        value = min(self.world.constants.EATING_VALUE, max(0, self.world.constants.ANIMAL_MAX_ENERGY - self.energy))
-        value = food.beating(value)
-        self.energy += value
+        value = min(
+            self.world.constants.EATING_VALUE,
+            max(0, self.world.constants.ANIMAL_MAX_ENERGY - self.energy) / self.world.constants.FOOD_SIZE_TO_ENERGY_RATIO
+        )
+        energy = food.beating(value)
+        self.energy += energy
 
     def move(self, move, rotate):
         self.energy -= (abs(move) + abs(rotate)) * self.world.constants.MOVE_DISTANCE_TO_CONSUMED_ENERGY_RATIO
