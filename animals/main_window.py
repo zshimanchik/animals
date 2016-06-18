@@ -108,7 +108,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._draw_smell(painter, smeller)
 
     def _draw_smell(self, painter, smeller):
-        smell_color = QColor(0, smeller.smell[0] * 255, 0, 15)
+        smell_color = QColor(0, smeller.smell[0] * 255, smeller.smell[1] * 255, 15)
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(smell_color))
         painter.drawEllipse(QRect(
@@ -124,6 +124,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             painter.setPen(self._animal_pen)
         painter.setBrush(self._animal_brush)
+
+        g = min(1.0, (1.0 - animal.color) * 2)
+        b = min(1.0, animal.color * 2)
+        painter.setBrush(QBrush(QColor(0, g * 255, b * 255)))
 
         size = animal.size * 2
         painter.drawEllipse(QRect(animal.x - animal.size, animal.y - animal.size, size, size))
@@ -153,10 +157,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _draw_food(self, painter, food):
         painter.setPen(Qt.NoPen)
-        if food.beated:
-            painter.setBrush(self._food_beated_brush)
-        else:
-            painter.setBrush(self._food_brush)
+        painter.setBrush(QBrush(QColor(0, food.smell[0] * 255, food.smell[1] * 255)))
         size = food.size * 2
         painter.drawEllipse(QRect(food.x - food.size, food.y - food.size, size, size))
 

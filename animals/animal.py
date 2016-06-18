@@ -7,14 +7,20 @@ TWO_PI = math.pi * 2
 
 
 class Food(object):
-    def __init__(self, world, x, y, size):
+    def __init__(self, world, x, y, size, color):
         self._world = world
         self.x = x
         self.y = y
         self._size = size
-        self._smell = (1.0,)
+        self.color = color
+        self._smell = self._calculate_smell(self.color)
         self._smell_size = self._size * self._world.constants.FOOD_SMELL_SIZE_RATIO
         self.beated = False
+
+    def _calculate_smell(self, color):
+        g = min(1.0, (1.0 - color) * 2)
+        b = min(1.0, color * 2)
+        return (g, b,)
 
     def beating(self, value):
         self.beated = True
@@ -67,6 +73,7 @@ class Animal(object):
         self.size = self.world.constants.ANIMAL_SIZE
         self.angle = 0
         self.closest_food = None
+        self.color = 0.0
 
         self.sensor_values = []
         self._sensors_positions = []
@@ -115,6 +122,7 @@ class Animal(object):
             self._search_partner_and_try_to_sex()
 
         self.move(self.answer[0], self.answer[1])
+        self.color = abs(self.answer[2])
 
     def is_ready_to_sex(self):
         return self.readiness_to_sex >= self.world.constants.READINESS_TO_SEX_THRESHOLD
@@ -168,6 +176,7 @@ class Animal(object):
             self.world.constants.EATING_VALUE,
             max(0, self.world.constants.ANIMAL_MAX_ENERGY - self.energy) / self.world.constants.FOOD_SIZE_TO_ENERGY_RATIO
         )
+        value *= 1.0 - abs(self.color - food.color)
         energy = food.beating(value)
         self.energy += energy
 

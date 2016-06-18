@@ -35,7 +35,8 @@ class World(object):
             self,
             int(self.width * x / 2.5),
             randint(0, self.height),
-            randint(self.constants.APPEAR_FOOD_SIZE_MIN, self.constants.APPEAR_FOOD_SIZE_MAX)
+            randint(self.constants.APPEAR_FOOD_SIZE_MIN, self.constants.APPEAR_FOOD_SIZE_MAX),
+            random()
         )
 
     def _make_random_mammoth(self):

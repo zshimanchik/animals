@@ -9,7 +9,7 @@ class WorldConstants(object):
     INITIAL_FOOD_COUNT = 250
 
     EATING_DISTANCE = 20
-    EATING_VALUE = 0.02
+    EATING_VALUE = 0.025
     FOOD_SMELL_SIZE_RATIO = 21.0
 
     FOOD_TIMER = 1000 * (100 * 100) // (WORLD_WIDTH * WORLD_HEIGHT)
@@ -34,10 +34,10 @@ class WorldConstants(object):
 
     # neural_network shape
     ANIMAL_SENSOR_COUNT = 3
-    ANIMAL_SENSOR_DIMENSION = 1  # how many values in one sensor
+    ANIMAL_SENSOR_DIMENSION = 2  # how many values in one sensor
 
-    MIDDLE_LAYERS_SIZES = [2]
-    OUTPUT_LAYER_SIZE = 2
+    MIDDLE_LAYERS_SIZES = [3]
+    OUTPUT_LAYER_SIZE = 3
 
     # DNA
     DNA_BASE = 4  # must be less or equals than 10, but greater than 1
