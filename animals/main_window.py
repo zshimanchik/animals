@@ -7,6 +7,7 @@ from PySide.QtOpenGL import QGLWidget
 
 from main_window_ui import Ui_MainWindow
 from constants_window import ConstantsWindow
+from neural_network_viewer import NeuralNetworkViewer
 import world
 from world_constants import WorldConstants
 
@@ -25,6 +26,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._selected_animal_pen = QPen(QColor(255, 180, 0), 2)
         self.selected_animal = None
         self.constants_window = None
+        self.neural_network_viewer_window = None
 
         self.setupUi(self)
         self.centralwidget_layout.removeWidget(self.draw_widget)
@@ -62,6 +64,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.constants_window.show()
 
     @Slot()
+    def on_network_viewer_action_triggered(self):
+        if not self.neural_network_viewer_window:
+            self.neural_network_viewer_window = NeuralNetworkViewer(parent=self)
+            if self.selected_animal:
+                self.neural_network_viewer_window.network = self.selected_animal.brain
+        if self.neural_network_viewer_window.isVisible():
+            self.neural_network_viewer_window.hide()
+        else:
+            self.neural_network_viewer_window.show()
+
+    @Slot()
     def on_timer_timeout(self):
         if self.world.time % self._PERFORMANCE_CALC_INTERVAL == 0:
             self.performance = (time.clock() - self._prev_time) / self._PERFORMANCE_CALC_INTERVAL
@@ -75,6 +88,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._update_text_info()
         if self.world.time % self.draw_each_times_slider.value() == 0:
             self.draw_widget.repaint()
+            if self.neural_network_viewer_window and self.neural_network_viewer_window.isVisible():
+                self.neural_network_viewer_window.repaint()
 
     def _update_text_info(self):
         self.world_time_label.setText(str(self.world.time))
@@ -102,6 +117,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def on_draw_widget_mousePressEvent(self, event):
         self.selected_animal = self.world.get_animal(event.x(), event.y())
+        if self.selected_animal and self.neural_network_viewer_window:
+            self.neural_network_viewer_window.network = self.selected_animal.brain
 
     def _draw_smells(self, painter):
         for smeller in self.world.mammoths + self.world.food:
