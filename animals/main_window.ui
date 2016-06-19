@@ -211,14 +211,15 @@
      <x>0</x>
      <y>0</y>
      <width>879</width>
-     <height>28</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuRestart_world">
     <property name="title">
-     <string>windows</string>
+     <string>wi&amp;ndows</string>
     </property>
     <addaction name="constants_action"/>
+    <addaction name="network_viewer_action"/>
    </widget>
    <addaction name="menuRestart_world"/>
   </widget>
@@ -230,7 +231,12 @@
   </action>
   <action name="constants_action">
    <property name="text">
-    <string>constants</string>
+    <string>&amp;constants</string>
+   </property>
+  </action>
+  <action name="network_viewer_action">
+   <property name="text">
+    <string>network viewer</string>
    </property>
   </action>
  </widget>

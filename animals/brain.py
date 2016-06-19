@@ -15,6 +15,15 @@ class Brain:
             x = layer.calculate(x)
         return x
 
+    def __len__(self):
+        return len(self.shape)
+
+    def __getitem__(self, item):
+        if item == len(self.shape) - 1:
+            return self.layers[-1].output
+        else:
+            return self.layers[item].input
+
 
 class Layer:
     def __init__(self, input_size, output_size, values_iter=None):
