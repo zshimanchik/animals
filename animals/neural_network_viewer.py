@@ -1,22 +1,16 @@
 from random import randint
+import colorsys
 
 from PySide import QtGui
-from PySide.QtCore import QRect
-from PySide.QtGui import QBrush, QPen, QColor
-
-
-def brush(r, g, b, alpha=255):
-    return QBrush(QColor(r, g, b, alpha))
-
-
-def pen(r, g, b, alpha=255):
-    return QPen(QColor(r, g, b, alpha))
+from PySide.QtCore import QRect, Qt
+from PySide.QtGui import QBrush, QColor
 
 
 def set_color(qp, color):
+    qp.setPen(Qt.NoPen)
     color = max(0, min(255, color))
-    qp.setBrush(brush(100, color, 255-color))
-    qp.setPen(pen(100, color, 255-color))
+    r, g, b = colorsys.hsv_to_rgb(0.333333 * color, 1.0, 1.0)
+    qp.setBrush(QBrush(QColor(r*255, g*255, b*255)))
 
 
 class NeuralNetworkViewer(QtGui.QMainWindow):
@@ -44,14 +38,13 @@ class NeuralNetworkViewer(QtGui.QMainWindow):
             qp.end()
 
     def draw_layer(self, qp, layer, x, y, width, height):
-        qp.setBrush(brush(randint(0,255), randint(0,255), randint(0,255)))
         cell_height = height*0.7
         cell_width = width / len(layer)
         y += height * 0.15
 
         for i, out in enumerate(layer):
             rect = QRect(x+i*cell_width, y, cell_width, cell_height)
-            set_color(qp, int((out + 1) * 255.0 / 2.0))
+            set_color(qp, (out + 1) / 2.0)
             qp.drawEllipse(rect)
 
 
