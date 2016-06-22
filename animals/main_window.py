@@ -26,7 +26,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._food_beated_brush = QBrush(QColor(180, 140, 100))
         self._mammoth_brush = QBrush(QColor(50, 50, 200))
         self._animal_pen = Qt.NoPen
-        self._selected_animal_pen = QPen(QColor(255, 180, 0), 2)
+        self._selected_animal_pen = QPen(QColor(255, 180, 0), 3)
         self.selected_animal = None
         self.constants_window = None
         self.neural_network_viewer_window = None
@@ -44,6 +44,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.world = world.World(constants=world_constants)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
         self.draw_widget.mousePressEvent = self.on_draw_widget_mousePressEvent
+        self.draw_widget.mouseMoveEvent = self.on_draw_widget_mouseMoveEvent
 
         self.timer = QTimer(self)
         self.connect(self.timer, SIGNAL("timeout()"), self.on_timer_timeout)
@@ -84,8 +85,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def on_load_action_triggered(self):
-        filename = QFileDialog.getOpenFileName(self, "Open world dump file", QDir.currentPath(),
-                                               "WORLD Files (*.wrld)")[0]
+        filename = QFileDialog.getOpenFileName(
+            self,
+            "Open world dump file",
+            self.snapshot_directory_combobox.currentText(),
+            "WORLD Files (*.wrld)"
+        )[0]
         if not filename:
             return
 
@@ -163,6 +168,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pickle.dump(self.world, out_file, protocol=4)
         print("saved into {}".format(file_path))
 
+    # PAINTING
+
     def on_draw_widget_paintEvent(self, event):
         painter = QPainter()
         painter.begin(self.draw_widget)
@@ -178,12 +185,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for animal in self.world.animals:
             self._draw_animal(painter, animal)
 
+        if self.selected_animal:
+            self._draw_animal(painter, self.selected_animal, selected=True)
+
         painter.end()
 
     def on_draw_widget_mousePressEvent(self, event):
         self.selected_animal = self.world.get_animal(event.x(), event.y())
-        if self.selected_animal and self.neural_network_viewer_window:
-            self.neural_network_viewer_window.network = self.selected_animal.brain
+        if self.neural_network_viewer_window:
+            self.neural_network_viewer_window.network = self.selected_animal.brain if self.selected_animal else None
+            self.neural_network_viewer_window.repaint()
+        self.draw_widget.repaint()
+
+    def on_draw_widget_mouseMoveEvent(self, event):
+        if self.selected_animal and self.move_radiobutton.isChecked():
+            self.selected_animal.x = event.x()
+            self.selected_animal.y = event.y()
+            self.draw_widget.repaint()
+            if self.neural_network_viewer_window:
+                self.neural_network_viewer_window.repaint()
+
 
     def _draw_smells(self, painter):
         for smeller in self.world.food:
@@ -200,8 +221,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             smeller.smell_size*2
         ))
 
-    def _draw_animal(self, painter, animal):
-        if animal == self.selected_animal:
+    def _draw_animal(self, painter, animal, selected=False):
+        if selected:
             painter.setPen(self._selected_animal_pen)
         else:
             painter.setPen(self._animal_pen)
@@ -215,6 +236,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._draw_animal_direction(painter, animal)
 
     def _draw_animal_energy_fullness(self, painter, animal):
+        painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(*[255*animal.energy_fullness]*3))
         painter.drawEllipse(QRect(
             animal.x - animal.size/2,
