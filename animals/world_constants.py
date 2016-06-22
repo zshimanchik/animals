@@ -2,63 +2,62 @@ from cached_property import cached_property
 
 
 class WorldConstants(object):
-    WORLD_WIDTH = 900
-    WORLD_HEIGHT = 400
-
-    INITIAL_ANIMAL_COUNT = 55
-    INITIAL_FOOD_COUNT = 250
-
-    EATING_DISTANCE = 20
-    EATING_VALUE = 0.02
-    FOOD_SMELL_SIZE_RATIO = 21.0
-
-    FOOD_TIMER = 1000 * (100 * 100) // (WORLD_WIDTH * WORLD_HEIGHT)
-
-    APPEAR_FOOD_COUNT = 3
-    APPEAR_FOOD_SIZE_MIN = 4
-    APPEAR_FOOD_SIZE_MAX = 7
-    FOOD_SIZE_TO_ENERGY_RATIO = 1.5
-
-    MAMMOTH_COUNT = 5
-    MAMMOTH_MIN_DISTANCE_TO_OTHERS = 80
-    MAMMOTH_SMELL_SIZE_RATIO = 29.0
-    MAMMOTH_BEAT_VALUE = 0.007
-    MAMMOTH_REGENERATION_VALUE = 0.01
-    FOOD_FROM_MAMMOTH_COUNT = 5
-
-    # Animal
-
-    ANIMAL_MAX_ENERGY = 30
-    ENERGY_FOR_EXIST = 0.007
-    MOVE_DISTANCE_TO_CONSUMED_ENERGY_RATIO = 0.01
-
-    # neural_network shape
-    ANIMAL_SENSOR_COUNT = 3
-    ANIMAL_SENSOR_DIMENSION = 2  # how many values in one sensor
-
-    MIDDLE_LAYERS_SIZES = [2]
-    OUTPUT_LAYER_SIZE = 2
-
-    # DNA
-    DNA_BASE = 4  # must be less or equals than 10, but greater than 1
-    DNA_BRAIN_VALUE_LEN = 5
-
-    READINESS_TO_SEX_THRESHOLD = 30
-    READINESS_TO_SEX_INCREMENT = 0.2
-    ENERGY_FULLNESS_TO_INCREASE_READINESS_TO_SEX = 0.7
-    ENERGY_FOR_BIRTH = 5
-    MIN_AMOUNT_OF_CHILDREN = 1
-    MAX_AMOUNT_OF_CHILDREN = 3
-
-    MUTATE_CHANCE = 0.05
-
-    ANIMAL_SIZE = 10
-    MAX_ANIMAL_SMELL_SIZE = 100
-
-    SEX_DISTANCE = 20 + ANIMAL_SIZE * 2
-
     def __init__(self):
-        pass
+        self.WORLD_WIDTH = 900
+        self.WORLD_HEIGHT = 400
+
+        self.INITIAL_ANIMAL_COUNT = 55
+        self.INITIAL_FOOD_COUNT = 250
+
+        self.EATING_DISTANCE = 20
+        self.EATING_VALUE = 0.02
+        self.FOOD_SMELL_SIZE_RATIO = 21.0
+
+        self.FOOD_TIMER = 1000 * (100 * 100) // (self.WORLD_WIDTH * self.WORLD_HEIGHT)
+
+        self.APPEAR_FOOD_COUNT = 3
+        self.APPEAR_FOOD_SIZE_MIN = 4
+        self.APPEAR_FOOD_SIZE_MAX = 7
+        self.FOOD_SIZE_TO_ENERGY_RATIO = 1.5
+
+        self.MAMMOTH_COUNT = 5
+        self.MAMMOTH_MIN_DISTANCE_TO_OTHERS = 80
+        self.MAMMOTH_SMELL_SIZE_RATIO = 29.0
+        self.MAMMOTH_BEAT_VALUE = 0.007
+        self.MAMMOTH_REGENERATION_VALUE = 0.01
+        self.FOOD_FROM_MAMMOTH_COUNT = 5
+
+        # Animal
+
+        self.ANIMAL_MAX_ENERGY = 30
+        self.ENERGY_FOR_EXIST = 0.007
+        self.MOVE_DISTANCE_TO_CONSUMED_ENERGY_RATIO = 0.01
+
+        # neural_network shape
+        self.ANIMAL_SENSOR_COUNT = 3
+        self.ANIMAL_SENSOR_DIMENSION = 2  # how many values in one sensor
+
+        self.MIDDLE_LAYERS_SIZES = [2]
+        self.OUTPUT_LAYER_SIZE = 2
+
+        # DNA
+        self.DNA_BASE = 4  # must be less or equals than 10, but greater than 1
+        self.DNA_BRAIN_VALUE_LEN = 5
+
+        self.READINESS_TO_SEX_THRESHOLD = 30
+        self.READINESS_TO_SEX_INCREMENT = 0.2
+        self.ENERGY_FULLNESS_TO_INCREASE_READINESS_TO_SEX = 0.7
+        self.ENERGY_FOR_BIRTH = 5
+        self.MIN_AMOUNT_OF_CHILDREN = 1
+        self.MAX_AMOUNT_OF_CHILDREN = 3
+
+        self.MUTATE_CHANCE = 0.05
+
+        self.ANIMAL_SIZE = 10
+        self.MAX_ANIMAL_SMELL_SIZE = 100
+
+        self.SEX_DISTANCE = 20 + self.ANIMAL_SIZE * 2
+
 
     @cached_property
     def INPUT_LAYER_SIZE(self):
