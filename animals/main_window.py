@@ -1,8 +1,10 @@
 import sys
 import time
 import math
-from PySide.QtCore import QTimer, SIGNAL, Slot, QRect, Qt, QPointF
-from PySide.QtGui import QMainWindow, QPainter, QApplication, QBrush, QPen, QColor
+import pickle
+import datetime
+from PySide.QtCore import QTimer, SIGNAL, Slot, QRect, Qt, QPointF, QDir
+from PySide.QtGui import QMainWindow, QPainter, QApplication, QBrush, QPen, QColor, QFileDialog
 from PySide.QtOpenGL import QGLWidget
 
 from main_window_ui import Ui_MainWindow
@@ -33,11 +35,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.draw_widget = QGLWidget()
         self.centralwidget_layout.insertWidget(0, self.draw_widget)
 
-        self.world_constants = WorldConstants()
-        self.draw_widget.setFixedWidth(self.world_constants.WORLD_WIDTH)
-        self.draw_widget.setFixedHeight(self.world_constants.WORLD_HEIGHT)
+        world_constants = WorldConstants()
+        self.draw_widget.setFixedWidth(world_constants.WORLD_WIDTH)
+        self.draw_widget.setFixedHeight(world_constants.WORLD_HEIGHT)
 
-        self.world = world.World(constants=self.world_constants)
+        self.world = world.World(constants=world_constants)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
         self.draw_widget.mousePressEvent = self.on_draw_widget_mousePressEvent
 
@@ -57,7 +59,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @Slot()
     def on_constants_action_triggered(self):
         if not self.constants_window:
-            self.constants_window = ConstantsWindow(self.world_constants, parent=self)
+            self.constants_window = ConstantsWindow(self.world.constants, parent=self)
         if self.constants_window.isVisible():
             self.constants_window.hide()
         else:
@@ -73,6 +75,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.neural_network_viewer_window.hide()
         else:
             self.neural_network_viewer_window.show()
+
+    @Slot()
+    def on_save_action_triggered(self):
+        now = datetime.datetime.now()
+        filename = "world_{}--{}.wrld".format(now.strftime("%F_%T"), self.world.time)
+        pickle.dump(self.world, open(filename, 'wb'), protocol=4)
+        print("saved into {}".format(filename))
+
+    @Slot()
+    def on_load_action_triggered(self):
+        filename = QFileDialog.getOpenFileName(self, "Open world dump file", QDir.currentPath(),
+                                               "WORLD Files (*.wrld)")[0]
+        if not filename:
+            return
+
+        dump = open(filename, 'rb')
+        print("loading from {}".format(filename))
+        new_world = pickle.load(dump)
+
+        self.world = new_world
+        if self.constants_window:
+            self.constants_window.constants = self.world.constants
+
+        self.draw_widget.setFixedWidth(self.world.constants.WORLD_WIDTH)
+        self.draw_widget.setFixedHeight(self.world.constants.WORLD_HEIGHT)
 
     @Slot()
     def on_timer_timeout(self):
@@ -93,7 +120,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _update_text_info(self):
         self.world_time_label.setText(str(self.world.time))
-        self.food_timer_label.setText(str(self.world_constants.FOOD_TIMER))
+        self.food_timer_label.setText(str(self.world.constants.FOOD_TIMER))
         self.animal_count_label.setText(str(len(self.world.animals)))
         self.food_count_label.setText(str(len(self.world.food)))
         self.mammoth_count_label.setText(str(len(self.world.mammoths)))
@@ -200,7 +227,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ))
         painter.setBrush(Qt.NoBrush)
 
-        radius = self.world_constants.EATING_DISTANCE + food.size
+        radius = self.world.constants.EATING_DISTANCE + food.size
         painter.drawEllipse(QRect(
             food.x - radius, food.y - radius, radius * 2, radius * 2
         ))

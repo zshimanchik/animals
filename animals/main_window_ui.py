@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Sun Jun 19 03:01:57 2016
+# Created: Wed Jun 22 01:43:32 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -99,6 +99,8 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menuRestart_world = QtGui.QMenu(self.menubar)
         self.menuRestart_world.setObjectName("menuRestart_world")
+        self.menuWorld = QtGui.QMenu(self.menubar)
+        self.menuWorld.setObjectName("menuWorld")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -109,8 +111,15 @@ class Ui_MainWindow(object):
         self.constants_action.setObjectName("constants_action")
         self.network_viewer_action = QtGui.QAction(MainWindow)
         self.network_viewer_action.setObjectName("network_viewer_action")
+        self.save_action = QtGui.QAction(MainWindow)
+        self.save_action.setObjectName("save_action")
+        self.load_action = QtGui.QAction(MainWindow)
+        self.load_action.setObjectName("load_action")
         self.menuRestart_world.addAction(self.constants_action)
         self.menuRestart_world.addAction(self.network_viewer_action)
+        self.menuWorld.addAction(self.save_action)
+        self.menuWorld.addAction(self.load_action)
+        self.menubar.addAction(self.menuWorld.menuAction())
         self.menubar.addAction(self.menuRestart_world.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -137,7 +146,10 @@ class Ui_MainWindow(object):
         self.smells_checkbox.setText(QtGui.QApplication.translate("MainWindow", "Smells", None, QtGui.QApplication.UnicodeUTF8))
         self.animal_direction_checkbox.setText(QtGui.QApplication.translate("MainWindow", "Animal direction", None, QtGui.QApplication.UnicodeUTF8))
         self.menuRestart_world.setTitle(QtGui.QApplication.translate("MainWindow", "wi&ndows", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuWorld.setTitle(QtGui.QApplication.translate("MainWindow", "wor&ld", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRestart.setText(QtGui.QApplication.translate("MainWindow", "restart", None, QtGui.QApplication.UnicodeUTF8))
         self.constants_action.setText(QtGui.QApplication.translate("MainWindow", "&constants", None, QtGui.QApplication.UnicodeUTF8))
-        self.network_viewer_action.setText(QtGui.QApplication.translate("MainWindow", "network viewer", None, QtGui.QApplication.UnicodeUTF8))
+        self.network_viewer_action.setText(QtGui.QApplication.translate("MainWindow", "&network viewer", None, QtGui.QApplication.UnicodeUTF8))
+        self.save_action.setText(QtGui.QApplication.translate("MainWindow", "save", None, QtGui.QApplication.UnicodeUTF8))
+        self.load_action.setText(QtGui.QApplication.translate("MainWindow", "load", None, QtGui.QApplication.UnicodeUTF8))
 
