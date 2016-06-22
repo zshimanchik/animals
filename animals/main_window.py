@@ -1,8 +1,11 @@
+import os
 import sys
 import time
 import math
-from PySide.QtCore import QTimer, SIGNAL, Slot, QRect, Qt, QPointF
-from PySide.QtGui import QMainWindow, QPainter, QApplication, QBrush, QPen, QColor
+import pickle
+import datetime
+from PySide.QtCore import QTimer, SIGNAL, Slot, QRect, Qt, QPointF, QDir
+from PySide.QtGui import QMainWindow, QPainter, QApplication, QBrush, QPen, QColor, QFileDialog, QMessageBox
 from PySide.QtOpenGL import QGLWidget
 
 from main_window_ui import Ui_MainWindow
@@ -29,15 +32,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.neural_network_viewer_window = None
 
         self.setupUi(self)
-        self.centralwidget_layout.removeWidget(self.draw_widget)
+        self.horizontalLayout.removeWidget(self.draw_widget)
         self.draw_widget = QGLWidget()
-        self.centralwidget_layout.insertWidget(0, self.draw_widget)
+        self.horizontalLayout.insertWidget(0, self.draw_widget)
+        self.snapshot_directory_combobox.addItem(QDir.currentPath())
 
-        self.world_constants = WorldConstants()
-        self.draw_widget.setFixedWidth(self.world_constants.WORLD_WIDTH)
-        self.draw_widget.setFixedHeight(self.world_constants.WORLD_HEIGHT)
+        world_constants = WorldConstants()
+        self.draw_widget.setFixedWidth(world_constants.WORLD_WIDTH)
+        self.draw_widget.setFixedHeight(world_constants.WORLD_HEIGHT)
 
-        self.world = world.World(constants=self.world_constants)
+        self.world = world.World(constants=world_constants)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
         self.draw_widget.mousePressEvent = self.on_draw_widget_mousePressEvent
 
@@ -57,7 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @Slot()
     def on_constants_action_triggered(self):
         if not self.constants_window:
-            self.constants_window = ConstantsWindow(self.world_constants, parent=self)
+            self.constants_window = ConstantsWindow(self.world.constants, parent=self)
         if self.constants_window.isVisible():
             self.constants_window.hide()
         else:
@@ -75,7 +79,47 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.neural_network_viewer_window.show()
 
     @Slot()
+    def on_save_action_triggered(self):
+        self.make_snapshot()
+
+    @Slot()
+    def on_load_action_triggered(self):
+        filename = QFileDialog.getOpenFileName(self, "Open world dump file", QDir.currentPath(),
+                                               "WORLD Files (*.wrld)")[0]
+        if not filename:
+            return
+
+        dump = open(filename, 'rb')
+        print("loading from {}".format(filename))
+        new_world = pickle.load(dump)
+
+        self.world = new_world
+        if self.constants_window:
+            self.constants_window.constants = self.world.constants
+
+        self.draw_widget.setFixedWidth(self.world.constants.WORLD_WIDTH)
+        self.draw_widget.setFixedHeight(self.world.constants.WORLD_HEIGHT)
+
+    @Slot()
+    def on_browse_snapshot_directory_button_clicked(self):
+        directory = QFileDialog.getExistingDirectory(self, "Directory for saving snapshots",
+                                                     self.snapshot_directory_combobox.currentText())
+        if not directory:
+            return
+        if self.snapshot_directory_combobox.findText(directory) == -1:
+            self.snapshot_directory_combobox.addItem(directory)
+
+        self.snapshot_directory_combobox.setCurrentIndex(self.snapshot_directory_combobox.findText(directory))
+
+    @Slot()
     def on_timer_timeout(self):
+        self._measure_performance()
+        self.world.update()
+        self._update_text_info()
+        self._evoke_repaint_event()
+        self._make_snapshot_if_need()
+
+    def _measure_performance(self):
         if self.world.time % self._PERFORMANCE_CALC_INTERVAL == 0:
             self.performance = (time.clock() - self._prev_time) / self._PERFORMANCE_CALC_INTERVAL
             self._prev_time = time.clock()
@@ -84,19 +128,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.world.time == 200:
             print(self.performance)
 
-        self.world.update()
-        self._update_text_info()
+    def _update_text_info(self):
+        self.world_time_label.setText(str(self.world.time))
+        self.food_timer_label.setText(str(self.world.constants.FOOD_TIMER))
+        self.animal_count_label.setText(str(len(self.world.animals)))
+        self.food_count_label.setText(str(len(self.world.food)))
+        self.mammoth_count_label.setText(str(len(self.world.mammoths)))
+
+    def _evoke_repaint_event(self):
         if self.world.time % self.draw_each_times_slider.value() == 0:
             self.draw_widget.repaint()
             if self.neural_network_viewer_window and self.neural_network_viewer_window.isVisible():
                 self.neural_network_viewer_window.repaint()
 
-    def _update_text_info(self):
-        self.world_time_label.setText(str(self.world.time))
-        self.food_timer_label.setText(str(self.world_constants.FOOD_TIMER))
-        self.animal_count_label.setText(str(len(self.world.animals)))
-        self.food_count_label.setText(str(len(self.world.food)))
-        self.mammoth_count_label.setText(str(len(self.world.mammoths)))
+    def _make_snapshot_if_need(self):
+        if self.make_snapshots_checkbox.isChecked() and self.world.time % self.make_snapshots_spinbox.value() == 0:
+            self.make_snapshot()
+
+    def make_snapshot(self):
+        if self.world_name_lineedit.text():
+            world_name = self.world_name_lineedit.text()
+        else:
+            now = datetime.datetime.now()
+            world_name = now.strftime("%F_%T")
+
+        filename = "world_{}--{}.wrld".format(world_name, self.world.time)
+        file_path = os.path.join(self.snapshot_directory_combobox.currentText(), filename)
+        try:
+            out_file = open(str(file_path), 'wb')
+        except IOError:
+            QMessageBox.critical(self, "Unable to open file", "There was an error opening \"%s\"" % file_path)
+            return
+
+        pickle.dump(self.world, out_file, protocol=4)
+        print("saved into {}".format(file_path))
 
     def on_draw_widget_paintEvent(self, event):
         painter = QPainter()
@@ -201,7 +266,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ))
         painter.setBrush(Qt.NoBrush)
 
-        radius = self.world_constants.EATING_DISTANCE + food.size
+        radius = self.world.constants.EATING_DISTANCE + food.size
         painter.drawEllipse(QRect(
             food.x - radius, food.y - radius, radius * 2, radius * 2
         ))
