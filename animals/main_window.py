@@ -26,7 +26,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._food_beated_brush = QBrush(QColor(180, 140, 100))
         self._mammoth_brush = QBrush(QColor(50, 50, 200))
         self._animal_pen = Qt.NoPen
-        self._selected_animal_pen = QPen(QColor(255, 180, 0), 2)
+        self._selected_animal_pen = QPen(QColor(255, 180, 0), 3)
         self.selected_animal = None
         self.constants_window = None
         self.neural_network_viewer_window = None
@@ -163,6 +163,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pickle.dump(self.world, out_file, protocol=4)
         print("saved into {}".format(file_path))
 
+    # PAINTING
+
     def on_draw_widget_paintEvent(self, event):
         painter = QPainter()
         painter.begin(self.draw_widget)
@@ -177,6 +179,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._draw_mammoth(painter, mammoth)
         for animal in self.world.animals:
             self._draw_animal(painter, animal)
+
+        if self.selected_animal:
+            self._draw_animal(painter, self.selected_animal, selected=True)
 
         painter.end()
 
@@ -200,8 +205,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             smeller.smell_size*2
         ))
 
-    def _draw_animal(self, painter, animal):
-        if animal == self.selected_animal:
+    def _draw_animal(self, painter, animal, selected=False):
+        if selected:
             painter.setPen(self._selected_animal_pen)
         else:
             painter.setPen(self._animal_pen)
@@ -215,6 +220,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._draw_animal_direction(painter, animal)
 
     def _draw_animal_energy_fullness(self, painter, animal):
+        painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(*[255*animal.energy_fullness]*3))
         painter.drawEllipse(QRect(
             animal.x - animal.size/2,
