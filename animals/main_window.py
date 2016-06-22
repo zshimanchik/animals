@@ -44,6 +44,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.world = world.World(constants=world_constants)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
         self.draw_widget.mousePressEvent = self.on_draw_widget_mousePressEvent
+        self.draw_widget.mouseMoveEvent = self.on_draw_widget_mouseMoveEvent
 
         self.timer = QTimer(self)
         self.connect(self.timer, SIGNAL("timeout()"), self.on_timer_timeout)
@@ -195,6 +196,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.neural_network_viewer_window.network = self.selected_animal.brain if self.selected_animal else None
             self.neural_network_viewer_window.repaint()
         self.draw_widget.repaint()
+
+    def on_draw_widget_mouseMoveEvent(self, event):
+        if self.selected_animal and self.move_radiobutton.isChecked():
+            self.selected_animal.x = event.x()
+            self.selected_animal.y = event.y()
+            self.draw_widget.repaint()
+            if self.neural_network_viewer_window:
+                self.neural_network_viewer_window.repaint()
 
 
     def _draw_smells(self, painter):
