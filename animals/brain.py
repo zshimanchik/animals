@@ -19,10 +19,12 @@ class Brain:
         return len(self.shape)
 
     def __getitem__(self, item):
-        if item == len(self.shape) - 1:
-            return self.layers[-1].output
+        if item == 0:
+            return FakeInputLayer(self.layers[0].input)
+        elif item + 1 == len(self.shape):
+            return FakeLayer(self.layers[-1].output, self.layers[-1].matrix, is_last=True)
         else:
-            return self.layers[item].input
+            return FakeLayer(self.layers[item - 1].output, self.layers[item - 1].matrix)
 
 
 class Layer:
@@ -39,6 +41,40 @@ class Layer:
         self.input = x
         self.output = np.tanh(np.dot(x, self.matrix))
         return self.output
+
+
+class FakeInputLayer:
+    def __init__(self, output):
+        self.output = output
+        self.matrix = []
+
+    def __len__(self):
+        return len(self.output)
+
+    def __getitem__(self, item):
+        return FakeNeuron([], self.output[item])
+
+
+class FakeLayer:
+    def __init__(self, output, matrix, is_last=False):
+        self.is_last = is_last
+        self.output = output if is_last else output.tolist() + [1.0]
+        self.matrix = matrix
+
+    def __len__(self):
+        return len(self.output)
+
+    def __getitem__(self, item):
+        if not self.is_last and item + 1 == len(self):
+            return FakeNeuron([], 1.0)
+        else:
+            return FakeNeuron(self.matrix[:, item], self.output[item])
+
+
+class FakeNeuron:
+    def __init__(self, weights, output):
+        self.w = weights
+        self.output = output
 
 
 def create_brain(dna, constants):
