@@ -84,8 +84,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def on_load_action_triggered(self):
-        filename = QFileDialog.getOpenFileName(self, "Open world dump file", QDir.currentPath(),
-                                               "WORLD Files (*.wrld)")[0]
+        filename = QFileDialog.getOpenFileName(
+            self,
+            "Open world dump file",
+            self.snapshot_directory_combobox.currentText(),
+            "WORLD Files (*.wrld)"
+        )[0]
         if not filename:
             return
 
