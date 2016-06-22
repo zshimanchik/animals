@@ -187,8 +187,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def on_draw_widget_mousePressEvent(self, event):
         self.selected_animal = self.world.get_animal(event.x(), event.y())
-        if self.selected_animal and self.neural_network_viewer_window:
-            self.neural_network_viewer_window.network = self.selected_animal.brain
+        if self.neural_network_viewer_window:
+            self.neural_network_viewer_window.network = self.selected_animal.brain if self.selected_animal else None
+            self.neural_network_viewer_window.repaint()
+        self.draw_widget.repaint()
+
 
     def _draw_smells(self, painter):
         for smeller in self.world.mammoths + self.world.food:
