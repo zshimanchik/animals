@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Wed Jun 22 01:43:32 2016
+# Created: Wed Jun 22 03:23:43 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,14 +12,26 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(879, 307)
+        MainWindow.resize(1320, 494)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.centralwidget_layout = QtGui.QHBoxLayout(self.centralwidget)
         self.centralwidget_layout.setObjectName("centralwidget_layout")
-        self.draw_widget = QtGui.QWidget(self.centralwidget)
+        self.scrollArea = QtGui.QScrollArea(self.centralwidget)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scrollAreaWidgetContents = QtGui.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 948, 425))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.horizontalLayout = QtGui.QHBoxLayout(self.scrollAreaWidgetContents)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.draw_widget = QtGui.QWidget(self.scrollAreaWidgetContents)
+        self.draw_widget.setMinimumSize(QtCore.QSize(300, 300))
+        self.draw_widget.setMaximumSize(QtCore.QSize(300, 300))
         self.draw_widget.setObjectName("draw_widget")
-        self.centralwidget_layout.addWidget(self.draw_widget)
+        self.horizontalLayout.addWidget(self.draw_widget)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.centralwidget_layout.addWidget(self.scrollArea)
         self.groupBox = QtGui.QGroupBox(self.centralwidget)
         self.groupBox.setMinimumSize(QtCore.QSize(350, 0))
         self.groupBox.setMaximumSize(QtCore.QSize(350, 16777215))
@@ -95,7 +107,7 @@ class Ui_MainWindow(object):
         self.centralwidget_layout.addWidget(self.groupBox)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 879, 30))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1320, 30))
         self.menubar.setObjectName("menubar")
         self.menuRestart_world = QtGui.QMenu(self.menubar)
         self.menuRestart_world.setObjectName("menuRestart_world")

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>879</width>
-    <height>307</height>
+    <width>1320</width>
+    <height>494</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,40 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="centralwidget_layout">
     <item>
-     <widget class="QWidget" name="draw_widget" native="true"/>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>948</width>
+         <height>425</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QWidget" name="draw_widget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>300</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>300</height>
+           </size>
+          </property>
+          <zorder>scrollArea</zorder>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
     </item>
     <item alignment="Qt::AlignRight">
      <widget class="QGroupBox" name="groupBox">
@@ -210,7 +243,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>879</width>
+     <width>1320</width>
      <height>30</height>
     </rect>
    </property>

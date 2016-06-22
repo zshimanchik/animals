@@ -31,9 +31,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.neural_network_viewer_window = None
 
         self.setupUi(self)
-        self.centralwidget_layout.removeWidget(self.draw_widget)
+        self.horizontalLayout.removeWidget(self.draw_widget)
         self.draw_widget = QGLWidget()
-        self.centralwidget_layout.insertWidget(0, self.draw_widget)
+        self.horizontalLayout.insertWidget(0, self.draw_widget)
 
         world_constants = WorldConstants()
         self.draw_widget.setFixedWidth(world_constants.WORLD_WIDTH)
