@@ -14,6 +14,9 @@ class WorldConstants(object):
         self.FOOD_SMELL_SIZE_RATIO = 21.0
 
         self.FOOD_TIMER = 1000 * (100 * 100) // (self.WORLD_WIDTH * self.WORLD_HEIGHT)
+        self.YEAR_CYCLE_COUNT = 20000
+        self.WINTER_FOOD_TIMER = 15
+        self.SUMMER_FOOD_TIMER = 40
 
         self.APPEAR_FOOD_COUNT = 3
         self.APPEAR_FOOD_SIZE_MIN = 4

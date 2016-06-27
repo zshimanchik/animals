@@ -18,6 +18,7 @@ class World(object):
         self.food = []
         self.mammoths = []
         self.time = 0
+        self.time_to_food = self.constants.FOOD_TIMER
 
         self.restart()
 
@@ -177,9 +178,15 @@ class World(object):
             self.food.append(Food(self, x, y, mammoth.size))
 
     def _add_food_if_necessary(self):
-        if self.time % self.constants.FOOD_TIMER == 0:
+        self.time_to_food -= 1
+        if self.time_to_food == 0:
             for _ in range(self.constants.APPEAR_FOOD_COUNT):
                 self.food.append(self._make_random_food())
+                self.constants.FOOD_TIMER = int(self.constants.WINTER_FOOD_TIMER + self._get_day_of_year_food_ratio() * (self.constants.SUMMER_FOOD_TIMER - self.constants.WINTER_FOOD_TIMER))
+            self.time_to_food = self.constants.FOOD_TIMER
+
+    def _get_day_of_year_food_ratio(self):
+        return abs(self.time % self.constants.YEAR_CYCLE_COUNT - (self.constants.YEAR_CYCLE_COUNT / 2)) / self.constants.YEAR_CYCLE_COUNT * 2
 
     def _add_mammoth_if_necessary(self):
         if self.time % self.constants.FOOD_TIMER == 0 and len(self.mammoths) < self.constants.MAMMOTH_COUNT:

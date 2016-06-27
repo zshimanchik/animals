@@ -135,7 +135,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _update_text_info(self):
         self.world_time_label.setText(str(self.world.time))
-        self.food_timer_label.setText(str(self.world.constants.FOOD_TIMER))
+        self.food_timer_label.setText("{} ({})".format(self.world.constants.FOOD_TIMER, self.world.time_to_food))
+        self.part_of_year_label.setText(str(self.world._get_day_of_year_food_ratio()))
         self.animal_count_label.setText(str(len(self.world.animals)))
         self.food_count_label.setText(str(len(self.world.food)))
         self.mammoth_count_label.setText(str(len(self.world.mammoths)))
