@@ -6,10 +6,11 @@ import multiprocessing as mp
 from world import World
 from world_constants import WorldConstants
 
-PROCESS_COUNT = mp.cpu_count()
-MAX_CYCLE = 1000
+PROCESS_COUNT = 4
+MAKE_DUMP_EACH = 100000
+MAX_CYCLE = 900000
 COMMON_WORLD_NAME = "mp"
-PATH_FOR_SNAPSHOTS = "/mnt/progs/animals/snapshots/food_and_mammoths/mp/"
+PATH_FOR_SNAPSHOTS = "/mnt/progs/animals/snapshots/food_and_mammoths/no_cycle/"
 
 
 def main():
@@ -17,32 +18,35 @@ def main():
     worlds = []
 
     w1 = WorldConstants()
-    w1.FOOD_TIMER = 20
-    worlds.append(_make_params(w1))
+    w1.FOOD_TIMER = 23
+    worlds.append((w1, "{}_{}_23".format(COMMON_WORLD_NAME, 1), MAX_CYCLE))
 
     w2 = WorldConstants()
-    w2.FOOD_TIMER = 30
-    worlds.append(_make_params(w2))
+    w2.FOOD_TIMER = 33
+    worlds.append((w2, "{}_{}_33".format(COMMON_WORLD_NAME, 2), MAX_CYCLE))
 
     w3 = WorldConstants()
-    w3.FOOD_TIMER = 45
-    worlds.append(_make_params(w3))
+    w3.FOOD_TIMER = 23
+    worlds.append((w3, "{}_{}_23".format(COMMON_WORLD_NAME, 3), MAX_CYCLE))
 
     w4 = WorldConstants()
-    w4.FOOD_TIMER = 60
-    worlds.append(_make_params(w4))
+    w4.FOOD_TIMER = 33
+    worlds.append((w4, "{}_{}_33".format(COMMON_WORLD_NAME, 4), MAX_CYCLE))
+
+    w5 = WorldConstants()
+    w5.FOOD_TIMER = 23
+    worlds.append((w4, "{}_{}_23".format(COMMON_WORLD_NAME, 5), MAX_CYCLE))
+
+    w6 = WorldConstants()
+    w6.FOOD_TIMER = 33
+    worlds.append((w4, "{}_{}_23".format(COMMON_WORLD_NAME, 6), MAX_CYCLE))
+
 
     print("START")
-    pool = mp.Pool(processes=3)
+    pool = mp.Pool(processes=PROCESS_COUNT)
     pool.map(worker, worlds)
 
     print("DONE")
-
-
-def _make_params(constants, id=[1]):
-    res = (constants, "{}_{}".format(COMMON_WORLD_NAME, id[0]), MAX_CYCLE)
-    id[0] += 1
-    return res
 
 
 def worker(args):
@@ -51,16 +55,22 @@ def worker(args):
     start_time = time.clock()
     world = World(constants)
     for _ in range(max_cycle):
+        if world.time % MAKE_DUMP_EACH == 0:
+            make_dump(world, world_name)
         world.update()
 
     performance = (time.clock() - start_time) / max_cycle
 
-    print("saving {}".format(world_name))
-    filename = os.path.join(PATH_FOR_SNAPSHOTS, "world_{}--{}.wrld".format(world_name, world.time))
-    with open(filename, 'wb') as f:
-        pickle.dump(world, f)
-
+    make_dump(world, world_name)
     print("{} ended with average performance={}".format(world_name, performance))
+
+
+def make_dump(world, world_name):
+    filename = "world_{}--{}.wrld".format(world_name, world.time)
+    print("saving {}".format(filename))
+    file_full_name = os.path.join(PATH_FOR_SNAPSHOTS, filename)
+    with open(file_full_name, 'wb') as f:
+        pickle.dump(world, f)
 
 
 if __name__ == '__main__':
