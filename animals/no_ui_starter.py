@@ -18,27 +18,33 @@ def main():
     worlds = []
 
     w1 = WorldConstants()
-    w1.FOOD_TIMER = 23
+    w1.WINTER_FOOD_TIMER = 23
+    w1.SUMMER_FOOD_TIMER = 23
     worlds.append((w1, "{}_{}_23".format(COMMON_WORLD_NAME, 1), MAX_CYCLE))
 
     w2 = WorldConstants()
-    w2.FOOD_TIMER = 33
+    w2.WINTER_FOOD_TIMER = 33
+    w2.SUMMER_FOOD_TIMER = 33
     worlds.append((w2, "{}_{}_33".format(COMMON_WORLD_NAME, 2), MAX_CYCLE))
 
     w3 = WorldConstants()
-    w3.FOOD_TIMER = 23
+    w3.WINTER_FOOD_TIMER = 23
+    w3.SUMMER_FOOD_TIMER = 23
     worlds.append((w3, "{}_{}_23".format(COMMON_WORLD_NAME, 3), MAX_CYCLE))
 
     w4 = WorldConstants()
-    w4.FOOD_TIMER = 33
+    w4.WINTER_FOOD_TIMER = 33
+    w4.SUMMER_FOOD_TIMER = 33
     worlds.append((w4, "{}_{}_33".format(COMMON_WORLD_NAME, 4), MAX_CYCLE))
 
     w5 = WorldConstants()
-    w5.FOOD_TIMER = 23
+    w5.WINTER_FOOD_TIMER = 23
+    w5.SUMMER_FOOD_TIMER = 23
     worlds.append((w4, "{}_{}_23".format(COMMON_WORLD_NAME, 5), MAX_CYCLE))
 
     w6 = WorldConstants()
-    w6.FOOD_TIMER = 33
+    w6.WINTER_FOOD_TIMER = 33
+    w6.SUMMER_FOOD_TIMER = 33
     worlds.append((w4, "{}_{}_23".format(COMMON_WORLD_NAME, 6), MAX_CYCLE))
 
 
