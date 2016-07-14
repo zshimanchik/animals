@@ -13,11 +13,11 @@ class WorldConstants(object):
         self.EATING_VALUE = 0.02
         self.FOOD_SMELL_SIZE_RATIO = 21.0
 
-        self.FOOD_TIMER = 4000 * (100 * 100) // (self.WORLD_WIDTH * self.WORLD_HEIGHT)
+        self.FOOD_TIMER = 1000 * (100 * 100) // (self.WORLD_WIDTH * self.WORLD_HEIGHT)
 
-        self.APPEAR_FOOD_COUNT = 5
-        self.APPEAR_FOOD_SIZE_MIN = 6
-        self.APPEAR_FOOD_SIZE_MAX = 11
+        self.APPEAR_FOOD_COUNT = 3
+        self.APPEAR_FOOD_SIZE_MIN = 4
+        self.APPEAR_FOOD_SIZE_MAX = 7
         self.FOOD_SIZE_TO_ENERGY_RATIO = 1.5
 
         self.MAMMOTH_COUNT = 5
