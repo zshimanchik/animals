@@ -79,7 +79,6 @@ class Animal(object):
 
         if not self._dna:
             self._dna = create_random_dna(self.world.constants)
-            print(self._dna)
 
         self.brain = create_brain(self._dna, self.world.constants)
         
@@ -144,7 +143,6 @@ class Animal(object):
             child_count = int(father.energy / mother.world.constants.ENERGY_FOR_BIRTH)
             father.energy = 0
 
-        print("{}\n{}\n{}".format("="*10, mother.dna, father.dna))
         for _ in range(child_count):
             mother.make_child(father)
 
@@ -158,7 +156,6 @@ class Animal(object):
         mother.energy -= mother.world.constants.ENERGY_FOR_BIRTH
         father.energy -= mother.world.constants.ENERGY_FOR_BIRTH
         child = Animal(mother.world, mix_dna(mother.dna, father.dna, mother.world.constants))
-        print(child.dna)
         child.x = mother.x + randint(-30, 30)
         child.y = mother.y + randint(-30, 30)
         mother.world.add_animal(child)
