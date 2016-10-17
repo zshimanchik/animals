@@ -3,15 +3,32 @@ from random import randint, random, gauss
 import numpy as np
 from scipy.spatial.distance import cdist
 
+import pymunk
+from pymunk import Vec2d
+
 from animal import Animal, Food, Mammoth
 
 
 class World(object):
+    OFFSET = 20
+
     def __init__(self, constants):
         self.constants = constants
 
         self.width = constants.WORLD_WIDTH
         self.height = constants.WORLD_HEIGHT
+        self.space = pymunk.Space()
+
+        static_body = pymunk.Body()
+        static_lines = [
+            # pymunk.Segment(static_body, Vec2d(0, 0), Vec2d(0, self.height), 1),
+            # pymunk.Segment(static_body, Vec2d(0, 0), Vec2d(self.width, 0), 1),
+            # pymunk.Segment(static_body, Vec2d(0, self.height), Vec2d(self.width, self.height), 1),
+            # pymunk.Segment(static_body, Vec2d(self.width, 0), Vec2d(self.width, self.height), 1),
+        ]
+        for l in static_lines:
+            l.friction = 0.3
+        self.space.add(static_lines)
 
         self.animals = []
         self.animals_to_add = []
@@ -22,9 +39,12 @@ class World(object):
         self.restart()
 
     def restart(self):
-        self.animals = [Animal(self) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)]
-        self.animals_to_add = []
-        self.food = [self._make_random_food() for _ in range(self.constants.INITIAL_FOOD_COUNT)]
+        self.animals = []
+        self.animals_to_add = [Animal(self, self.space) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)]
+        self._add_new_animals()
+        self.food = []
+        for _ in range(self.constants.INITIAL_FOOD_COUNT):
+            self.add_food(self._make_random_food())
         self.mammoths = []
         self.time = 0
 
@@ -32,8 +52,9 @@ class World(object):
         max_gauss_x = 4.5
         x = min(abs(gauss(0, 1)), max_gauss_x)
         return Food(
-            self,
-            int(self.width * x / 2.5),
+            self, self.space,
+            # int(self.width * x / 2.5),
+            randint(self.OFFSET, self.width-self.OFFSET),
             randint(0, self.height),
             randint(self.constants.APPEAR_FOOD_SIZE_MIN, self.constants.APPEAR_FOOD_SIZE_MAX)
         )
@@ -54,6 +75,11 @@ class World(object):
         return np.min(distances) < self.constants.MAMMOTH_MIN_DISTANCE_TO_OTHERS
 
     def update(self):
+
+        steps = 1
+        for x in range(steps):
+            self.space.step(1/60./steps)
+
         self.time += 1
         self._check_all_in_bounds()
 
@@ -83,15 +109,29 @@ class World(object):
             self._check_in_bounds(animal)
 
     def _check_in_bounds(self, animal):
-        if animal.x > self.width:
-            animal.x = self.width
-        if animal.x < 0:
-            animal.x = 0
+        if all(body.position.x > self.width-self.OFFSET and body.velocity.x > 0 for body in animal.bodies):
+            for body in animal.bodies:
+                body.position.x -= self.width - self.OFFSET
+        if all(body.position.x < self.OFFSET and body.velocity.x < 0 for body in animal.bodies):
+            for body in animal.bodies:
+                body.position.x += self.width - self.OFFSET
 
-        if animal.y > self.height:
-            animal.y = self.height
-        if animal.y < 0:
-            animal.y = 0
+        if all(body.position.y > self.height-self.OFFSET and body.velocity.y > 0 for body in animal.bodies):
+            for body in animal.bodies:
+                body.position.y -= self.height - self.OFFSET
+        if all(body.position.y < self.OFFSET and body.velocity.y < 0 for body in animal.bodies):
+            for body in animal.bodies:
+                body.position.y += self.height - self.OFFSET
+
+        # if animal.x > self.width:
+        #     animal.x = self.width
+        # if animal.x < 0:
+        #     animal.x = 0
+        #
+        # if animal.y > self.height:
+        #     animal.y = self.height
+        # if animal.y < 0:
+        #     animal.y = 0
 
     def _update_food(self):
         for food in self.food:
@@ -152,16 +192,27 @@ class World(object):
 
     def _add_new_animals(self):
         self.animals.extend(self.animals_to_add)
+        for animal in self.animals_to_add:
+            for body in animal.bodies:
+                self.add_to_space(body)
         self.animals_to_add = []
 
     def _remove_dead_animals(self):
         for animal in self.animals[:]:
             if animal.energy <= 0:
+                for body in animal.bodies:
+                    self.space.remove(body.shapes)
+                    self.space.remove(body.constraints)
+                    self.space.remove(body)
                 self.animals.remove(animal)
 
     def _clear_empty_food(self):
         for food in self.food[:]:
             if food.size <= 0:
+                for body in food.bodies:
+                    self.space.remove(body.shapes)
+                    self.space.remove(body.constraints)
+                    self.space.remove(body)
                 self.food.remove(food)
 
     def _transform_dead_mammoths(self):
@@ -174,12 +225,17 @@ class World(object):
         for _ in range(self.constants.FOOD_FROM_MAMMOTH_COUNT):
             x = mammoth.x + (mammoth.smell_size*random()*2 - mammoth.smell_size)*0.5
             y = mammoth.y + (mammoth.smell_size*random()*2 - mammoth.smell_size)*0.5
-            self.food.append(Food(self, x, y, mammoth.size))
+            self.add_food(Food(self, self.space, x, y, mammoth.size))
 
     def _add_food_if_necessary(self):
         if self.time % self.constants.FOOD_TIMER == 0:
             for _ in range(self.constants.APPEAR_FOOD_COUNT):
-                self.food.append(self._make_random_food())
+                self.add_food(self._make_random_food())
+
+    def add_food(self, food):
+        self.food.append(food)
+        for body in food.bodies:
+            self.add_to_space(body)
 
     def _add_mammoth_if_necessary(self):
         if self.time % self.constants.FOOD_TIMER == 0 and len(self.mammoths) < self.constants.MAMMOTH_COUNT:
@@ -197,3 +253,21 @@ class World(object):
                 closest_animal = animal
                 closest_dist = dist
         return closest_animal
+
+
+    def add_to_space(self, body):
+        body.velocity_limit = 100
+        pj = pymunk.PivotJoint(self.space.static_body, body, Vec2d.zero(), Vec2d.zero())
+        pj.max_force = 1000
+        pj.max_bias = 0
+        pj.ignore_draw = True
+        self.space.add(pj)
+
+        gj = pymunk.GearJoint(self.space.static_body, body, 0.0, 1.0)
+        gj.max_force = 5000
+        gj.max_bias = 0
+        gj.ignore_draw = True
+        self.space.add(gj)
+
+        # space.add(body)
+        return body

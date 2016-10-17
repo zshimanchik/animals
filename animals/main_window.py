@@ -228,8 +228,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             painter.setPen(self._animal_pen)
         painter.setBrush(self._animal_brush)
 
-        size = animal.size * 2
-        painter.drawEllipse(QRect(animal.x - animal.size, animal.y - animal.size, size, size))
+        for body in animal.bodies:
+            for shape in body.shapes:
+                painter.setPen(self._animal_pen)
+                x, y = shape.body.position.x, shape.body.position.y
+                diameter = shape.radius * 2
+                painter.drawEllipse(QRect(x - shape.radius, y - shape.radius, diameter, diameter))
+
+                painter.setPen(QPen(QColor(0, 0, 0), 2))
+
+                painter.drawLine(
+                    QPointF(x, y),
+                    QPointF(
+                        x + math.cos(body.angle) * shape.radius,
+                        y + math.sin(body.angle) * shape.radius
+                    )
+                )
+
 
         self._draw_animal_energy_fullness(painter, animal)
         if self.animal_direction_checkbox.isChecked():

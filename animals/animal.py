@@ -1,17 +1,26 @@
 ﻿import math
 from random import random, randint
+import pymunk
+from pymunk import Vec2d
 
 from brain import create_brain
 
 TWO_PI = math.pi * 2
 
+class WorldObject:
+    def __init__(self, pos, size):
+        pass
+
 
 class Food(object):
-    def __init__(self, world, x, y, size):
+    def __init__(self, world, space, x, y, size):
         self._world = world
-        self.x = x
-        self.y = y
         self._size = size
+
+        self.body, self.shape = create_circle_body(10, self.size, (x, y))
+        self.bodies = [self.body]
+        space.add(self.bodies, self.shape)
+
         self._smell = (1.0,)
         self._smell_size = self._size * self._world.constants.FOOD_SMELL_SIZE_RATIO
         self.beated = False
@@ -30,6 +39,22 @@ class Food(object):
     def size(self, value):
         self._size = max(0, value)
         self._smell_size = self._size * self._world.constants.FOOD_SMELL_SIZE_RATIO
+
+    @property
+    def x(self):
+        return self.body.position.x
+
+    @property
+    def y(self):
+        return self.body.position.y
+
+    @x.setter
+    def x(self, value):
+        self.body.position.x = value
+
+    @y.setter
+    def y(self, value):
+        self.body.position.y = value
 
     @property
     def smell_size(self):
@@ -59,14 +84,18 @@ class Mammoth(object):
 
 
 class Animal(object):
-    def __init__(self, world, dna=""):
+    def __init__(self, world, space, dna=""):
+        print(dna)
         self.world = world
+        self.space = space
         self._dna = dna
-        self._x = randint(0, self.world.width)
-        self._y = randint(0, self.world.height)
+        self._x = randint(100, self.world.width-100)
+        self._y = randint(100, self.world.height-100)
         self.size = self.world.constants.ANIMAL_SIZE
-        self.angle = 0
         self.closest_food = None
+
+        self._create_bodies()
+        self.age = 0
 
         self.sensor_values = []
         self._sensors_positions = []
@@ -81,7 +110,16 @@ class Animal(object):
             self._dna = create_random_dna(self.world.constants)
 
         self.brain = create_brain(self._dna, self.world.constants)
-        
+
+    def _create_bodies(self):
+        self.main_body, main_shape = create_circle_body(10, self.size, (self._x, self._y))
+        self.main_body.angle = random()*math.pi*2
+        self.space.add(self.main_body, main_shape)
+
+        self.bodies = [self.main_body]
+        self.move_body_1, self.move_body_2 = None, None
+
+
     @property
     def sensors_positions(self):
         if not self._sensors_positions_calculated:
@@ -94,12 +132,15 @@ class Animal(object):
         angle_between_sensors = TWO_PI / self.world.constants.ANIMAL_SENSOR_COUNT
         sensor_angle = self.angle
         for i in range(self.world.constants.ANIMAL_SENSOR_COUNT):
-            x = math.cos(sensor_angle) * self.size + self._x
-            y = math.sin(sensor_angle) * self.size + self._y
+            x = math.cos(sensor_angle) * self.size + self.x
+            y = math.sin(sensor_angle) * self.size + self.y
             self._sensors_positions.append((x, y))
             sensor_angle += angle_between_sensors
 
     def update(self):
+        self.age += 1
+        self.grow_up()
+
         if self.closest_food:
             self.eat(self.closest_food)
 
@@ -114,6 +155,45 @@ class Animal(object):
             self._search_partner_and_try_to_sex()
 
         self.move(self.answer[0], self.answer[1])
+
+    def grow_up(self):
+        if self.age == 20:
+            spawn_pos = Vec2d(self.size, 0).rotated(self.main_body.angle - math.pi/4)
+            self.move_body_1, move_shape_1 = create_circle_body(10, self.size/2, spawn_pos + [self.x, self.y])
+            self.move_body_1.angle = self.main_body.angle - math.pi/4
+            self.space.add(self.move_body_1, move_shape_1)
+
+            join_offset = Vec2d(self.size, 0).rotated(-math.pi / 4)
+            pj = pymunk.PinJoint(self.main_body, self.move_body_1, join_offset, (-self.size/2, 0))
+            pj.distance = 0
+            self.space.add(pj)
+
+            self.world.add_to_space(self.move_body_1)
+
+            self.bodies.append(self.move_body_1)
+
+        elif self.age == 40:
+            spawn_pos = Vec2d(self.size, 0).rotated(self.main_body.angle + math.pi/4)
+            self.move_body_2, move_shape_2 = create_circle_body(10, self.size/2, spawn_pos + [self.x, self.y])
+            self.move_body_2.angle = self.main_body.angle + math.pi/4
+            self.space.add(self.move_body_2, move_shape_2)
+
+
+            join_offset = Vec2d(self.size, 0).rotated( + math.pi / 4)
+            pj = pymunk.PinJoint(self.main_body, self.move_body_2, join_offset, (-self.size/2, 0))
+            pj.distance = 0
+            self.space.add(pj)
+
+            self.world.add_to_space(self.move_body_2)
+
+            self.bodies.append(self.move_body_2)
+
+            # pj = pymunk.PinJoint(self.move_body_1, self.move_body_2)
+            # pj.max_force = pymunk.inf
+            # pj.max_bias = pymunk.inf
+            # pj.distance = self.size*2
+            # self.space.add(pj)
+
 
     def is_ready_to_sex(self):
         return self.readiness_to_sex >= self.world.constants.READINESS_TO_SEX_THRESHOLD
@@ -155,7 +235,7 @@ class Animal(object):
     def make_child(mother, father):
         mother.energy -= mother.world.constants.ENERGY_FOR_BIRTH
         father.energy -= mother.world.constants.ENERGY_FOR_BIRTH
-        child = Animal(mother.world, mix_dna(mother.dna, father.dna, mother.world.constants))
+        child = Animal(mother.world, mother.space, mix_dna(mother.dna, father.dna, mother.world.constants))
         child.x = mother.x + randint(-30, 30)
         child.y = mother.y + randint(-30, 30)
         mother.world.add_animal(child)
@@ -172,26 +252,31 @@ class Animal(object):
         self.energy -= (abs(move) + abs(rotate)) * self.world.constants.MOVE_DISTANCE_TO_CONSUMED_ENERGY_RATIO
 
         self._sensors_positions_calculated = False
-        self.angle += rotate
-        self._x += math.cos(self.angle) * move * 2.0
-        self._y += math.sin(self.angle) * move * 2.0
+
+        impulse = 50
+
+        if self.move_body_1:
+            self.move_body_1.apply_impulse(self.move_body_1.rotation_vector * impulse, (0, 0))
+
+        if self.move_body_2:
+            self.move_body_2.apply_impulse(self.move_body_1.rotation_vector * impulse, (0, 0))
 
     @property
     def x(self):
-        return self._x
+        return self.main_body.position.x
 
     @x.setter
     def x(self, value):
-        self._x = value
+        self.main_body.position.x = value
         self._sensors_positions_calculated = False
 
     @property
     def y(self):
-        return self._y
+        return self.main_body.position.y
 
     @y.setter
     def y(self, value):
-        self._y = value
+        self.main_body.position.y = value
         self._sensors_positions_calculated = False
 
     @property
@@ -201,6 +286,10 @@ class Animal(object):
     @property
     def dna(self):
         return self._dna
+
+    @property
+    def angle(self):
+        return self.main_body.angle
 
 
 def create_random_dna(constants):
@@ -221,3 +310,14 @@ def mix_dna(dna1, dna2, constants):
         return mutate_dna(dna1[:m] + dna2[m:], constants)
     else:
         return mutate_dna(dna2[:m] + dna1[m:], constants)
+
+
+def create_circle_body(mass, size, pos):
+
+    moment = pymunk.moment_for_circle(mass, 0, size)
+    body = pymunk.Body(mass, moment)
+    body.position = Vec2d(*pos)
+    shape = pymunk.Circle(body, size)
+    shape.friction = 20.0
+
+    return body, shape

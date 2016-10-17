@@ -53,7 +53,7 @@ class WorldConstants(object):
 
         self.MUTATE_CHANCE = 0.05
 
-        self.ANIMAL_SIZE = 10
+        self.ANIMAL_SIZE = 6
         self.MAX_ANIMAL_SMELL_SIZE = 100
 
         self.SEX_DISTANCE = 20 + self.ANIMAL_SIZE * 2
