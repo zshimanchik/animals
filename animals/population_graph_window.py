@@ -58,7 +58,7 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtGui.QMainWindow):
                 y += self.agent_size // 2
                 animal._drawing_position = (x, y)
 
-                if not self.selected_animal:
+                if self.all_radio_button.isChecked():
                     for parent in animal.parents:
                         if hasattr(parent, '_drawing_position'):
                             qp.drawLine(x, y, *parent._drawing_position)
@@ -67,8 +67,12 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtGui.QMainWindow):
         if self.selected_animal:
             qp.setBrush(QBrush(QColor(100, 100, 250)))
             qp.drawEllipse(qcircle(*self.selected_animal._drawing_position, 2))
-            self.draw_ancestors_connections(qp, self.selected_animal)
-            # self.draw_successors_connections(qp, self.selected_animal)
+            depth = self.depth_spinbox.value() or -1
+            if self.ancestors_radio_button.isChecked():
+                self.draw_ancestors_connections(qp, self.selected_animal, depth)
+            elif self.successors_radio_button.isChecked():
+                self.draw_successors_connections(qp, self.selected_animal, depth)
+
         qp.end()
 
         self.set_new_draw_widget_size(i, max_j)
@@ -77,19 +81,25 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtGui.QMainWindow):
         self.draw_widget.setFixedWidth((cols + 1) * (self.agent_size + self.padding))
         self.draw_widget.setFixedHeight((rows+1) * (self.agent_size + self.padding))
 
-    def draw_ancestors_connections(self, qp, animal):
+    def draw_ancestors_connections(self, qp, animal, depth):
+        """Draw all ancestors with given depth. If depth is negative - draw without depth limit"""
+        if depth == 0:
+            return
         for parent in animal.parents:
             if hasattr(animal, '_drawing_position') and hasattr(parent, '_drawing_position'):
                 qp.drawLine(*animal._drawing_position, *parent._drawing_position)
                 qp.drawEllipse(qcircle(*parent._drawing_position, 2))
-                self.draw_ancestors_connections(qp, parent)
+                self.draw_ancestors_connections(qp, parent, depth-1)
 
-    def draw_successors_connections(self, qp, animal):
+    def draw_successors_connections(self, qp, animal, depth):
+        """Draw all successors with given depth. If depth is negative - draw without depth limit"""
+        if depth == 0:
+            return
         for child in animal.children:
             if hasattr(animal, '_drawing_position') and hasattr(child, '_drawing_position'):
                 qp.drawLine(*animal._drawing_position, *child._drawing_position)
                 qp.drawEllipse(qcircle(*child._drawing_position, 2))
-                self.draw_successors_connections(qp, child)
+                self.draw_successors_connections(qp, child, depth-1)
 
     def generation_iterator(self, world):
         current = set(world.first_generation)

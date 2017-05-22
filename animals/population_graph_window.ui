@@ -21,20 +21,50 @@
        <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
+       <item row="2" column="1">
         <widget class="QRadioButton" name="ancestors_radio_button">
          <property name="text">
-          <string>ancestors</string>
+          <string>a&amp;ncestors</string>
          </property>
          <property name="checked">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="1" column="1">
+        <widget class="QRadioButton" name="all_radio_button">
+         <property name="text">
+          <string>all</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
         <widget class="QRadioButton" name="successors_radio_button">
          <property name="text">
           <string>s&amp;uccessors</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="6" column="1">
+        <widget class="QSpinBox" name="depth_spinbox"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Depth:</string>
          </property>
         </widget>
        </item>
@@ -57,7 +87,9 @@
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QWidget" name="draw_widget" native="true"/>
+         <widget class="QWidget" name="draw_widget" native="true">
+          <zorder>groupBox</zorder>
+         </widget>
         </item>
        </layout>
       </widget>
