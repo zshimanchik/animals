@@ -35,7 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.setupUi(self)
         self.horizontalLayout.removeWidget(self.draw_widget)
-        self.draw_widget = QGLWidget()
+        self.draw_widget = QGLWidget()  # using QGLWidjet instead pf QWidget for performance
         self.horizontalLayout.insertWidget(0, self.draw_widget)
         self.snapshot_directory_combobox.addItem(QDir.currentPath())
 
@@ -160,7 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.neural_network_viewer_window and self.neural_network_viewer_window.isVisible():
                 self.neural_network_viewer_window.repaint()
             if self.population_graph_window and self.population_graph_window.isVisible():
-                self.population_graph_window.repaint()
+                self.population_graph_window.redraw()
 
     def _make_snapshot_if_need(self):
         if self.make_snapshots_checkbox.isChecked() and self.world.time % self.make_snapshots_spinbox.value() == 0:

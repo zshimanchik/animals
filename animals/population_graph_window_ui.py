@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'population_graph.ui'
+#
+# Created: Mon May 22 12:59:49 2017
+#      by: pyside-uic 0.2.15 running on PySide 1.2.4
+#
+# WARNING! All changes made in this file will be lost!
+
+from PySide import QtCore, QtGui
+
+class Ui_PopulationGraphWidget(object):
+    def setupUi(self, PopulationGraphWidget):
+        PopulationGraphWidget.setObjectName("PopulationGraphWidget")
+        PopulationGraphWidget.resize(1061, 355)
+        self.centralwidget = QtGui.QWidget(PopulationGraphWidget)
+        self.centralwidget.setObjectName("centralwidget")
+        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.groupBox = QtGui.QGroupBox(self.centralwidget)
+        self.groupBox.setTitle("")
+        self.groupBox.setObjectName("groupBox")
+        self.gridLayout = QtGui.QGridLayout(self.groupBox)
+        self.gridLayout.setObjectName("gridLayout")
+        self.ancestors_radio_button = QtGui.QRadioButton(self.groupBox)
+        self.ancestors_radio_button.setChecked(True)
+        self.ancestors_radio_button.setObjectName("ancestors_radio_button")
+        self.gridLayout.addWidget(self.ancestors_radio_button, 0, 0, 1, 1)
+        self.successors_radio_button = QtGui.QRadioButton(self.groupBox)
+        self.successors_radio_button.setObjectName("successors_radio_button")
+        self.gridLayout.addWidget(self.successors_radio_button, 1, 0, 1, 1)
+        self.horizontalLayout_2.addWidget(self.groupBox)
+        self.scrollArea = QtGui.QScrollArea(self.centralwidget)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scrollAreaWidgetContents = QtGui.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 929, 339))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.horizontalLayout = QtGui.QHBoxLayout(self.scrollAreaWidgetContents)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.draw_widget = QtGui.QWidget(self.scrollAreaWidgetContents)
+        self.draw_widget.setObjectName("draw_widget")
+        self.horizontalLayout.addWidget(self.draw_widget)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.horizontalLayout_2.addWidget(self.scrollArea)
+        PopulationGraphWidget.setCentralWidget(self.centralwidget)
+
+        self.retranslateUi(PopulationGraphWidget)
+        QtCore.QMetaObject.connectSlotsByName(PopulationGraphWidget)
+
+    def retranslateUi(self, PopulationGraphWidget):
+        PopulationGraphWidget.setWindowTitle(QtGui.QApplication.translate("PopulationGraphWidget", "Population Graph", None, QtGui.QApplication.UnicodeUTF8))
+        self.ancestors_radio_button.setText(QtGui.QApplication.translate("PopulationGraphWidget", "ancestors", None, QtGui.QApplication.UnicodeUTF8))
+        self.successors_radio_button.setText(QtGui.QApplication.translate("PopulationGraphWidget", "s&uccessors", None, QtGui.QApplication.UnicodeUTF8))
+
