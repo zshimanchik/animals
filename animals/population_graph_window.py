@@ -65,6 +65,11 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtGui.QMainWindow):
                 max_j = max(max_j, j)
 
         if self.selected_animal:
+            qp.setPen(QPen(QColor(255, 180, 0), 3))
+            qp.setBrush(QBrush(get_color(len(self.selected_animal.children))))
+            qp.drawEllipse(qcircle(*self.selected_animal._drawing_position, self.agent_size))
+
+            qp.setPen(QPen(QColor(0, 0, 0), 1))
             qp.setBrush(QBrush(QColor(100, 100, 250)))
             qp.drawEllipse(qcircle(*self.selected_animal._drawing_position, 2))
             depth = self.depth_spinbox.value() or -1
