@@ -127,6 +127,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.world = new_world
         if self.constants_window:
             self.constants_window.constants = self.world.constants
+        if self.population_graph_window:
+            self.population_graph_window.world = self.world
+            self.population_graph_window.selected_animal = self.selected_animal
 
         self.draw_widget.setFixedWidth(self.world.constants.WORLD_WIDTH)
         self.draw_widget.setFixedHeight(self.world.constants.WORLD_HEIGHT)
