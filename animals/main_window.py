@@ -213,7 +213,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.neural_network_viewer_window.repaint()
         if self.population_graph_window:
             self.population_graph_window.selected_animal = self.selected_animal
-            self.population_graph_window.repaint()
         self.draw_widget.repaint()
 
     def on_draw_widget_mouseMoveEvent(self, event):

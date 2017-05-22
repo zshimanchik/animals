@@ -1,7 +1,8 @@
 import colorsys
+import math
 
 from PySide import QtGui
-from PySide.QtCore import QRect, Qt
+from PySide.QtCore import QRect
 from PySide.QtGui import QPen, QBrush, QColor
 
 CHILDREN_TO_BE_RED = 10
@@ -27,10 +28,11 @@ class PopulationGraphWindow(QtGui.QMainWindow):
     def __init__(self, world, selected_animal=None, parent=None):
         super().__init__(parent=parent)
         self.world = world
-        self.selected_animal = selected_animal
+        self._selected_animal = selected_animal
 
         self.central_widget = QtGui.QWidget(self)
         self.setCentralWidget(self.central_widget)
+        self.central_widget.mousePressEvent = self.on_central_widget_mousePressEvent
 
         self.setWindowTitle("Population Graph")
         self.resize(700, 300)
@@ -77,16 +79,35 @@ class PopulationGraphWindow(QtGui.QMainWindow):
                 qp.drawEllipse(qcircle(*child._drawing_position, 2))
                 self.draw_successors_connections(qp, child)
 
-
     def generation_iterator(self, world):
         current = set(world.first_generation)
-        drawed = set()
+        drawn = set()
         while current:
             yield current.copy()
-            drawed.update(current)
+            drawn.update(current)
 
             prev, current = current, set()
             for animal in prev:
                 for child in animal.children:
-                    if not set(child.parents).difference(drawed):
+                    if not set(child.parents).difference(drawn):
                         current.add(child)
+
+    def on_central_widget_mousePressEvent(self, event):
+        for generation in self.generation_iterator(self.world):
+            for animal in generation:
+                if hasattr(animal, '_drawing_position') and self._close_enogh(event.x(), event.y(), *animal._drawing_position, self.agent_size):
+                    self.selected_animal = animal
+                    return
+        self.selected_animal = None
+
+    def _close_enogh(self, x1, y1, x2, y2, radius):
+        return math.hypot(x1 - x2, y1 - y2) < radius
+
+    @property
+    def selected_animal(self):
+        return self._selected_animal
+
+    @selected_animal.setter
+    def selected_animal(self, value):
+        self._selected_animal = value
+        self.repaint()
