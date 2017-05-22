@@ -31,18 +31,26 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtGui.QMainWindow):
         super().__init__(parent=parent)
         self.world = world
         self._selected_animal = selected_animal
+        self.info = []
+        self._cols = 1
+        self._rows = 1
 
         self.setupUi(self)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
         self.draw_widget.mousePressEvent = self.on_draw_widget_mousePressEvent
 
     def redraw(self):
-        """this method repaint only draw_widget"""
         self.draw_widget.repaint()
 
+        self.info.append("generations: {}".format(self._rows))
+        children = len(self.selected_animal.children) if self.selected_animal else 0
+        self.info.append("children: {}".format(children))
+        self.info_label.setText('\n'.join(self.info))
+        self.info.clear()
+
+        self.set_new_draw_widget_size(self._rows, self._cols)
+
     def on_draw_widget_paintEvent(self, event):
-        max_j = 1
-        i = 1
         qp = QtGui.QPainter()
         qp.begin(self.draw_widget)
         qp.setPen(self.connection_pen)
@@ -62,7 +70,7 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtGui.QMainWindow):
                     for parent in animal.parents:
                         if hasattr(parent, '_drawing_position'):
                             qp.drawLine(x, y, *parent._drawing_position)
-                max_j = max(max_j, j)
+                self._cols = max(self._cols, j)
 
         if self.selected_animal:
             qp.setPen(QPen(QColor(255, 180, 0), 3))
@@ -80,7 +88,7 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtGui.QMainWindow):
 
         qp.end()
 
-        self.set_new_draw_widget_size(i, max_j)
+        self._rows = i
 
     def set_new_draw_widget_size(self, rows, cols):
         self.draw_widget.setFixedWidth((cols + 1) * (self.agent_size + self.padding))
