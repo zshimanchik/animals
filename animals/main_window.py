@@ -12,6 +12,7 @@ from main_window_ui import Ui_MainWindow
 from constants_window import ConstantsWindow
 from neural_network_viewer import NeuralNetworkViewer
 import world
+from population_graph_window import PopulationGraphWindow
 from world_constants import WorldConstants
 
 
@@ -30,6 +31,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.selected_animal = None
         self.constants_window = None
         self.neural_network_viewer_window = None
+        self.population_graph_window = None
 
         self.setupUi(self)
         self.horizontalLayout.removeWidget(self.draw_widget)
@@ -78,6 +80,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.neural_network_viewer_window.hide()
         else:
             self.neural_network_viewer_window.show()
+
+    @Slot()
+    def on_action_population_graph_triggered(self):
+        if not self.population_graph_window:
+            self.population_graph_window = PopulationGraphWindow(world=self.world,
+                                                                 selected_animal=self.selected_animal,
+                                                                 parent=self)
+        if self.population_graph_window.isVisible():
+            self.population_graph_window.hide()
+        else:
+            self.population_graph_window.show()
+        
 
     @Slot()
     def on_save_action_triggered(self):
@@ -145,6 +159,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.draw_widget.repaint()
             if self.neural_network_viewer_window and self.neural_network_viewer_window.isVisible():
                 self.neural_network_viewer_window.repaint()
+            if self.population_graph_window and self.population_graph_window.isVisible():
+                self.population_graph_window.repaint()
 
     def _make_snapshot_if_need(self):
         if self.make_snapshots_checkbox.isChecked() and self.world.time % self.make_snapshots_spinbox.value() == 0:
@@ -195,6 +211,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.neural_network_viewer_window:
             self.neural_network_viewer_window.network = self.selected_animal.brain if self.selected_animal else None
             self.neural_network_viewer_window.repaint()
+        if self.population_graph_window:
+            self.population_graph_window.selected_animal = self.selected_animal
+            self.population_graph_window.repaint()
         self.draw_widget.repaint()
 
     def on_draw_widget_mouseMoveEvent(self, event):

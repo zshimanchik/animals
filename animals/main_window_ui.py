@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Thu Jun 23 00:36:20 2016
+# Created: Mon May 15 17:37:42 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -21,7 +21,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 948, 425))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 948, 433))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.horizontalLayout = QtGui.QHBoxLayout(self.scrollAreaWidgetContents)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -140,7 +140,7 @@ class Ui_MainWindow(object):
         self.centralwidget_layout.addWidget(self.groupBox)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1320, 30))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1320, 26))
         self.menubar.setObjectName("menubar")
         self.menuRestart_world = QtGui.QMenu(self.menubar)
         self.menuRestart_world.setObjectName("menuRestart_world")
@@ -160,8 +160,11 @@ class Ui_MainWindow(object):
         self.save_action.setObjectName("save_action")
         self.load_action = QtGui.QAction(MainWindow)
         self.load_action.setObjectName("load_action")
+        self.action_population_graph = QtGui.QAction(MainWindow)
+        self.action_population_graph.setObjectName("action_population_graph")
         self.menuRestart_world.addAction(self.constants_action)
         self.menuRestart_world.addAction(self.network_viewer_action)
+        self.menuRestart_world.addAction(self.action_population_graph)
         self.menuWorld.addAction(self.save_action)
         self.menuWorld.addAction(self.load_action)
         self.menubar.addAction(self.menuWorld.menuAction())
@@ -203,4 +206,5 @@ class Ui_MainWindow(object):
         self.network_viewer_action.setText(QtGui.QApplication.translate("MainWindow", "&network viewer", None, QtGui.QApplication.UnicodeUTF8))
         self.save_action.setText(QtGui.QApplication.translate("MainWindow", "&save", None, QtGui.QApplication.UnicodeUTF8))
         self.load_action.setText(QtGui.QApplication.translate("MainWindow", "&load", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_population_graph.setText(QtGui.QApplication.translate("MainWindow", "population graph", None, QtGui.QApplication.UnicodeUTF8))
 
