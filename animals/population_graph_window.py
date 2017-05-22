@@ -81,25 +81,36 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtGui.QMainWindow):
         self.draw_widget.setFixedWidth((cols + 1) * (self.agent_size + self.padding))
         self.draw_widget.setFixedHeight((rows+1) * (self.agent_size + self.padding))
 
-    def draw_ancestors_connections(self, qp, animal, depth):
+    def draw_ancestors_connections(self, qp, animal, depth, drawn=None):
         """Draw all ancestors with given depth. If depth is negative - draw without depth limit"""
         if depth == 0:
             return
+        drawn = drawn or dict()
+        drawn[animal] = depth
         for parent in animal.parents:
             if hasattr(animal, '_drawing_position') and hasattr(parent, '_drawing_position'):
                 qp.drawLine(*animal._drawing_position, *parent._drawing_position)
                 qp.drawEllipse(qcircle(*parent._drawing_position, 2))
-                self.draw_ancestors_connections(qp, parent, depth-1)
+                if depth < 0 and parent in drawn:
+                    continue
+                if parent not in drawn or drawn[parent] < depth - 1:
+                    self.draw_ancestors_connections(qp, parent, depth-1, drawn)
 
-    def draw_successors_connections(self, qp, animal, depth):
+    def draw_successors_connections(self, qp, animal, depth, drawn=None):
         """Draw all successors with given depth. If depth is negative - draw without depth limit"""
         if depth == 0:
             return
+        drawn = drawn or dict()
+        drawn[animal] = depth
         for child in animal.children:
             if hasattr(animal, '_drawing_position') and hasattr(child, '_drawing_position'):
-                qp.drawLine(*animal._drawing_position, *child._drawing_position)
+                if self.draw_lines_checkbox.isChecked():
+                    qp.drawLine(*animal._drawing_position, *child._drawing_position)
                 qp.drawEllipse(qcircle(*child._drawing_position, 2))
-                self.draw_successors_connections(qp, child, depth-1)
+                if depth < 0 and child in drawn:
+                    continue
+                if child not in drawn or drawn[child] < depth - 1:
+                    self.draw_successors_connections(qp, child, depth-1, drawn)
 
     def generation_iterator(self, world):
         current = set(world.first_generation)
