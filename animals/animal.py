@@ -59,9 +59,11 @@ class Mammoth(object):
 
 
 class Animal(object):
-    def __init__(self, world, dna=""):
+    def __init__(self, world, dna="", parents=None):
         self.world = world
         self._dna = dna
+        self.parents = parents or []
+        self.children = []
         self._x = randint(0, self.world.width)
         self._y = randint(0, self.world.height)
         self.size = self.world.constants.ANIMAL_SIZE
@@ -155,10 +157,14 @@ class Animal(object):
     def make_child(mother, father):
         mother.energy -= mother.world.constants.ENERGY_FOR_BIRTH
         father.energy -= mother.world.constants.ENERGY_FOR_BIRTH
-        child = Animal(mother.world, mix_dna(mother.dna, father.dna, mother.world.constants))
+        child = Animal(mother.world,
+                       mix_dna(mother.dna, father.dna, mother.world.constants),
+                       parents=[mother, father])
         child.x = mother.x + randint(-30, 30)
         child.y = mother.y + randint(-30, 30)
         mother.world.add_animal(child)
+        mother.children.append(child)
+        father.children.append(child)
 
     def eat(self, food):
         value = min(

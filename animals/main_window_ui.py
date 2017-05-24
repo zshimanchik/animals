@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Thu Jun 23 00:36:20 2016
+# Created: Mon May 22 18:30:57 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -160,8 +160,14 @@ class Ui_MainWindow(object):
         self.save_action.setObjectName("save_action")
         self.load_action = QtGui.QAction(MainWindow)
         self.load_action.setObjectName("load_action")
+        self.action_population_graph = QtGui.QAction(MainWindow)
+        self.action_population_graph.setObjectName("action_population_graph")
+        self.graphics_action = QtGui.QAction(MainWindow)
+        self.graphics_action.setObjectName("graphics_action")
         self.menuRestart_world.addAction(self.constants_action)
         self.menuRestart_world.addAction(self.network_viewer_action)
+        self.menuRestart_world.addAction(self.action_population_graph)
+        self.menuRestart_world.addAction(self.graphics_action)
         self.menuWorld.addAction(self.save_action)
         self.menuWorld.addAction(self.load_action)
         self.menubar.addAction(self.menuWorld.menuAction())
@@ -203,4 +209,6 @@ class Ui_MainWindow(object):
         self.network_viewer_action.setText(QtGui.QApplication.translate("MainWindow", "&network viewer", None, QtGui.QApplication.UnicodeUTF8))
         self.save_action.setText(QtGui.QApplication.translate("MainWindow", "&save", None, QtGui.QApplication.UnicodeUTF8))
         self.load_action.setText(QtGui.QApplication.translate("MainWindow", "&load", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_population_graph.setText(QtGui.QApplication.translate("MainWindow", "&population graph", None, QtGui.QApplication.UnicodeUTF8))
+        self.graphics_action.setText(QtGui.QApplication.translate("MainWindow", "graphics", None, QtGui.QApplication.UnicodeUTF8))
 

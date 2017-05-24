@@ -323,6 +323,8 @@
     </property>
     <addaction name="constants_action"/>
     <addaction name="network_viewer_action"/>
+    <addaction name="action_population_graph"/>
+    <addaction name="graphics_action"/>
    </widget>
    <widget class="QMenu" name="menuWorld">
     <property name="title">
@@ -358,6 +360,16 @@
   <action name="load_action">
    <property name="text">
     <string>&amp;load</string>
+   </property>
+  </action>
+  <action name="action_population_graph">
+   <property name="text">
+    <string>&amp;population graph</string>
+   </property>
+  </action>
+  <action name="graphics_action">
+   <property name="text">
+    <string>graphics</string>
    </property>
   </action>
  </widget>

@@ -8,11 +8,25 @@ from PySide.QtCore import QTimer, SIGNAL, Slot, QRect, Qt, QPointF, QDir
 from PySide.QtGui import QMainWindow, QPainter, QApplication, QBrush, QPen, QColor, QFileDialog, QMessageBox
 from PySide.QtOpenGL import QGLWidget
 
+from graphics_window import GraphicsWindow
 from main_window_ui import Ui_MainWindow
 from constants_window import ConstantsWindow
 from neural_network_viewer import NeuralNetworkViewer
 import world
+from population_graph_window import PopulationGraphWindow
 from world_constants import WorldConstants
+
+import resource
+import sys
+
+print(resource.getrlimit(resource.RLIMIT_STACK))
+print(sys.getrecursionlimit())
+
+max_rec = 0x100000
+
+# May segfault without this line. 0x100 is a guess at the size of each stack frame.
+resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
+sys.setrecursionlimit(max_rec)
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -30,10 +44,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.selected_animal = None
         self.constants_window = None
         self.neural_network_viewer_window = None
+        self.population_graph_window = None
+        self.graphics_window = None
 
         self.setupUi(self)
         self.horizontalLayout.removeWidget(self.draw_widget)
-        self.draw_widget = QGLWidget()
+        self.draw_widget = QGLWidget()  # using QGLWidjet instead pf QWidget for performance
         self.horizontalLayout.insertWidget(0, self.draw_widget)
         self.snapshot_directory_combobox.addItem(QDir.currentPath())
 
@@ -80,6 +96,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.neural_network_viewer_window.show()
 
     @Slot()
+    def on_action_population_graph_triggered(self):
+        if not self.population_graph_window:
+            self.population_graph_window = PopulationGraphWindow(world=self.world,
+                                                                 selected_animal=self.selected_animal,
+                                                                 parent=self)
+        if self.population_graph_window.isVisible():
+            self.population_graph_window.hide()
+        else:
+            self.population_graph_window.show()
+
+    @Slot()
+    def on_graphics_action_triggered(self):
+        if not self.graphics_window:
+            self.graphics_window = GraphicsWindow(world=self.world, parent=self)
+        if self.graphics_window.isVisible():
+            self.graphics_window.hide()
+        else:
+            self.graphics_window.show()
+
+    @Slot()
     def on_save_action_triggered(self):
         self.make_snapshot()
 
@@ -101,6 +137,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.world = new_world
         if self.constants_window:
             self.constants_window.constants = self.world.constants
+        if self.population_graph_window:
+            self.population_graph_window.world = self.world
+            self.population_graph_window.selected_animal = self.selected_animal
+
+        if self.graphics_window:
+            self.graphics_window.world = self.world
 
         self.draw_widget.setFixedWidth(self.world.constants.WORLD_WIDTH)
         self.draw_widget.setFixedHeight(self.world.constants.WORLD_HEIGHT)
@@ -120,6 +162,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_timer_timeout(self):
         self._measure_performance()
         self.world.update()
+        if self.graphics_window:
+            self.graphics_window.update()
         self._update_text_info()
         self._evoke_repaint_event()
         self._make_snapshot_if_need()
@@ -145,6 +189,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.draw_widget.repaint()
             if self.neural_network_viewer_window and self.neural_network_viewer_window.isVisible():
                 self.neural_network_viewer_window.repaint()
+            if self.population_graph_window and self.population_graph_window.isVisible():
+                self.population_graph_window.redraw()
+            if self.graphics_window and self.graphics_window.isVisible():
+                self.graphics_window.update()
 
     def _make_snapshot_if_need(self):
         if self.make_snapshots_checkbox.isChecked() and self.world.time % self.make_snapshots_spinbox.value() == 0:
@@ -195,6 +243,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.neural_network_viewer_window:
             self.neural_network_viewer_window.network = self.selected_animal.brain if self.selected_animal else None
             self.neural_network_viewer_window.repaint()
+        if self.population_graph_window:
+            self.population_graph_window.selected_animal = self.selected_animal
         self.draw_widget.repaint()
 
     def on_draw_widget_mouseMoveEvent(self, event):
