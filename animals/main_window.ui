@@ -26,7 +26,7 @@
          <x>0</x>
          <y>0</y>
          <width>948</width>
-         <height>433</height>
+         <height>425</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -314,7 +314,7 @@
      <x>0</x>
      <y>0</y>
      <width>1320</width>
-     <height>26</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuRestart_world">
@@ -324,6 +324,7 @@
     <addaction name="constants_action"/>
     <addaction name="network_viewer_action"/>
     <addaction name="action_population_graph"/>
+    <addaction name="graphics_action"/>
    </widget>
    <widget class="QMenu" name="menuWorld">
     <property name="title">
@@ -363,7 +364,12 @@
   </action>
   <action name="action_population_graph">
    <property name="text">
-    <string>population graph</string>
+    <string>&amp;population graph</string>
+   </property>
+  </action>
+  <action name="graphics_action">
+   <property name="text">
+    <string>graphics</string>
    </property>
   </action>
  </widget>
