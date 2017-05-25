@@ -18,14 +18,13 @@ class GraphicsWindow(Ui_graphics_window, QtGui.QMainWindow):
         self.world = world
 
         self.setupUi(self)
-        self.population_widget.paintEvent = self.on_population_widget_paintEvent
-        self.food_widget.paintEvent = self.on_food_widget_paintEvent
-        self.population_widget.resizeEvent = self.population_widget_resizeEvent
+        self.widget_1.paintEvent = self.on_widget_1_paintEvent
+        self.widget_1.resizeEvent = self.widget_1_resizeEvent
 
-    def population_widget_resizeEvent(self, event):
+    def widget_1_resizeEvent(self, event):
         # I know that this method evoke too often...
-        self.population.scale = self.population_widget.height() / 100.0
-        self.food.scale = self.food_widget.height() / 250.0
+        self.population.scale = self.widget_1.height() / 100.0
+        self.food.scale = self.widget_1.height() / 250.0
 
     @property
     def world(self):
@@ -34,8 +33,8 @@ class GraphicsWindow(Ui_graphics_window, QtGui.QMainWindow):
     @world.setter
     def world(self, value):
         self._world = value
-        self.population = Graphic(freq=50, scale=2, maxlen=None)
-        self.food = Graphic(freq=50, scale=1, maxlen=None)
+        self.population = Graphic(freq=1, scale=2, maxlen=None)
+        self.food = Graphic(freq=1, scale=1, maxlen=None)
 
     def update(self):
         self.population.update(len(self.world.animals))
@@ -48,30 +47,31 @@ class GraphicsWindow(Ui_graphics_window, QtGui.QMainWindow):
         if bar.maximum() - bar.value() < 100:
             bar.setValue(bar.maximum())
 
-        self.population_widget.repaint()
-        self.food_widget.repaint()
+        self.widget_1.repaint()
 
-    def on_population_widget_paintEvent(self, event):
-        self.draw_graphic(self.population_widget, self.population, text='population')
+    def on_widget_1_paintEvent(self, event):
+        painter = QtGui.QPainter()
+        painter.begin(self.widget_1)
+        width = painter.device().width()
+        scroll_pos = self.scrollArea.horizontalScrollBar().value()
 
-    def on_food_widget_paintEvent(self, event):
-        self.draw_graphic(self.food_widget, self.food, text='food')
+        painter.setPen(QPen(Qt.green))
+        painter.drawText(QRect(scroll_pos, 0, 100, 20), Qt.AlignLeft, 'population')
+        self.draw_graphic(painter, self.population)
 
-    def draw_graphic(self, widget, graphic, text=None):
-        qp = QtGui.QPainter()
-        height = widget.height()
-        qp.begin(widget)
+        painter.setPen(QPen(Qt.blue))
+        painter.drawText(QRect(scroll_pos, 20, width, 20), Qt.AlignLeft, 'food')
+        self.draw_graphic(painter, self.food)
 
-        if text:
-            qp.drawText(QRect(0, 0, 100, 100), Qt.AlignLeft, text)
+        painter.end()
 
+    def draw_graphic(self, painter, graphic):
+        height = painter.device().height()
         igraph = enumerate(graphic)
         i, prev = next(igraph)
         for i, cur in igraph:
-            qp.drawLine(i-1, height - prev, i, height - cur)
+            painter.drawLine(i - 1, height - prev, i, height - cur)
             prev = cur
-
-        qp.end()
 
 
 class Graphic:
