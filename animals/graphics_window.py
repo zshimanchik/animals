@@ -20,6 +20,7 @@ class GraphicsWindow(Ui_graphics_window, QtGui.QMainWindow):
         self.setupUi(self)
         self.widget_1.paintEvent = self.on_widget_1_paintEvent
         self.widget_1.resizeEvent = self.widget_1_resizeEvent
+        self.widget_1.wheelEvent = self.on_widget_1_wheelEvent
 
     def widget_1_resizeEvent(self, event):
         # I know that this method evoke too often...
@@ -33,13 +34,14 @@ class GraphicsWindow(Ui_graphics_window, QtGui.QMainWindow):
     @world.setter
     def world(self, value):
         self._world = value
-        self.population = Graphic(freq=1, scale=2, maxlen=None)
-        self.food = Graphic(freq=1, scale=1, maxlen=None)
+        self.population = Graphic(freq=10, scale=2, maxlen=None)
+        self.food = Graphic(freq=10, scale=1, maxlen=None)
 
     def update(self):
         self.population.update(len(self.world.animals))
         self.food.update(len(self.world.food))
 
+    def redraw(self):
         width = max(len(self.population), self.scrollArea.width()-10)
         self.scrollAreaWidgetContents.setFixedWidth(width)
 
@@ -73,23 +75,42 @@ class GraphicsWindow(Ui_graphics_window, QtGui.QMainWindow):
             painter.drawLine(i - 1, height - prev, i, height - cur)
             prev = cur
 
+    def on_widget_1_wheelEvent(self, event):
+        d = - event.delta() / 120
+        self.food.freq += d
+        self.population.freq += d
+
 
 class Graphic:
     def __init__(self, freq=1, scale=1.0, maxlen=None):
-        self.freq = freq
+        self._freq = freq
         self.curi = 0
         self.scale = scale
         self.deque = collections.deque(maxlen=maxlen)
 
     def update(self, value):
-        if self.curi == 0:
-            self.deque.append(value)
-            self.curi = self.freq
+        self.deque.append(value)
 
-        self.curi -= 1
+    @property
+    def freq(self):
+        return self._freq
+
+    @freq.setter
+    def freq(self, value):
+        self._freq = max(1, int(value))
 
     def __iter__(self):
-        return iter(x*self.scale for x in self.deque)
+        return self._iterator()
+
+    def _iterator(self):
+        freq = self.freq
+        idata = iter(self.deque)
+        while True:
+            yield next(idata) * self.scale
+
+            # skipping data
+            for _ in range(freq - 1):
+                next(idata)
 
     def __len__(self):
-        return len(self.deque)
+        return len(self.deque) // self.freq
