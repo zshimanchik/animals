@@ -192,7 +192,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.population_graph_window and self.population_graph_window.isVisible():
                 self.population_graph_window.redraw()
             if self.graphics_window and self.graphics_window.isVisible():
-                self.graphics_window.update()
+                self.graphics_window.redraw()
 
     def _make_snapshot_if_need(self):
         if self.make_snapshots_checkbox.isChecked() and self.world.time % self.make_snapshots_spinbox.value() == 0:
