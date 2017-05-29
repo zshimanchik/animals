@@ -256,10 +256,10 @@ class Animal(object):
         impulse = 50
 
         if self.move_body_1:
-            self.move_body_1.apply_impulse(self.move_body_1.rotation_vector * impulse, (0, 0))
+            self.move_body_1.apply_impulse_at_local_point(self.move_body_1.rotation_vector * impulse, (0, 0))
 
         if self.move_body_2:
-            self.move_body_2.apply_impulse(self.move_body_1.rotation_vector * impulse, (0, 0))
+            self.move_body_2.apply_impulse_at_local_point(self.move_body_1.rotation_vector * impulse, (0, 0))
 
     @property
     def x(self):

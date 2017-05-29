@@ -111,17 +111,17 @@ class World(object):
     def _check_in_bounds(self, animal):
         if all(body.position.x > self.width-self.OFFSET and body.velocity.x > 0 for body in animal.bodies):
             for body in animal.bodies:
-                body.position.x -= self.width - self.OFFSET
+                body.position = body.position.x - self.width + self.OFFSET, body.position.y
         if all(body.position.x < self.OFFSET and body.velocity.x < 0 for body in animal.bodies):
             for body in animal.bodies:
-                body.position.x += self.width - self.OFFSET
+                body.position = body.position.x + self.width - self.OFFSET, body.position.y
 
         if all(body.position.y > self.height-self.OFFSET and body.velocity.y > 0 for body in animal.bodies):
             for body in animal.bodies:
-                body.position.y -= self.height - self.OFFSET
+                body.position = body.position.x, body.position.y - self.height + self.OFFSET
         if all(body.position.y < self.OFFSET and body.velocity.y < 0 for body in animal.bodies):
             for body in animal.bodies:
-                body.position.y += self.height - self.OFFSET
+                body.position = body.position.x, body.position.y + self.height - self.OFFSET
 
         # if animal.x > self.width:
         #     animal.x = self.width
