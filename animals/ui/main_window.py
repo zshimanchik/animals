@@ -139,8 +139,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def on_browse_snapshot_directory_button_clicked(self):
-        directory = QFileDialog.getExistingDirectory(self, "Directory for saving snapshots",
-                                                     self.snapshot_directory_combobox.currentText())
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            "Directory for saving snapshots",
+            self.snapshot_directory_combobox.currentText(),
+            options=QFileDialog.DontUseNativeDialog
+        )
         if not directory:
             return
         if self.snapshot_directory_combobox.findText(directory) == -1:
