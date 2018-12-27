@@ -15,6 +15,7 @@ Ensure that you have increased recursion limits
 import random
 import numpy as np
 import pickle
+import gzip
 
 
 def save(world, path):
@@ -27,7 +28,7 @@ def save(world, path):
         'np.random.state': np.random.get_state()
     }
     try:
-        with open(path, 'wb') as f:
+        with gzip.open(path, 'wb') as f:
             pickle.dump(data, f)
     except RecursionError as ex:
         print('RecursionError. Make sure that you increased recursion limit.')
@@ -38,7 +39,7 @@ def load(path):
     """
     Loads world from dump and set state to random generators: random and numpy.random
     """
-    with open(path, 'rb') as f:
+    with gzip.open(path, 'rb') as f:
         data = pickle.load(f)
 
     random.setstate(data['random.state'])
