@@ -1,9 +1,9 @@
 import colorsys
 import math
 
-from PySide import QtGui
-from PySide.QtCore import QRect
-from PySide.QtGui import QPen, QBrush, QColor
+from PySide2 import QtWidgets, QtGui
+from PySide2.QtCore import QRect
+from PySide2.QtGui import QPen, QBrush, QColor
 
 from population_graph_window_ui import Ui_PopulationGraphWidget
 
@@ -21,7 +21,7 @@ def qcircle(x, y, r):
     return QRect(x-r, y-r, r*2, r*2)
 
 
-class PopulationGraphWindow(Ui_PopulationGraphWidget, QtGui.QMainWindow):
+class PopulationGraphWindow(Ui_PopulationGraphWidget, QtWidgets.QMainWindow):
     agent_size = 10
     padding = 10
     connection_pen = QPen(QColor(0,0,0), 1)

@@ -1,8 +1,8 @@
-from PySide import QtGui
+from PySide2 import QtWidgets
 from itertools import cycle
 
 
-class ConstantsWindow(QtGui.QMainWindow):
+class ConstantsWindow(QtWidgets.QMainWindow):
     EDITABLE_PROPERTIES = ['WORLD_HEIGHT', 'WORLD_WIDTH', 'FOOD_TIMER', 'ANIMAL_MAX_ENERGY', 'ANIMAL_SIZE',
                            'APPEAR_FOOD_COUNT', 'APPEAR_FOOD_SIZE_MAX', 'APPEAR_FOOD_SIZE_MIN', 'EATING_DISTANCE',
                            'EATING_VALUE', 'ENERGY_FOR_BIRTH', 'ENERGY_FOR_EXIST',
@@ -26,9 +26,9 @@ class ConstantsWindow(QtGui.QMainWindow):
 
         self.property_widget = {}
 
-        self.centralwidget = QtGui.QWidget(self)
+        self.centralwidget = QtWidgets.QWidget(self)
         self.setWindowTitle("Constants")
-        self.centralwidget_layout = QtGui.QGridLayout(self.centralwidget)
+        self.centralwidget_layout = QtWidgets.QGridLayout(self.centralwidget)
         self.centralwidget_layout.setObjectName("centralwidget_layout")
 
         row = 0
@@ -36,9 +36,9 @@ class ConstantsWindow(QtGui.QMainWindow):
         for column, prop in zip(column_cycle, self.EDITABLE_PROPERTIES):
             if column == 0:
                 row += 1
-            label = QtGui.QLabel()
+            label = QtWidgets.QLabel()
             label.setText(prop)
-            text_edit = QtGui.QLineEdit()
+            text_edit = QtWidgets.QLineEdit()
             text_edit.setText(str(self.constants.__getattribute__(prop)))
             self.centralwidget_layout.addWidget(label, row, column * 2 + 1, 1, 1)
             self.centralwidget_layout.addWidget(text_edit, row, column * 2 + 2, 1, 1)
@@ -48,20 +48,20 @@ class ConstantsWindow(QtGui.QMainWindow):
         for column, prop in zip(column_cycle, self.READONLY_PROPERTIES):
             if column == 0:
                 row += 1
-            label = QtGui.QLabel()
+            label = QtWidgets.QLabel()
             label.setText(prop)
-            text_edit = QtGui.QLineEdit()
+            text_edit = QtWidgets.QLineEdit()
             text_edit.setReadOnly(True)
             text_edit.setText(str(self.constants.__getattribute__(prop)))
             self.centralwidget_layout.addWidget(label, row, column * 2 + 1, 1, 1)
             self.centralwidget_layout.addWidget(text_edit, row, column * 2 + 2, 1, 1)
 
-        reset_button = QtGui.QPushButton()
+        reset_button = QtWidgets.QPushButton()
         reset_button.setText("reset")
         reset_button.clicked.connect(self.reset_values)
         self.centralwidget_layout.addWidget(reset_button, row + 1, self.COLUMN_AMOUNT * 2, 1, 1)
 
-        apply_button = QtGui.QPushButton()
+        apply_button = QtWidgets.QPushButton()
         apply_button.setText("apply")
         apply_button.clicked.connect(self.apply_values)
         self.centralwidget_layout.addWidget(apply_button, row + 1, self.COLUMN_AMOUNT * 2 - 1, 1, 1)

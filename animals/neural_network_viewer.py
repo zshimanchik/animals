@@ -1,6 +1,6 @@
-from PySide import QtGui
-from PySide.QtCore import QRect, Qt
-from PySide.QtGui import QPen, QBrush, QColor
+from PySide2 import QtWidgets, QtGui
+from PySide2.QtCore import QRect, Qt
+from PySide2.QtGui import QPen, QBrush, QColor
 
 
 def get_color(color):
@@ -8,12 +8,12 @@ def get_color(color):
     return QColor(r * 255, g * 255, b * 255)
 
 
-class NeuralNetworkViewer(QtGui.QMainWindow):
+class NeuralNetworkViewer(QtWidgets.QMainWindow):
     def __init__(self, network=None, parent=None):
         super().__init__(parent=parent)
         self.network = network
 
-        self.central_widget = QtGui.QWidget(self)
+        self.central_widget = QtWidgets.QWidget(self)
         self.setCentralWidget(self.central_widget)
 
         self.setWindowTitle("NeuralNetwork viewer")

@@ -7,25 +7,25 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 class Ui_graphics_window(object):
     def setupUi(self, graphics_window):
         graphics_window.setObjectName("graphics_window")
         graphics_window.resize(895, 439)
-        self.centralwidget = QtGui.QWidget(graphics_window)
+        self.centralwidget = QtWidgets.QWidget(graphics_window)
         self.centralwidget.setObjectName("centralwidget")
-        self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.scrollArea = QtGui.QScrollArea(self.centralwidget)
+        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
-        self.scrollAreaWidgetContents = QtGui.QWidget()
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 879, 423))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.widget_1 = QtGui.QWidget(self.scrollAreaWidgetContents)
+        self.widget_1 = QtWidgets.QWidget(self.scrollAreaWidgetContents)
         self.widget_1.setObjectName("widget_1")
         self.verticalLayout_2.addWidget(self.widget_1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
@@ -36,5 +36,5 @@ class Ui_graphics_window(object):
         QtCore.QMetaObject.connectSlotsByName(graphics_window)
 
     def retranslateUi(self, graphics_window):
-        graphics_window.setWindowTitle(QtGui.QApplication.translate("graphics_window", "Graphics", None, QtGui.QApplication.UnicodeUTF8))
+        graphics_window.setWindowTitle(QtWidgets.QApplication.translate("graphics_window", "Graphics"))
 

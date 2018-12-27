@@ -4,9 +4,10 @@ import time
 import math
 import pickle
 import datetime
-from PySide.QtCore import QTimer, SIGNAL, Slot, QRect, Qt, QPointF, QDir
-from PySide.QtGui import QMainWindow, QPainter, QApplication, QBrush, QPen, QColor, QFileDialog, QMessageBox
-from PySide.QtOpenGL import QGLWidget
+from PySide2.QtCore import QTimer, SIGNAL, Slot, QRect, Qt, QPointF, QDir
+from PySide2.QtGui import QPainter, QBrush, QPen, QColor
+from PySide2.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
+from PySide2.QtOpenGL import QGLWidget
 
 from graphics_window import GraphicsWindow
 from main_window_ui import Ui_MainWindow
