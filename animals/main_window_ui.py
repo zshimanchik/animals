@@ -174,7 +174,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuRestart_world.menuAction())
 
         self.retranslateUi(MainWindow)
-        QtCore.QObject.connect(self.draw_each_times_slider, QtCore.SIGNAL("valueChanged(int)"), self.draw_each_times_lcd.display)
+        self.draw_each_times_slider.valueChanged['int'].connect(self.draw_each_times_lcd.display)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

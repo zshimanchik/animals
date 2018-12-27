@@ -4,7 +4,7 @@ import time
 import math
 import pickle
 import datetime
-from PySide2.QtCore import QTimer, SIGNAL, Slot, QRect, Qt, QPointF, QDir
+from PySide2.QtCore import QTimer, Slot, QRect, Qt, QPointF, QDir
 from PySide2.QtGui import QPainter, QBrush, QPen, QColor
 from PySide2.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
 from PySide2.QtOpenGL import QGLWidget
@@ -64,7 +64,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.draw_widget.mouseMoveEvent = self.on_draw_widget_mouseMoveEvent
 
         self.timer = QTimer(self)
-        self.connect(self.timer, SIGNAL("timeout()"), self.on_timer_timeout)
+        self.timer.timeout.connect(self.on_timer_timeout)
         self.timer.start(self.TIMER_INTERVAL)
 
         self._prev_time = time.clock()
