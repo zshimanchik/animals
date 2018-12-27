@@ -1,9 +1,10 @@
 ﻿from math import hypot
 from random import randint, random, gauss
+
 import numpy as np
 from scipy.spatial.distance import cdist
 
-from animal import Animal, Food, Mammoth
+from engine.animal import Animal, Food, Mammoth
 
 
 class World(object):

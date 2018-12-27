@@ -5,7 +5,7 @@ from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import QRect
 from PySide2.QtGui import QPen, QBrush, QColor
 
-from population_graph_window_ui import Ui_PopulationGraphWidget
+from ui.population_graph_window_ui import Ui_PopulationGraphWidget
 
 CHILDREN_TO_BE_RED = 10
 

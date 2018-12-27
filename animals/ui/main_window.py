@@ -1,33 +1,21 @@
-import os
-import sys
-import time
-import math
-import pickle
 import datetime
+import math
+import os
+import pickle
+import time
+
 from PySide2.QtCore import QTimer, Slot, QRect, Qt, QPointF, QDir
 from PySide2.QtGui import QPainter, QBrush, QPen, QColor
-from PySide2.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
 from PySide2.QtOpenGL import QGLWidget
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
-from graphics_window import GraphicsWindow
-from main_window_ui import Ui_MainWindow
-from constants_window import ConstantsWindow
-from neural_network_viewer import NeuralNetworkViewer
-import world
-from population_graph_window import PopulationGraphWindow
-from world_constants import WorldConstants
-
-import resource
-import sys
-
-print(resource.getrlimit(resource.RLIMIT_STACK))
-print(sys.getrecursionlimit())
-
-max_rec = 0x100000
-
-# May segfault without this line. 0x100 is a guess at the size of each stack frame.
-resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
-sys.setrecursionlimit(max_rec)
+from engine import world
+from engine.world_constants import WorldConstants
+from ui.constants_window import ConstantsWindow
+from ui.graphics_window import GraphicsWindow
+from ui.main_window_ui import Ui_MainWindow
+from ui.neural_network_viewer import NeuralNetworkViewer
+from ui.population_graph_window import PopulationGraphWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -343,10 +331,3 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         painter.drawEllipse(QRect(
             food.x - radius, food.y - radius, radius * 2, radius * 2
         ))
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    mySW = MainWindow()
-    mySW.show()
-    sys.exit(app.exec_())

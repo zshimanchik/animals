@@ -1,7 +1,7 @@
 ﻿import math
 from random import random, randint
 
-from brain import create_brain
+from engine.brain import create_brain
 
 TWO_PI = math.pi * 2
 
