@@ -1,7 +1,6 @@
 import datetime
 import math
 import os
-import pickle
 import time
 
 from PySide2.QtCore import QTimer, Slot, QRect, Qt, QPointF, QDir
@@ -9,7 +8,7 @@ from PySide2.QtGui import QPainter, QBrush, QPen, QColor
 from PySide2.QtOpenGL import QGLWidget
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
-from engine import world
+from engine import world, serializer
 from engine.world_constants import WorldConstants
 from ui.constants_window import ConstantsWindow
 from ui.graphics_window import GraphicsWindow
@@ -120,9 +119,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not filename:
             return
 
-        dump = open(filename, 'rb')
-        print("loading from {}".format(filename))
-        new_world = pickle.load(dump)
+        new_world = serializer.load(filename)
 
         self.world = new_world
         if self.constants_window:
@@ -199,16 +196,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             now = datetime.datetime.now()
             world_name = now.strftime("%F_%T")
 
-        filename = "world_{}--{}.wrld".format(world_name, self.world.time)
+        git_commit = os.popen('git rev-parse --short HEAD').read().strip() or 'world'
+        filename = f'{git_commit}_{world_name}--{self.world.time}.wrld'
         file_path = os.path.join(self.snapshot_directory_combobox.currentText(), filename)
         try:
-            out_file = open(str(file_path), 'wb')
+            serializer.save(self.world, file_path)
+            print("saved into {}".format(file_path))
         except IOError:
             QMessageBox.critical(self, "Unable to open file", "There was an error opening \"%s\"" % file_path)
             return
-
-        pickle.dump(self.world, out_file, protocol=4)
-        print("saved into {}".format(file_path))
 
     # PAINTING
 

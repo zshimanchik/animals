@@ -1,78 +1,82 @@
 import multiprocessing as mp
 import os
-import pickle
 import resource
 import sys
 import time
 
+from engine import serializer
 from engine.world import World
 from engine.world_constants import WorldConstants
 
-PROCESS_COUNT = 4
-MAKE_DUMP_EACH = 100000
-MAX_CYCLE = 900000
-COMMON_WORLD_NAME = "mp"
-PATH_FOR_SNAPSHOTS = "./snapshots/"
+# I know... Don't look at this file
 
 
-def main():
-    print("{} processes".format(PROCESS_COUNT))
-    worlds = []
+class NoUiStarter:
 
-    w1 = WorldConstants()
-    w1.FOOD_TIMER = 23
-    worlds.append((w1, "{}_{}_23".format(COMMON_WORLD_NAME, 1), MAX_CYCLE))
+    PROCESS_COUNT = 4
+    MAKE_DUMP_EACH = 20000
+    MAX_CYCLE = 900000
+    COMMON_WORLD_NAME = "mp"
+    PATH_FOR_SNAPSHOTS = "../snapshots/"
 
-    w2 = WorldConstants()
-    w2.FOOD_TIMER = 33
-    worlds.append((w2, "{}_{}_33".format(COMMON_WORLD_NAME, 2), MAX_CYCLE))
+    def __init__(self):
+        self.git_commit = os.popen('git rev-parse --short HEAD').read().strip() or 'nocommit'
 
-    w3 = WorldConstants()
-    w3.FOOD_TIMER = 23
-    worlds.append((w3, "{}_{}_23".format(COMMON_WORLD_NAME, 3), MAX_CYCLE))
+    def start(self):
+        print("{} processes".format(self.PROCESS_COUNT))
+        worlds = []
 
-    w4 = WorldConstants()
-    w4.FOOD_TIMER = 33
-    worlds.append((w4, "{}_{}_33".format(COMMON_WORLD_NAME, 4), MAX_CYCLE))
+        w1 = WorldConstants()
+        w1.FOOD_TIMER = 23
+        worlds.append((w1, "{}_{}_23".format(self.COMMON_WORLD_NAME, 1), self.MAX_CYCLE))
 
-    w5 = WorldConstants()
-    w5.FOOD_TIMER = 23
-    worlds.append((w4, "{}_{}_23".format(COMMON_WORLD_NAME, 5), MAX_CYCLE))
+        w2 = WorldConstants()
+        w2.FOOD_TIMER = 33
+        worlds.append((w2, "{}_{}_33".format(self.COMMON_WORLD_NAME, 2), self.MAX_CYCLE))
 
-    w6 = WorldConstants()
-    w6.FOOD_TIMER = 33
-    worlds.append((w4, "{}_{}_23".format(COMMON_WORLD_NAME, 6), MAX_CYCLE))
+        w3 = WorldConstants()
+        w3.FOOD_TIMER = 23
+        worlds.append((w3, "{}_{}_23".format(self.COMMON_WORLD_NAME, 3), self.MAX_CYCLE))
 
+        w4 = WorldConstants()
+        w4.FOOD_TIMER = 33
+        worlds.append((w4, "{}_{}_33".format(self.COMMON_WORLD_NAME, 4), self.MAX_CYCLE))
 
-    print("START")
-    pool = mp.Pool(processes=PROCESS_COUNT)
-    pool.map(worker, worlds)
+        w5 = WorldConstants()
+        w5.FOOD_TIMER = 23
+        worlds.append((w4, "{}_{}_23".format(self.COMMON_WORLD_NAME, 5), self.MAX_CYCLE))
 
-    print("DONE")
+        w6 = WorldConstants()
+        w6.FOOD_TIMER = 33
+        worlds.append((w4, "{}_{}_23".format(self.COMMON_WORLD_NAME, 6), self.MAX_CYCLE))
 
+        print("START")
+        pool = mp.Pool(processes=self.PROCESS_COUNT)
+        pool.map(self.worker, worlds)
+        print("DONE")
 
-def worker(args):
-    constants, world_name, max_cycle = args
-    print("{} started".format(world_name))
-    start_time = time.clock()
-    world = World(constants)
-    for _ in range(max_cycle):
-        if world.time % MAKE_DUMP_EACH == 0:
-            make_dump(world, world_name)
-        world.update()
+    def worker(self, args):
+        constants, world_name, max_cycle = args
+        print("{} started".format(world_name))
+        start_time = time.clock()
+        world = World(constants)
+        for _ in range(max_cycle):
+            if world.time % self.MAKE_DUMP_EACH == 0:
+                self.make_dump(world, world_name)
+            world.update()
 
-    performance = (time.clock() - start_time) / max_cycle
+        performance = (time.clock() - start_time) / max_cycle
 
-    make_dump(world, world_name)
-    print("{} ended with average performance={}".format(world_name, performance))
+        self.make_dump(world, world_name)
+        print("{} ended with average performance={}".format(world_name, performance))
 
-
-def make_dump(world, world_name):
-    filename = "world_{}--{}.wrld".format(world_name, world.time)
-    print("saving {}".format(filename))
-    file_full_name = os.path.join(PATH_FOR_SNAPSHOTS, filename)
-    with open(file_full_name, 'wb') as f:
-        pickle.dump(world, f)
+    def make_dump(self, world, world_name):
+        subdir_name = f'{self.git_commit}_{world_name}'
+        subdir = os.path.join(self.PATH_FOR_SNAPSHOTS, subdir_name)
+        os.makedirs(subdir, exist_ok=True)
+        filename = os.path.join(subdir, f'{world.time}.wrld')
+        print(f'saving {filename}')
+        serializer.save(world, filename)
 
 
 if __name__ == '__main__':
@@ -86,4 +90,4 @@ if __name__ == '__main__':
     resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
     sys.setrecursionlimit(max_rec)
 
-    main()
+    NoUiStarter().start()
