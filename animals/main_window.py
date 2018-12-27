@@ -126,7 +126,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self,
             "Open world dump file",
             self.snapshot_directory_combobox.currentText(),
-            "WORLD Files (*.wrld)"
+            "WORLD Files (*.wrld)",
+            options=QFileDialog.DontUseNativeDialog
         )[0]
         if not filename:
             return
