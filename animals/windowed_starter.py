@@ -1,7 +1,7 @@
 import resource
 import sys
 
-from PySide2.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication
 
 from ui.main_window import MainWindow
 

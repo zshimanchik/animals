@@ -1,8 +1,8 @@
 import collections
 
-from PySide2 import QtWidgets, QtGui
-from PySide2.QtCore import QRect, Qt
-from PySide2.QtGui import QPen, QColor
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import QRect, Qt
+from PyQt5.QtGui import QPen, QColor
 
 from ui.graphics_window_ui import Ui_graphics_window
 

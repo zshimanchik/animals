@@ -1,6 +1,6 @@
 from itertools import cycle
 
-from PySide2 import QtWidgets
+from PyQt5 import QtWidgets
 
 
 class ConstantsWindow(QtWidgets.QMainWindow):

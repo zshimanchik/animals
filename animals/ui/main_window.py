@@ -3,10 +3,9 @@ import math
 import os
 import time
 
-from PySide2.QtCore import QTimer, Slot, QRect, Qt, QPointF, QDir
-from PySide2.QtGui import QPainter, QBrush, QPen, QColor
-from PySide2.QtOpenGL import QGLWidget
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from PyQt5.QtCore import QTimer, pyqtSlot as Slot, QRect, Qt, QPointF, QDir
+from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
 from engine import world, serializer
 from engine.world_constants import WorldConstants
@@ -36,8 +35,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphics_window = None
 
         self.setupUi(self)
-        self.horizontalLayout.removeWidget(self.draw_widget)
-        self.draw_widget = QGLWidget()  # using QGLWidjet instead pf QWidget for performance
         self.horizontalLayout.insertWidget(0, self.draw_widget)
         self.snapshot_directory_combobox.addItem(QDir.currentPath())
 

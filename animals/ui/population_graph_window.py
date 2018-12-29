@@ -1,9 +1,9 @@
 import colorsys
 import math
 
-from PySide2 import QtWidgets, QtGui
-from PySide2.QtCore import QRect
-from PySide2.QtGui import QPen, QBrush, QColor
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import QRect
+from PyQt5.QtGui import QPen, QBrush, QColor
 
 from ui.population_graph_window_ui import Ui_PopulationGraphWidget
 

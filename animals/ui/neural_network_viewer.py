@@ -1,6 +1,6 @@
-from PySide2 import QtWidgets, QtGui
-from PySide2.QtCore import QRect, Qt
-from PySide2.QtGui import QPen, QBrush, QColor
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import QRect, Qt
+from PyQt5.QtGui import QPen, QBrush, QColor
 
 
 def get_color(color):
