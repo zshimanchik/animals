@@ -58,7 +58,6 @@ class WorldConstants(object):
 
         self.SEX_DISTANCE = 20 + self.ANIMAL_SIZE * 2
 
-
     @cached_property
     def INPUT_LAYER_SIZE(self):
         return self.ANIMAL_SENSOR_COUNT * self.ANIMAL_SENSOR_DIMENSION
@@ -84,3 +83,18 @@ class WorldConstants(object):
     @cached_property
     def DNA_LEN(self):
         return self.DNA_FOR_BRAIN_LEN
+
+    def to_dict(self):
+        result = {}
+        for attr in dir(self):
+            if not attr.startswith('_'):
+                value = getattr(self, attr)
+                if not callable(value):
+                    result[attr] = value
+        return result
+
+    @classmethod
+    def from_dict(cls, data):
+        self = WorldConstants()
+        self.__dict__.update(data)
+        return self
