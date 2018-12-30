@@ -32,11 +32,15 @@ class World(object):
         self.time = 0
 
     def _make_random_food(self):
-        max_gauss_x = 4.5
-        x = min(abs(gauss(0, 1)), max_gauss_x)
+        max_gauss_sigma = 4.5  # than more this value then more concentrated x_ratio will be
+        x_ratio = abs(gauss(0, 1)) / max_gauss_sigma
+        while x_ratio > 1:
+            x_ratio = abs(gauss(0, 1)) / max_gauss_sigma
+        # x_ratio is now between 0 and 1
+
         return Food(
             self,
-            int(self.width * x / 2.5),
+            int(self.width * x_ratio),
             randint(0, self.height),
             randint(self.constants.APPEAR_FOOD_SIZE_MIN, self.constants.APPEAR_FOOD_SIZE_MAX)
         )

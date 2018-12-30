@@ -17,4 +17,5 @@ class MammothAnalyzer:
 
     @property
     def amount_of_killings(self):
+        """Amount of killings per 1 tick"""
         return self.killing_history_sum / self.analysis_interval
