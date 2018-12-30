@@ -7,6 +7,7 @@ from PyQt5.QtCore import QTimer, pyqtSlot as Slot, QRect, Qt, QPointF, QDir
 from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
+from analyzers import MammothAnalyzer
 from engine import world, serializer
 from engine.world_constants import WorldConstants
 from ui.constants_window import ConstantsWindow
@@ -45,6 +46,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.draw_widget.setFixedHeight(world_constants.WORLD_HEIGHT)
 
         self.world = world.World(constants=world_constants)
+        self.mammoth_analyzer = MammothAnalyzer(self.world)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
         self.draw_widget.mousePressEvent = self.on_draw_widget_mousePressEvent
         self.draw_widget.mouseMoveEvent = self.on_draw_widget_mouseMoveEvent
@@ -121,6 +123,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         new_world = serializer.load(filename)
 
         self.world = new_world
+        self.mammoth_analyzer = MammothAnalyzer(self.world)
         if self.constants_window:
             self.constants_window.constants = self.world.constants
         if self.population_graph_window:
@@ -152,6 +155,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_timer_timeout(self):
         self._measure_performance()
         self.world.update()
+        self.mammoth_analyzer.update()
         if self.graphics_window:
             self.graphics_window.update()
         self._update_text_info()
@@ -173,6 +177,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.info_text.append(("Animal count", len(self.world.animals)))
         self.info_text.append(("Food count", len(self.world.food)))
         self.info_text.append(("Mammoth count", len(self.world.mammoths)))
+        self.info_text.append(("Mammoth kills", f'{self.mammoth_analyzer.amount_of_killings:.5f}'))
         self.info_label.setText('\n'.join('{:<15} {:<10}'.format(*args) for args in self.info_text))
         self.info_text.clear()
 
