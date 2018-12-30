@@ -51,7 +51,7 @@ class NoUiStarter:
 
             world.update()
             analyzer.update()
-            if analyzer.amount_of_killings > 10 and not got_reaction:
+            if analyzer.amount_of_killings > 0.01 and not got_reaction:
                 print(f'World {args.world_name} got reaction at {world.time}')
                 got_reaction = True
                 self._save_world(world, args.snapshot_dir)
