@@ -35,14 +35,20 @@ class NoUiStarter:
 
     def worker(self, args: WorkerArgs):
         print("{} started".format(args.world_name))
-        start_time = time.clock()
+        start_time = time.perf_counter()
         world = World(args.world_constants)
         for _ in range(self.max_cycle):
             if world.time % self.save_world_each == 0:
+                elapsed = time.perf_counter() - start_time
+                performance = (time.perf_counter()-start_time) / self.save_world_each
+                print(f'{args.world_name}: '
+                      f'{world.time} ticks calculated. '
+                      f'{elapsed:.3f}s elapsed. '
+                      f'{performance:.7f} performance')
                 self._save_world(world, args.snapshot_dir)
             world.update()
 
-        performance = (time.clock() - start_time) / self.max_cycle
+        performance = (time.perf_counter() - start_time) / self.max_cycle
 
         self._save_world(world, args.snapshot_dir)
         print("{} ended with average performance={}".format(args.world_name, performance))
