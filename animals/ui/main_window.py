@@ -22,6 +22,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.info_text = []
+        self.performance = 0
         self._animal_brush = QBrush(QColor(74, 172, 225))
         self._food_brush = QBrush(QColor(100, 100, 100))
         self._food_beated_brush = QBrush(QColor(180, 140, 100))
@@ -160,17 +162,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.world.time % self._PERFORMANCE_CALC_INTERVAL == 0:
             self.performance = (time.clock() - self._prev_time) / self._PERFORMANCE_CALC_INTERVAL
             self._prev_time = time.clock()
-            self.performance_label.setText("{:.6f}".format(self.performance))
 
         if self.world.time == 200:
             print(self.performance)
 
     def _update_text_info(self):
-        self.world_time_label.setText(str(self.world.time))
-        self.food_timer_label.setText(str(self.world.constants.FOOD_TIMER))
-        self.animal_count_label.setText(str(len(self.world.animals)))
-        self.food_count_label.setText(str(len(self.world.food)))
-        self.mammoth_count_label.setText(str(len(self.world.mammoths)))
+        self.info_text.append(('Performance', f'{self.performance:.6f}'))
+        self.info_text.append(("World time", self.world.time))
+        self.info_text.append(("Food timer", self.world.constants.FOOD_TIMER))
+        self.info_text.append(("Animal count", len(self.world.animals)))
+        self.info_text.append(("Food count", len(self.world.food)))
+        self.info_text.append(("Mammoth count", len(self.world.mammoths)))
+        self.info_label.setText('\n'.join('{:<15} {:<10}'.format(*args) for args in self.info_text))
+        self.info_text.clear()
 
     def _evoke_repaint_event(self):
         if self.world.time % self.draw_each_times_slider.value() == 0:
