@@ -6,6 +6,7 @@ import sys
 import time
 from collections import namedtuple
 
+from analyzers import MammothAnalyzer
 from engine import serializer
 from engine.world import World
 from engine.world_constants import WorldConstants
@@ -17,8 +18,7 @@ WorkerArgs = namedtuple('WorkerArgs', ['world_constants', 'world_name', 'snapsho
 
 class NoUiStarter:
 
-    def __init__(self, process_count, save_world_each=100_000, max_cycle=1_000_000,
-                 path_for_snapshots='../snapshots/'):
+    def __init__(self, process_count, save_world_each, max_cycle, path_for_snapshots):
         self.process_count = process_count
         self.save_world_each = save_world_each
         self.max_cycle = max_cycle
@@ -37,6 +37,8 @@ class NoUiStarter:
         print("{} started".format(args.world_name))
         start_time = time.perf_counter()
         world = World(args.world_constants)
+        analyzer = MammothAnalyzer(world)
+        got_reaction = False
         for _ in range(self.max_cycle):
             if world.time % self.save_world_each == 0:
                 elapsed = time.perf_counter() - start_time
@@ -46,7 +48,13 @@ class NoUiStarter:
                       f'{elapsed:.3f}s elapsed. '
                       f'{performance:.7f} performance')
                 self._save_world(world, args.snapshot_dir)
+
             world.update()
+            analyzer.update()
+            if analyzer.amount_of_killings > 10 and not got_reaction:
+                print(f'World {args.world_name} got reaction at {world.time}')
+                got_reaction = True
+                self._save_world(world, args.snapshot_dir)
 
         performance = (time.perf_counter() - start_time) / self.max_cycle
 
@@ -82,7 +90,12 @@ if __name__ == '__main__':
     resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
     sys.setrecursionlimit(max_rec)
 
-    starter = NoUiStarter(process_count=4)
+    starter = NoUiStarter(
+        process_count=4,
+        save_world_each=50_000,
+        max_cycle=1_000_000,
+        path_for_snapshots='../snapshots/'
+    )
 
     for i in range(6):
         starter.add_world(WorldConstants(), f'world_n{i}')
