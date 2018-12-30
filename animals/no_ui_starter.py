@@ -1,3 +1,4 @@
+import datetime
 import json
 import multiprocessing as mp
 import os
@@ -66,7 +67,8 @@ class NoUiStarter:
         self.world_constant_list.append(WorkerArgs(world_constants, world_name, snapshot_dir))
 
     def _prepare_snapshot_dir(self, world_constants, world_name):
-        subdir_name = f'{self.git_commit}_{world_name}'
+        now = datetime.datetime.now().strftime("%FT%T")
+        subdir_name = f'{now}--{self.git_commit}--{world_name}'
         snapshot_dir = os.path.join(self.path_for_snapshots, subdir_name)
         os.makedirs(snapshot_dir, exist_ok=True)
         with open(os.path.join(snapshot_dir, 'world_params.json'), 'w') as f:
@@ -94,7 +96,7 @@ if __name__ == '__main__':
         process_count=4,
         save_world_each=50_000,
         max_cycle=1_000_000,
-        path_for_snapshots='../snapshots/'
+        path_for_snapshots='./snapshots/'
     )
 
     for i in range(6):

@@ -39,7 +39,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.setupUi(self)
         self.horizontalLayout.insertWidget(0, self.draw_widget)
-        self.snapshot_directory_combobox.addItem(QDir.currentPath())
+        snapshot_dir = QDir('./snapshots/')
+        snapshot_dir.mkpath('.')
+        self.snapshot_directory_combobox.addItem(snapshot_dir.absolutePath())
 
         world_constants = WorldConstants()
         self.draw_widget.setFixedWidth(world_constants.WORLD_WIDTH)
@@ -196,14 +198,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.make_snapshot()
 
     def make_snapshot(self):
-        if self.world_name_lineedit.text():
-            world_name = self.world_name_lineedit.text()
-        else:
-            now = datetime.datetime.now()
-            world_name = now.strftime("%F_%T")
+        now = datetime.datetime.now().strftime("%FT%T")
+        world_name = self.world_name_lineedit.text()
+        if world_name:
+            world_name += '--'
 
         git_commit = os.popen('git rev-parse --short HEAD').read().strip() or 'world'
-        filename = f'{git_commit}_{world_name}--{self.world.time}.wrld'
+        filename = f'{now}--{git_commit}--{world_name}{self.world.time}.wrld'
         file_path = os.path.join(self.snapshot_directory_combobox.currentText(), filename)
         try:
             serializer.save(self.world, file_path)

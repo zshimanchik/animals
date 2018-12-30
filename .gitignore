@@ -2,3 +2,4 @@
 /.idea
 *.pyc
 __cache__
+/animals/snapshots/
