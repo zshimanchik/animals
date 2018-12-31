@@ -14,6 +14,9 @@ class WorldConstants(object):
         self.FOOD_SMELL_SIZE_RATIO = 21.0
 
         self.FOOD_TIMER = 1000 * (100 * 100) // (self.WORLD_WIDTH * self.WORLD_HEIGHT)
+        # Than more this value then more concentrated x_ratio will be
+        # Set 0 for uniform distribution
+        self.FOOD_GAUSS_DISTRIBUTION_SIGMA = 2.5
 
         self.APPEAR_FOOD_COUNT = 3
         self.APPEAR_FOOD_SIZE_MIN = 4

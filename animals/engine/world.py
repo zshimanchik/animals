@@ -5,10 +5,12 @@ import numpy as np
 from scipy.spatial.distance import cdist
 
 from engine.animal import Animal, Food, Mammoth
+from engine.world_constants import WorldConstants
 
 
 class World(object):
     def __init__(self, constants, save_genealogy=False):
+        assert isinstance(constants, WorldConstants)
         self.constants = constants
         self.save_genealogy = save_genealogy
 
@@ -36,11 +38,13 @@ class World(object):
         self.time = 0
 
     def _make_random_food(self):
-        max_gauss_sigma = 4.5  # than more this value then more concentrated x_ratio will be
-        x_ratio = abs(gauss(0, 1)) / max_gauss_sigma
-        while x_ratio > 1:
-            x_ratio = abs(gauss(0, 1)) / max_gauss_sigma
-        # x_ratio is now between 0 and 1
+        if self.constants.FOOD_GAUSS_DISTRIBUTION_SIGMA:  # gauss distribution if sigma was set
+            x_ratio = abs(gauss(0, 1)) / self.constants.FOOD_GAUSS_DISTRIBUTION_SIGMA
+            while x_ratio > 1:
+                x_ratio = abs(gauss(0, 1)) / self.constants.FOOD_GAUSS_DISTRIBUTION_SIGMA
+            # x_ratio is now between 0 and 1
+        else:  # uniform distribution
+            x_ratio = random()
 
         return Food(
             self,
