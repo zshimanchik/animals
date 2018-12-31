@@ -55,6 +55,7 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtWidgets.QMainWindow):
         qp.begin(self.draw_widget)
         qp.setPen(self.connection_pen)
         qp.setBrush(self.agent_brush)
+        i = 0
         for i, generation in enumerate(self.generation_iterator(self.world)):
             for j, animal in enumerate(generation):
                 x = (self.agent_size + self.padding) * j
@@ -72,7 +73,7 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtWidgets.QMainWindow):
                             qp.drawLine(x, y, *parent._drawing_position)
                 self._cols = max(self._cols, j)
 
-        if self.selected_animal:
+        if self.selected_animal and hasattr(self.selected_animal, '_drawing_position'):
             qp.setPen(QPen(QColor(255, 180, 0), 3))
             qp.setBrush(QBrush(get_color(len(self.selected_animal.children))))
             qp.drawEllipse(qcircle(*self.selected_animal._drawing_position, self.agent_size))
@@ -88,11 +89,11 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtWidgets.QMainWindow):
 
         qp.end()
 
-        self._rows = i
+        self._rows = i + 1
 
     def set_new_draw_widget_size(self, rows, cols):
         self.draw_widget.setFixedWidth((cols + 1) * (self.agent_size + self.padding))
-        self.draw_widget.setFixedHeight((rows+1) * (self.agent_size + self.padding))
+        self.draw_widget.setFixedHeight((rows + 1) * (self.agent_size + self.padding))
 
     def draw_ancestors_connections(self, qp, animal, depth, drawn=None):
         """Draw all ancestors with given depth. If depth is negative - draw without depth limit"""

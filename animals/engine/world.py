@@ -8,8 +8,9 @@ from engine.animal import Animal, Food, Mammoth
 
 
 class World(object):
-    def __init__(self, constants):
+    def __init__(self, constants, save_genealogy=False):
         self.constants = constants
+        self.save_genealogy = save_genealogy
 
         self.width = constants.WORLD_WIDTH
         self.height = constants.WORLD_HEIGHT
@@ -24,8 +25,11 @@ class World(object):
         self.restart()
 
     def restart(self):
-        self.animals = [Animal(self) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)]
-        self.first_generation = self.animals.copy()
+        self.animals = [
+            Animal(self, save_genealogy=self.save_genealogy) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)
+        ]
+        if self.save_genealogy:
+            self.first_generation = self.animals.copy()
         self.animals_to_add = []
         self.food = [self._make_random_food() for _ in range(self.constants.INITIAL_FOOD_COUNT)]
         self.mammoths = []

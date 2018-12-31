@@ -47,7 +47,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.draw_widget.setFixedWidth(world_constants.WORLD_WIDTH)
         self.draw_widget.setFixedHeight(world_constants.WORLD_HEIGHT)
 
-        self.world = world.World(constants=world_constants)
+        self.world = world.World(constants=world_constants, save_genealogy=False)
         self.mammoth_analyzer = MammothAnalyzer(self.world)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
         self.draw_widget.mousePressEvent = self.on_draw_widget_mousePressEvent
