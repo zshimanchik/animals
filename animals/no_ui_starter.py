@@ -40,8 +40,7 @@ class NoUiStarter:
         start_time = time.perf_counter()
         world = World(args.world_constants)
         analyzer = MammothAnalyzer(world)
-        got_reaction = False
-        for _ in range(self.max_cycle):
+        while True:
             if world.time % self.save_world_each == 0:
                 elapsed = time.perf_counter() - start_time
                 performance = (time.perf_counter()-start_time) / self.save_world_each
@@ -53,10 +52,12 @@ class NoUiStarter:
 
             world.update()
             analyzer.update()
-            if analyzer.amount_of_killings > 0.01 and not got_reaction:
-                print(f'World {args.world_name} got reaction at {world.time}')
-                got_reaction = True
-                self._save_world(world, args.snapshot_dir)
+            if analyzer.amount_of_killings > 0.01:
+                logging.info(f'World {args.world_name} got reaction at {world.time}')
+                break
+
+            if self.max_cycle and world.time >= self.max_cycle:
+                break
 
         performance = (time.perf_counter() - start_time) / self.max_cycle
 
