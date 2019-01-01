@@ -27,7 +27,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.performance = 0
         self._animal_brush = QBrush(QColor(74, 172, 225))
         self._food_brush = QBrush(QColor(100, 100, 100))
-        self._food_beated_brush = QBrush(QColor(180, 140, 100))
+        self._food_bitten_brush = QBrush(QColor(180, 140, 100))
         self._mammoth_brush = QBrush(QColor(50, 50, 200))
         self._animal_pen = Qt.NoPen
         self._selected_animal_pen = QPen(QColor(255, 180, 0), 3)
@@ -304,8 +304,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _draw_food(self, painter, food):
         painter.setPen(Qt.NoPen)
-        if food.beated:
-            painter.setBrush(self._food_beated_brush)
+        if food.bitten:
+            painter.setBrush(self._food_bitten_brush)
         else:
             painter.setBrush(self._food_brush)
         size = food.size * 2

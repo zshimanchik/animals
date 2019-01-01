@@ -110,7 +110,7 @@ class World(object):
 
     def _update_food(self):
         for food in self.food:
-            food.beated = False
+            food.update()
 
     def _update_mammoths(self):
         for mammoth in self.mammoths:

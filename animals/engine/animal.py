@@ -6,7 +6,16 @@ from engine.brain import create_brain
 TWO_PI = math.pi * 2
 
 
-class Food(object):
+class WorldObject:
+    x = 0
+    y = 0
+    size = 1
+
+    def update(self):
+        pass
+
+
+class Food(WorldObject):
     def __init__(self, world, x, y, size):
         self._world = world
         self.x = x
@@ -14,10 +23,13 @@ class Food(object):
         self._size = size
         self._smell = (0.0, 1.0,)
         self._smell_size = self._size * self._world.constants.FOOD_SMELL_SIZE_RATIO
-        self.beated = False
+        self.bitten = False
 
-    def beating(self, value):
-        self.beated = True
+    def update(self):
+        self.bitten = False
+
+    def to_be_bitten(self, value):
+        self.bitten = True
         real_value = min(self.size, value)
         self.size -= real_value
         return real_value * self._world.constants.FOOD_SIZE_TO_ENERGY_RATIO
@@ -40,7 +52,7 @@ class Food(object):
         return self._smell
 
 
-class Mammoth(object):
+class Mammoth(WorldObject):
     def __init__(self, world, x, y, size):
         self._world = world
         self.x = x
@@ -50,7 +62,7 @@ class Mammoth(object):
         self.smell_size = self.size * self._world.constants.MAMMOTH_SMELL_SIZE_RATIO
         self.life = 1
 
-    def beating(self, value):
+    def to_be_bitten(self, value):
         self.life -= self._world.constants.MAMMOTH_BEAT_VALUE
         return 0
 
@@ -58,7 +70,7 @@ class Mammoth(object):
         self.life = min(1.0, self.life + self._world.constants.MAMMOTH_REGENERATION_VALUE)
 
 
-class Animal(object):
+class Animal(WorldObject):
     def __init__(self, world, dna="", parents=None, save_genealogy=False):
         self.world = world
         self._dna = dna
@@ -177,7 +189,7 @@ class Animal(object):
             self.world.constants.EATING_VALUE,
             max(0, self.world.constants.ANIMAL_MAX_ENERGY - self.energy) / self.world.constants.FOOD_SIZE_TO_ENERGY_RATIO
         )
-        energy = food.beating(value)
+        energy = food.to_be_bitten(value)
         self.energy += energy
 
     def move(self, move, rotate):
@@ -206,9 +218,9 @@ class Animal(object):
         self._y = value
         self._sensors_positions_calculated = False
 
-    @property
-    def smell(self):
-        return self._smell
+    # @property
+    # def smell(self):
+    #     return self._smell
 
     @property
     def energy_fullness(self):
@@ -220,15 +232,11 @@ class Animal(object):
 
 
 def create_random_dna(constants):
-    return "".join([str(randint(0, constants.DNA_BASE - 1)) for _ in range(constants.DNA_LEN)])
+    return "".join(str(randint(0, constants.DNA_BASE - 1)) for _ in range(constants.DNA_LEN))
 
 
 def mutate_dna(dna, constants):
-    dna_ba = bytearray(dna, 'utf8')
-    for i in range(len(dna_ba)):
-        if random() < constants.MUTATE_CHANCE:
-            dna_ba[i] = ord(str(randint(0, constants.DNA_BASE - 1)))
-    return dna_ba.decode('utf8')
+    return ''.join(str(randint(0, constants.DNA_BASE - 1)) if random() < constants.MUTATE_CHANCE else c for c in dna)
 
 
 def mix_dna(dna1, dna2, constants):
