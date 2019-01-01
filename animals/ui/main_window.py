@@ -18,7 +18,7 @@ from ui.population_graph_window import PopulationGraphWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    _PERFORMANCE_CALC_INTERVAL = 20
+    _PERFORMANCE_CALC_INTERVAL = 100
     TIMER_INTERVAL = 1
 
     def __init__(self, parent=None):
