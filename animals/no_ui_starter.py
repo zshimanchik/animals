@@ -27,6 +27,7 @@ class NoUiStarter:
         :param max_cycle: 0 for endless emulation
         :param path_for_snapshots:
         """
+        assert save_world_each != 0
         self.process_count = process_count
         self.save_world_each = save_world_each
         self.max_cycle = max_cycle
@@ -42,22 +43,32 @@ class NoUiStarter:
         logging.info("DONE")
 
     def worker(self, args: WorkerArgs):
-        logging.info("{} started".format(args.world_name))
-        start_time = time.perf_counter()
+        logging.info(f'World {args.world_name} has been started')
         if args.world_constants:
             world = World(args.world_constants)
         else:
             world = serializer.load(args.world_save)
         analyzer = MammothAnalyzer(world)
+
+        world_start_time = world.time
+        start_time = prev_save_time = time.perf_counter()
         while True:
             if world.time % self.save_world_each == 0:
-                elapsed = time.perf_counter() - start_time
-                performance = (time.perf_counter()-start_time) / self.save_world_each
-                logging.info(f'{args.world_name}: '
-                      f'{world.time} ticks calculated. '
-                      f'{elapsed:.3f}s elapsed. '
-                      f'{performance:.7f} performance')
+                now = time.perf_counter()
+                total_elapsed = now - start_time
+                total_performance = total_elapsed / ((world.time - world_start_time) or 1)
+                elapsed = now - prev_save_time
+                performance = elapsed / self.save_world_each
+                logging.info(
+                    f'{args.world_name}: '
+                    f'{world.time} wtime, '
+                    f'{elapsed:.3f}s elapsed, '
+                    f'{performance:.6f} performance, '
+                    f'{total_elapsed:.3f}s total elapsed, '
+                    f'{total_performance:.6f} total performance.'
+                )
                 self._save_world(world, args.snapshot_dir)
+                prev_save_time = now
 
             world.update()
             analyzer.update()
@@ -68,10 +79,10 @@ class NoUiStarter:
             if self.max_cycle and world.time >= self.max_cycle:
                 break
 
-        performance = (time.perf_counter() - start_time) / self.max_cycle
+        total_performance = (time.perf_counter() - start_time) / ((world.time - world_start_time) or 1)
 
         self._save_world(world, args.snapshot_dir)
-        logging.info("{} ended with average performance={}".format(args.world_name, performance))
+        logging.info(f'World {args.world_name} has finished with average performance: {total_performance}')
 
     def add_new_world(self, world_constants, world_name):
         snapshot_dir = self._prepare_snapshot_dir(world_name, world_constants)
@@ -112,12 +123,12 @@ if __name__ == '__main__':
 
     starter = NoUiStarter(
         process_count=4,
-        save_world_each=50_000,
+        save_world_each=5_000,
         max_cycle=0,
         path_for_snapshots='./snapshots/'
     )
 
-    for i in range(6):
+    for i in range(1):
         starter.add_new_world(WorldConstants(), f'world_n{i:02}')
 
     starter.start()
