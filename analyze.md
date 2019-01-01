@@ -202,3 +202,28 @@ self.MAMMOTH_REGENERATION_VALUE = 0.005
 
 К тому же реакция образуется не наверняка и не стабильно, что затрудняет "составлении сетки".
 
+#### f69939e7 master
+
+Запустил 30 эмуляций с максимально продолжительностью 5 000 000 итераций. C такой же целью, как в прошлый раз.
+До 1 000 000 итераций достигли 8 миров, до 5 000 000 интераций 19 миров достигли нужного поведения.
+
+- World world_n6  got reaction at 32 595
+- World world_n9  got reaction at 50 401
+- World world_n4  got reaction at 74 895
+- World world_n1  got reaction at 146 610
+- World world_n7  got reaction at 188 333
+- World world_n17 got reaction at 412 591
+- World world_n29 got reaction at 550 933
+- World world_n14 got reaction at 714 961
+- World world_n25 got reaction at 972 465
+- World world_n0  got reaction at 1 950 433
+- World world_n10 got reaction at 2 192 841
+- World world_n21 got reaction at 2 235 433
+- World world_n15 got reaction at 2 524 155
+- World world_n24 got reaction at 2 645 035
+- World world_n22 got reaction at 2 987 927
+- World world_n2  got reaction at 3 268 790
+- World world_n16 got reaction at 3 461 027
+- World world_n19 got reaction at 4 125 106
+- World world_n3  got reaction at 4 624 136
+
