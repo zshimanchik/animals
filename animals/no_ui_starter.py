@@ -15,12 +15,18 @@ from engine.world_constants import WorldConstants
 
 # I know... Don't look at this file
 
-WorkerArgs = namedtuple('WorkerArgs', ['world_constants', 'world_name', 'snapshot_dir'])
+WorkerArgs = namedtuple('WorkerArgs', ['world_constants', 'world_save', 'world_name', 'snapshot_dir'])
 
 
 class NoUiStarter:
 
     def __init__(self, process_count, save_world_each, max_cycle, path_for_snapshots):
+        """
+        :param process_count:
+        :param save_world_each:
+        :param max_cycle: 0 for endless emulation
+        :param path_for_snapshots:
+        """
         self.process_count = process_count
         self.save_world_each = save_world_each
         self.max_cycle = max_cycle
@@ -38,7 +44,10 @@ class NoUiStarter:
     def worker(self, args: WorkerArgs):
         logging.info("{} started".format(args.world_name))
         start_time = time.perf_counter()
-        world = World(args.world_constants)
+        if args.world_constants:
+            world = World(args.world_constants)
+        else:
+            world = serializer.load(args.world_save)
         analyzer = MammothAnalyzer(world)
         while True:
             if world.time % self.save_world_each == 0:
@@ -64,17 +73,22 @@ class NoUiStarter:
         self._save_world(world, args.snapshot_dir)
         logging.info("{} ended with average performance={}".format(args.world_name, performance))
 
-    def add_world(self, world_constants, world_name):
-        snapshot_dir = self._prepare_snapshot_dir(world_constants, world_name)
-        self.world_constant_list.append(WorkerArgs(world_constants, world_name, snapshot_dir))
+    def add_new_world(self, world_constants, world_name):
+        snapshot_dir = self._prepare_snapshot_dir(world_name, world_constants)
+        self.world_constant_list.append(WorkerArgs(world_constants, None, world_name, snapshot_dir))
 
-    def _prepare_snapshot_dir(self, world_constants, world_name):
+    def add_saved_world(self, world_save, world_name):
+        snapshot_dir = self._prepare_snapshot_dir(world_name)
+        self.world_constant_list.append(WorkerArgs(None, world_save, world_name, snapshot_dir))
+
+    def _prepare_snapshot_dir(self, world_name, world_constants=None):
         now = datetime.datetime.now().strftime("%FT%T")
         subdir_name = f'{now}--{self.git_commit}--{world_name}'
         snapshot_dir = os.path.join(self.path_for_snapshots, subdir_name)
         os.makedirs(snapshot_dir, exist_ok=True)
-        with open(os.path.join(snapshot_dir, 'world_params.json'), 'w') as f:
-            json.dump(world_constants.to_dict(), f, indent=2)
+        if world_constants is not None:
+            with open(os.path.join(snapshot_dir, 'world_params.json'), 'w') as f:
+                json.dump(world_constants.to_dict(), f, indent=2)
         return snapshot_dir
 
     def _save_world(self, world, snapshot_dir):
@@ -99,11 +113,11 @@ if __name__ == '__main__':
     starter = NoUiStarter(
         process_count=4,
         save_world_each=50_000,
-        max_cycle=1_000_000,
+        max_cycle=0,
         path_for_snapshots='./snapshots/'
     )
 
     for i in range(6):
-        starter.add_world(WorldConstants(), f'world_n{i}')
+        starter.add_new_world(WorldConstants(), f'world_n{i:02}')
 
     starter.start()
