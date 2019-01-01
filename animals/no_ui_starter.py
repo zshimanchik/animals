@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import multiprocessing as mp
 import os
 import resource
@@ -28,14 +29,14 @@ class NoUiStarter:
         self.world_constant_list = []
 
     def start(self):
-        print(f"{self.process_count} processes")
-        print("START")
+        logging.info(f"{self.process_count} processes")
+        logging.info("START")
         pool = mp.Pool(processes=self.process_count)
         pool.map(self.worker, self.world_constant_list)
-        print("DONE")
+        logging.info("DONE")
 
     def worker(self, args: WorkerArgs):
-        print("{} started".format(args.world_name))
+        logging.info("{} started".format(args.world_name))
         start_time = time.perf_counter()
         world = World(args.world_constants)
         analyzer = MammothAnalyzer(world)
@@ -44,7 +45,7 @@ class NoUiStarter:
             if world.time % self.save_world_each == 0:
                 elapsed = time.perf_counter() - start_time
                 performance = (time.perf_counter()-start_time) / self.save_world_each
-                print(f'{args.world_name}: '
+                logging.info(f'{args.world_name}: '
                       f'{world.time} ticks calculated. '
                       f'{elapsed:.3f}s elapsed. '
                       f'{performance:.7f} performance')
@@ -60,7 +61,7 @@ class NoUiStarter:
         performance = (time.perf_counter() - start_time) / self.max_cycle
 
         self._save_world(world, args.snapshot_dir)
-        print("{} ended with average performance={}".format(args.world_name, performance))
+        logging.info("{} ended with average performance={}".format(args.world_name, performance))
 
     def add_world(self, world_constants, world_name):
         snapshot_dir = self._prepare_snapshot_dir(world_constants, world_name)
@@ -77,14 +78,16 @@ class NoUiStarter:
 
     def _save_world(self, world, snapshot_dir):
         filename = os.path.join(snapshot_dir, f'{world.time}.wrld')
-        print(f'saving {filename}')
+        logging.info(f'saving {filename}')
         serializer.save(world, filename)
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format= '[%(asctime)s]: %(message)s')
+
     # Increasing size of stack to be able to pickle
-    print(resource.getrlimit(resource.RLIMIT_STACK))
-    print(sys.getrecursionlimit())
+    logging.info(resource.getrlimit(resource.RLIMIT_STACK))
+    logging.info(sys.getrecursionlimit())
 
     max_rec = 0x100000
 
