@@ -83,7 +83,7 @@ class World(object):
 
         self._add_new_animals()
         self._remove_dead_animals()
-        self._clear_empty_food()
+        self._remove_empty_food()
         self._transform_dead_mammoths()
 
         self._add_food_if_necessary()
@@ -170,14 +170,10 @@ class World(object):
         self.animals_to_add = []
 
     def _remove_dead_animals(self):
-        for animal in self.animals[:]:
-            if animal.energy <= 0:
-                self.animals.remove(animal)
+        self.animals = [animal for animal in self.animals if animal.energy > 0]
 
-    def _clear_empty_food(self):
-        for food in self.food[:]:
-            if food.size <= 0:
-                self.food.remove(food)
+    def _remove_empty_food(self):
+        self.food = [food for food in self.food if food.size > 0]
 
     def _transform_dead_mammoths(self):
         for mammoth in self.mammoths[:]:
