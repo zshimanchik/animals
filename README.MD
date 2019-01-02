@@ -1,6 +1,5 @@
-Do not try to run **master** branch.
+Hard to explain
 
-use branches: 
-**only-food
-colored-food
-food-and-mammoths**
+RTFM https://programmers-thoughts.blogspot.com/
+
+Read analysis in the file [analyze.md](analyze.md) 
