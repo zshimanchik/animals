@@ -76,7 +76,7 @@ class GraphicsWindow(Ui_graphics_window, QtWidgets.QMainWindow):
             prev = cur
 
     def on_widget_1_wheelEvent(self, event):
-        d = - event.delta() / 120
+        d = - event.angleDelta().y() / 120
         self.food.freq += d
         self.population.freq += d
 
