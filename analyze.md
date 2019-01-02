@@ -1,7 +1,9 @@
 # Analysis
 
-## Previous version
-Git source: https://github.com/zshimanchik/iron-unconditioned-reflexes
+## Repo versions
+- Version 1: https://github.com/zshimanchik/unconditioned-reflexes
+- Version 2: https://github.com/zshimanchik/iron-unconditioned-reflexes
+- Current: https://github.com/zshimanchik/animals  
 
 ### Мамонты: идея
 
@@ -20,7 +22,7 @@ Git source: https://github.com/zshimanchik/iron-unconditioned-reflexes
 обычной пище, а во вторую очередь к мамонту. Чего в последствии удавалось достичь, но интерес привлекал, видимо, 
 как и почему это поведение возникало.
 
-#### 1e0cd22
+#### 1e0cd22 repo:iron-unconditioned-reflexes
 
 Мамонты появляются лишь на половине экрана, что должно создать надёжную зону для выживания.
 
@@ -44,7 +46,7 @@ Git source: https://github.com/zshimanchik/iron-unconditioned-reflexes
 умирали, но пару раз всё-таки по воле случая мимо проходили другие энималы и валили мамонта, после чего все ближайшие 
 энималы сбегались и ибыстро съедали что получилось.
 
-#### d4d3439
+#### d4d3439 repo:iron-unconditioned-reflexes
 
 за 10 часов записи сменилось 16 миров. Не выживает первое поколение. Не равномерное было увеличение размера мира, 
 количество старовой пищи и стартовая популяция энималов.
@@ -71,7 +73,7 @@ Git source: https://github.com/zshimanchik/iron-unconditioned-reflexes
 
 Вывод: фиксить баг.
 
-#### 822d59c
+#### 822d59c repo:iron-unconditioned-reflexes
 
 Чтож мир стал вполне стабильным. В левой части всегда благоприятная зона и популяция там всегда большая, в правой - 
 наоборот, но есть мамонты. за 400 000 циклов было много убийств мамонтов, но я по моему мнению они были в основном 
@@ -82,17 +84,12 @@ Git source: https://github.com/zshimanchik/iron-unconditioned-reflexes
 сообщать. сейчас я испытываю большой дискомфорт в записывании моделирования мира. ибо я не могу что0то еще делать за 
 компом пока оно включено.
 
-#### d59c4ec
+#### d59c4ec repo:iron-unconditioned-reflexes
 
 Возможно стоило бы добавлять новых мамонтов подальше от существующих, чтобы не образовывалось групп, которых сложно 
 завалить. Значения MAMMOTH_BEAT_VALUE и MAMMOTH_REGENERATION_VALUE считаю приемлимыми.  и возможно для того, чтобы они 
 эволюционировали нужно больше времени. Но эта запись заняла 9 часов на ~225000 циклов. стоит либо увеличить 
 производительность, либо создать запись мира, что более желательно.
-
-
-## New version.
-
-Git source: https://github.com/zshimanchik/animals
 
 #### 47db711
 
