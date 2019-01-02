@@ -47,9 +47,7 @@ class WorldConstants(object):
         self.DNA_BASE = 4  # must be less or equals than 10, but greater than 1
         self.DNA_BRAIN_VALUE_LEN = 5
 
-        self.READINESS_TO_SEX_THRESHOLD = 30
-        self.READINESS_TO_SEX_INCREMENT = 0.2
-        self.ENERGY_FULLNESS_TO_INCREASE_READINESS_TO_SEX = 0.7
+        self.ENERGY_THRESHOLD_FOR_SEX = 0.7
         self.ENERGY_FOR_BIRTH = 5
         self.MIN_AMOUNT_OF_CHILDREN = 1
         self.MAX_AMOUNT_OF_CHILDREN = 3

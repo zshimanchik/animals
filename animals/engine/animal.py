@@ -88,7 +88,6 @@ class Animal(WorldObject):
         self._sensors_positions_calculated = False
 
         self.energy = self.world.constants.ENERGY_FOR_BIRTH
-        self.readiness_to_sex = 0
         self.close_partners = []
         self.answer = []
 
@@ -122,9 +121,6 @@ class Animal(WorldObject):
 
         self.energy -= self.world.constants.ENERGY_FOR_EXIST
 
-        if self.energy_fullness > self.world.constants.ENERGY_FULLNESS_TO_INCREASE_READINESS_TO_SEX:
-            self.readiness_to_sex += self.world.constants.READINESS_TO_SEX_INCREMENT
-
         if self.is_ready_to_sex():
             self._search_partner_and_try_to_sex()
 
@@ -132,7 +128,7 @@ class Animal(WorldObject):
         self.move(self.answer[0], self.answer[1])
 
     def is_ready_to_sex(self):
-        return self.readiness_to_sex >= self.world.constants.READINESS_TO_SEX_THRESHOLD
+        return self.energy_fullness >= self.world.constants.ENERGY_THRESHOLD_FOR_SEX
 
     def _search_partner_and_try_to_sex(self):
         for partner in self.close_partners:
@@ -161,9 +157,6 @@ class Animal(WorldObject):
 
         for _ in range(child_count):
             mother.make_child(father)
-
-        mother.readiness_to_sex = 0
-        father.readiness_to_sex = 0
 
     def can_make_n_children(self, child_count):
         return child_count * self.world.constants.ENERGY_FOR_BIRTH <= self.energy
