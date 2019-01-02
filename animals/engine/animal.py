@@ -138,10 +138,11 @@ class Animal(WorldObject):
 
     def be_requested_for_sex(self, partner):
         if self.is_ready_to_sex():
-            self.sex(partner)
+            Animal.sex(self, partner)
             return True
         return False
 
+    @staticmethod
     def sex(mother, father):
         child_count = randint(
             mother.world.constants.MIN_AMOUNT_OF_CHILDREN,
@@ -156,11 +157,12 @@ class Animal(WorldObject):
             father.energy = 0
 
         for _ in range(child_count):
-            mother.make_child(father)
+            Animal.make_child(mother, father)
 
     def can_make_n_children(self, child_count):
         return child_count * self.world.constants.ENERGY_FOR_BIRTH <= self.energy
 
+    @staticmethod
     def make_child(mother, father):
         mother.energy -= mother.world.constants.ENERGY_FOR_BIRTH
         father.energy -= mother.world.constants.ENERGY_FOR_BIRTH
