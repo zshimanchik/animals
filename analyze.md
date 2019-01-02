@@ -229,6 +229,9 @@ self.MAMMOTH_REGENERATION_VALUE = 0.005
 Запустил 30 эмуляций с максимально продолжительностью 5 000 000 итераций. C такой же целью, как в прошлый раз.
 До 1 000 000 итераций достигли 8 миров, до 5 000 000 интераций 19 миров достигли нужного поведения.
 
+Обновление **072d311**: Продолжил вычисление миров, что не достигли нужного поведения за 5кк итераций, **все 30 
+миров** достигли этого поведения. Обновил список.
+
 - World world_n6  got reaction at 32 595
 - World world_n9  got reaction at 50 401
 - World world_n4  got reaction at 74 895
@@ -248,6 +251,23 @@ self.MAMMOTH_REGENERATION_VALUE = 0.005
 - World world_n16 got reaction at 3 461 027
 - World world_n19 got reaction at 4 125 106
 - World world_n3  got reaction at 4 624 136
+- World world_n27 got reaction at 5 483 442
+- World world_n28 got reaction at 5 710 481
+- World world_n11 got reaction at 7 718 059
+- World world_n5  got reaction at 8 788 360
+- World world_n13 got reaction at 9 077 027
+- World world_n20 got reaction at 9 193 164
+- World world_n8  got reaction at 10 049 096
+- World world_n26 got reaction at 10 509 236
+- World world_n23 got reaction at 10 822 015
+- World world_n18 got reaction at 16 446 545
+- World world_n12 got reaction at 18 028 088
+
+Среднее: 4 832 806
+Медиана: 3 128 358
+
+![botplot of reaction time](analyze_assets/f69939e7_boxplot.png "Boxplot of reaction time")
+
 
 ### Мамонты: вывод
 
