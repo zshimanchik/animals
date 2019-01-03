@@ -1,13 +1,16 @@
-import random
 from collections import deque
 
+import numpy as np
 import pyqtgraph
 from PyQt5 import QtWidgets
+
+from engine.world import World
 
 
 class GraphicsWindow(QtWidgets.QMainWindow):
     def __init__(self, world, parent=None):
         super().__init__(parent=parent)
+        assert isinstance(world, World)
         self._world = world
 
         self.centralwidget = QtWidgets.QWidget(self)
@@ -27,24 +30,24 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         self.animals_curve = self.animals_plot.plot(self.animals_history, pen=(255, 0, 0), name="Animals")
         self.animals_curve.setPos(self.world.time, 0)
 
-        self.guiplot = pyqtgraph.PlotWidget()
-        self.guiplot.enableAutoRange()
+        self.animals_deaths_plot = pyqtgraph.PlotWidget()
+        self.animals_deaths_plot.enableAutoRange()
 
         self.energy_for_birth_plot = pyqtgraph.PlotWidget()
-        self.energy_for_birth_plot.enableAutoRange()
+        self.energy_for_birth_plot.setXRange(
+            self.world.constants.ENERGY_FOR_BIRTH_MIN,
+            self.world.constants.ENERGY_FOR_BIRTH_MAX
+        )
+        self.energy_for_birth_plot.enableAutoRange('y')
 
         self.centralwidget_layout.addWidget(self.food_plot)
         self.centralwidget_layout.addWidget(self.animals_plot)
-        self.centralwidget_layout.addWidget(self.guiplot)
+        self.centralwidget_layout.addWidget(self.animals_deaths_plot)
         self.centralwidget_layout.addWidget(self.energy_for_birth_plot)
         self.setCentralWidget(self.centralwidget)
 
     def showEvent(self, QShowEvent):
-        x = [animal.energy_for_birth for animal in self.world.animals]
-        y = [random.normalvariate(0, 0.002) for _ in range(len(self.world.animals))]
-        self.energy_for_birth_plot.plot(
-            x, y, pen=None, symbol='t', symbolPen=None, symbolSize=10, symbolBrush=(100, 100, 255, 170), clear=True
-        )
+        pass
 
     @property
     def world(self):
@@ -58,10 +61,13 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         self.food_history.append(len(self.world.food))
         self.animals_history.append(len(self.world.animals))
 
+    def redraw(self):
         self.food_curve.setData(self.food_history)
         self.animals_curve.setData(self.animals_history)
+        self.animals_deaths_plot.plot([x[1] for x in self.world.animal_deaths], clear=True)
 
-        self.guiplot.plot([x[1] for x in self.world.animal_deaths], clear=True)
-
-    def redraw(self):
-        pass
+        y, x = np.histogram(
+            [animal.energy_for_birth for animal in self.world.animals],
+            bins=np.linspace(self.world.constants.ENERGY_FOR_BIRTH_MIN, self.world.constants.ENERGY_FOR_BIRTH_MAX, 40)
+        )
+        self.energy_for_birth_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150), clear=True)
