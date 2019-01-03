@@ -1,4 +1,4 @@
-import math
+﻿import math
 from random import random, randint
 
 from engine.brain import create_brain
@@ -96,14 +96,27 @@ class Animal(WorldObject):
             self._dna = create_random_dna(self.world.constants)
 
         self.brain = create_brain(self._dna, self.world.constants)
-        self._extract_energy_for_birth_from_dna(self._dna)
+        self._extract_energy_for_birth_from_dna()
+        self._extract_useless_param()
 
-    def _extract_energy_for_birth_from_dna(self, dna):
-        energy_for_birth_raw_int = int(self._dna[-4:], base=self.world.constants.DNA_BASE)
-        # scale to [0;1]
-        energy_for_birth_raw_normalized = energy_for_birth_raw_int / (4 ** self.world.constants.DNA_BASE)
-        self.energy_for_birth = self.world.constants.ENERGY_FOR_BIRTH_DIFF * energy_for_birth_raw_normalized \
-                                + self.world.constants.ENERGY_FOR_BIRTH_MIN
+    def _extract_energy_for_birth_from_dna(self):
+        self.energy_for_birth = self._dna_to_number(
+            self._dna[-8:-4],
+            self.world.constants.ENERGY_FOR_BIRTH_MIN,
+            self.world.constants.ENERGY_FOR_BIRTH_MAX
+        )
+
+    def _extract_useless_param(self):
+        self.useless_param = self._dna_to_number(
+            self._dna[-4:],
+            self.world.constants.ENERGY_FOR_BIRTH_MIN,
+            self.world.constants.ENERGY_FOR_BIRTH_MAX
+        )
+
+    def _dna_to_number(self, dna, min_value, max_value):
+        raw_int = int(dna, base=self.world.constants.DNA_BASE)
+        raw_scaled = raw_int / (len(dna) ** self.world.constants.DNA_BASE)  # scaled to [0;1]
+        return raw_scaled * (max_value - min_value) + min_value
 
     @property
     def sensors_positions(self):
@@ -238,7 +251,7 @@ class Animal(WorldObject):
 
 def create_random_dna(constants):
     result = "".join(str(randint(0, constants.DNA_BASE - 1)) for _ in range(constants.DNA_LEN))
-    result = result[:-4] + '1333'  # just for everybody starts with the same energy_for_birth
+    result = result[:-8] + '13331333'  # just for everybody starts with the same energy_for_birth
     return result
 
 
