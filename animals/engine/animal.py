@@ -1,4 +1,4 @@
-import math
+﻿import math
 from random import random, randint
 
 from engine.brain import create_brain
@@ -71,7 +71,7 @@ class Mammoth(WorldObject):
 
 
 class Animal(WorldObject):
-    def __init__(self, world, dna="", parents=None, save_genealogy=False):
+    def __init__(self, world, energy, dna="", parents=None, save_genealogy=False):
         self.world = world
         self._dna = dna
         self.parents = parents or []
@@ -88,7 +88,7 @@ class Animal(WorldObject):
         self._sensors_positions = []
         self._sensors_positions_calculated = False
 
-        self.energy = self.world.constants.ENERGY_FOR_BIRTH
+        self.energy = energy
         self.close_partners = []
         self.answer = []
 
@@ -96,7 +96,15 @@ class Animal(WorldObject):
             self._dna = create_random_dna(self.world.constants)
 
         self.brain = create_brain(self._dna, self.world.constants)
-        
+        self._extract_energy_for_birth_from_dna(self._dna)
+
+    def _extract_energy_for_birth_from_dna(self, dna):
+        energy_for_birth_raw_int = int(self._dna[-4:], base=self.world.constants.DNA_BASE)
+        # scale to [0;1]
+        energy_for_birth_raw_normalized = energy_for_birth_raw_int / (4 ** self.world.constants.DNA_BASE)
+        self.energy_for_birth = self.world.constants.ENERGY_FOR_BIRTH_DIFF * energy_for_birth_raw_normalized \
+                                + self.world.constants.ENERGY_FOR_BIRTH_MIN
+
     @property
     def sensors_positions(self):
         if not self._sensors_positions_calculated:
@@ -151,24 +159,25 @@ class Animal(WorldObject):
         )
         # if it tries to birth more child than it can - bud so many as it can and die.
         if not mother.can_make_n_children(child_count):
-            child_count = int(mother.energy / mother.world.constants.ENERGY_FOR_BIRTH)
+            child_count = int(mother.energy / mother.energy_for_birth)
             mother.energy = 0
         if not father.can_make_n_children(child_count):
-            child_count = int(father.energy / mother.world.constants.ENERGY_FOR_BIRTH)
+            child_count = int(father.energy / father.energy_for_birth)
             father.energy = 0
 
         for _ in range(child_count):
             Animal.make_child(mother, father)
 
     def can_make_n_children(self, child_count):
-        return child_count * self.world.constants.ENERGY_FOR_BIRTH <= self.energy
+        return child_count * self.energy_for_birth <= self.energy
 
     @staticmethod
     def make_child(mother, father):
-        mother.energy -= mother.world.constants.ENERGY_FOR_BIRTH
-        father.energy -= mother.world.constants.ENERGY_FOR_BIRTH
+        mother.energy -= mother.energy_for_birth
+        father.energy -= mother.energy_for_birth
         child = Animal(
             mother.world,
+            mother.energy_for_birth + father.energy_for_birth,
             mix_dna(mother.dna, father.dna, mother.world.constants),
             parents=[mother, father] if mother.save_genealogy else None,
             save_genealogy=mother.save_genealogy,
@@ -228,7 +237,9 @@ class Animal(WorldObject):
 
 
 def create_random_dna(constants):
-    return "".join(str(randint(0, constants.DNA_BASE - 1)) for _ in range(constants.DNA_LEN))
+    result = "".join(str(randint(0, constants.DNA_BASE - 1)) for _ in range(constants.DNA_LEN))
+    result = result[:-4] + '1333'  # just for everybody starts with the same energy_for_birth
+    return result
 
 
 def mutate_dna(dna, constants):

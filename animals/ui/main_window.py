@@ -276,7 +276,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             painter.setPen(self._selected_animal_pen)
         else:
             painter.setPen(self._animal_pen)
-        painter.setBrush(self._animal_brush)
+        painter.setBrush(QBrush(get_color(animal.energy_for_birth / self.world.constants.ENERGY_FOR_BIRTH_DIFF)))
 
         size = animal.size * 2
         painter.drawEllipse(QRect(animal.x - animal.size, animal.y - animal.size, size, size))
@@ -341,3 +341,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         painter.drawEllipse(QRect(
             food.x - radius, food.y - radius, radius * 2, radius * 2
         ))
+
+
+def get_color(color):
+    r, g, b = max(0, -color), max(0, color), 0
+    return QColor(r * 255, g * 255, b * 255)

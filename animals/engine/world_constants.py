@@ -23,7 +23,7 @@ class WorldConstants(object):
         self.APPEAR_FOOD_SIZE_MAX = 7
         self.FOOD_SIZE_TO_ENERGY_RATIO = 1.5
 
-        self.MAMMOTH_COUNT = 5
+        self.MAMMOTH_COUNT = 0
         self.MAMMOTH_MIN_DISTANCE_TO_OTHERS = 80
         self.MAMMOTH_SMELL_SIZE_RATIO = 21.0
         self.MAMMOTH_BEAT_VALUE = 0.007
@@ -33,6 +33,8 @@ class WorldConstants(object):
         # Animal
 
         self.ANIMAL_MAX_ENERGY = 30
+        self.ANIMAL_WORLD_START_ENERGY = self.ANIMAL_MAX_ENERGY / 3
+
         self.ENERGY_FOR_EXIST = 0.007
         self.MOVE_DISTANCE_TO_CONSUMED_ENERGY_RATIO = 0.01
 
@@ -48,9 +50,11 @@ class WorldConstants(object):
         self.DNA_BRAIN_VALUE_LEN = 5
 
         self.ENERGY_THRESHOLD_FOR_SEX = 0.7
-        self.ENERGY_FOR_BIRTH = 5
+        self.ENERGY_FOR_BIRTH_MAX = 15
+        self.ENERGY_FOR_BIRTH_MIN = 0
+
         self.MIN_AMOUNT_OF_CHILDREN = 1
-        self.MAX_AMOUNT_OF_CHILDREN = 3
+        self.MAX_AMOUNT_OF_CHILDREN = 1
 
         self.MUTATE_CHANCE = 0.05
 
@@ -83,7 +87,11 @@ class WorldConstants(object):
 
     @cached_property
     def DNA_LEN(self):
-        return self.DNA_FOR_BRAIN_LEN
+        return self.DNA_FOR_BRAIN_LEN + 4
+
+    @cached_property
+    def ENERGY_FOR_BIRTH_DIFF(self):
+        return self.ENERGY_FOR_BIRTH_MAX - self.ENERGY_FOR_BIRTH_MIN
 
     def to_dict(self):
         result = {}

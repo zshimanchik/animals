@@ -1,4 +1,4 @@
-from collections import deque
+﻿from collections import deque
 from math import hypot
 from random import randint, random, gauss
 
@@ -30,7 +30,8 @@ class World(object):
 
     def restart(self):
         self.animals = [
-            Animal(self, save_genealogy=self.save_genealogy) for _ in range(self.constants.INITIAL_ANIMAL_COUNT)
+            Animal(self, self.constants.ANIMAL_WORLD_START_ENERGY, save_genealogy=self.save_genealogy)
+            for _ in range(self.constants.INITIAL_ANIMAL_COUNT)
         ]
         if self.save_genealogy:
             self.first_generation = self.animals.copy()
