@@ -1,4 +1,4 @@
-﻿import math
+import math
 from random import random, randint
 
 from engine.brain import create_brain
@@ -174,7 +174,7 @@ class Animal(WorldObject):
     @staticmethod
     def make_child(mother, father):
         mother.energy -= mother.energy_for_birth
-        father.energy -= mother.energy_for_birth
+        father.energy -= father.energy_for_birth
         child = Animal(
             mother.world,
             mother.energy_for_birth + father.energy_for_birth,
