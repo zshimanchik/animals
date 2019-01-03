@@ -40,10 +40,18 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         )
         self.energy_for_birth_plot.enableAutoRange('y')
 
+        self.useless_param_plot = pyqtgraph.PlotWidget()
+        self.useless_param_plot.setXRange(
+            self.world.constants.ENERGY_FOR_BIRTH_MIN,
+            self.world.constants.ENERGY_FOR_BIRTH_MAX
+        )
+        self.useless_param_plot.enableAutoRange('y')
+
         self.centralwidget_layout.addWidget(self.food_plot)
         self.centralwidget_layout.addWidget(self.animals_plot)
         self.centralwidget_layout.addWidget(self.animals_deaths_plot)
         self.centralwidget_layout.addWidget(self.energy_for_birth_plot)
+        self.centralwidget_layout.addWidget(self.useless_param_plot)
         self.setCentralWidget(self.centralwidget)
 
     def showEvent(self, QShowEvent):
@@ -66,8 +74,16 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         self.animals_curve.setData(self.animals_history)
         self.animals_deaths_plot.plot([x[1] for x in self.world.animal_deaths], clear=True)
 
-        y, x = np.histogram(
-            [animal.energy_for_birth for animal in self.world.animals],
-            bins=np.linspace(self.world.constants.ENERGY_FOR_BIRTH_MIN, self.world.constants.ENERGY_FOR_BIRTH_MAX, 40)
+        vals = np.array([animal.energy_for_birth for animal in self.world.animals])
+        y = pyqtgraph.pseudoScatter(vals, spacing=0.15)
+        self.energy_for_birth_plot.plot(
+            vals, y, pen=None, symbol='o', symbolSize=5, symbolPen=(255, 255, 255, 200), symbolBrush=(0, 0, 255, 150),
+            clear=True
         )
-        self.energy_for_birth_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150), clear=True)
+
+        vals = np.array([animal.useless_param for animal in self.world.animals])
+        y = pyqtgraph.pseudoScatter(vals, spacing=0.15)
+        self.useless_param_plot.plot(
+            vals, y, pen=None, symbol='o', symbolSize=5, symbolPen=(255, 255, 255, 200), symbolBrush=(0, 0, 255, 150),
+            clear=True
+        )
