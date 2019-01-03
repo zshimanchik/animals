@@ -1,4 +1,5 @@
-﻿from math import hypot
+from collections import deque
+from math import hypot
 from random import randint, random, gauss
 
 import numpy as np
@@ -23,6 +24,7 @@ class World(object):
         self.food = []
         self.mammoths = []
         self.time = 0
+        self.analysis_period = 20000
 
         self.restart()
 
@@ -36,6 +38,7 @@ class World(object):
         self.food = [self._make_random_food() for _ in range(self.constants.INITIAL_FOOD_COUNT)]
         self.mammoths = []
         self.time = 0
+        self.animal_deaths = deque()
 
     def _make_random_food(self):
         if self.constants.FOOD_GAUSS_DISTRIBUTION_SIGMA:  # gauss distribution if sigma was set
@@ -80,6 +83,7 @@ class World(object):
         self._calculate_animals_close_partners()
 
         self._update_animals()
+        self._analyze()
 
         self._add_new_animals()
         self._remove_dead_animals()
@@ -164,6 +168,14 @@ class World(object):
     def _update_animals(self):
         for animal in self.animals:
             animal.update()
+
+    def _analyze(self):
+        for animal in self.animals:
+            if animal.energy <= 0:
+                self.animal_deaths.append((self.time, self.time - animal.birth_time))
+        # remove entries that older than analysis period
+        while self.animal_deaths and self.animal_deaths[0][0] < self.time - self.analysis_period:
+            self.animal_deaths.popleft()
 
     def _add_new_animals(self):
         self.animals.extend(self.animals_to_add)

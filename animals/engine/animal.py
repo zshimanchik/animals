@@ -1,4 +1,4 @@
-﻿import math
+import math
 from random import random, randint
 
 from engine.brain import create_brain
@@ -76,6 +76,7 @@ class Animal(WorldObject):
         self._dna = dna
         self.parents = parents or []
         self.save_genealogy = save_genealogy
+        self.birth_time = self.world.time
         self.children = []
         self._x = randint(0, self.world.width)
         self._y = randint(0, self.world.height)

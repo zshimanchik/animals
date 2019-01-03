@@ -2,6 +2,7 @@ import datetime
 import math
 import os
 import time
+from statistics import mean
 
 from PyQt5.QtCore import QTimer, pyqtSlot as Slot, QRect, Qt, QPointF, QDir
 from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
@@ -158,7 +159,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._measure_performance()
         self.world.update()
         self.mammoth_analyzer.update()
-        if self.graphics_window:
+        if self.graphics_window and not self.graphics_window.isHidden():
             self.graphics_window.update()
         self._update_text_info()
         self._evoke_repaint_event()
@@ -180,6 +181,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.info_text.append(("Food count", len(self.world.food)))
         self.info_text.append(("Mammoth count", len(self.world.mammoths)))
         self.info_text.append(("Mammoth kills", f'{self.mammoth_analyzer.amount_of_killings:.5f}'))
+        avg_lifetime = mean(x[1] for x in self.world.animal_deaths) if self.world.animal_deaths else 0
+        self.info_text.append(("Animal lifetime", f'{avg_lifetime:.0f}'))
         self.info_label.setText('\n'.join('{:<15} {:<10}'.format(*args) for args in self.info_text))
         self.info_text.clear()
 
