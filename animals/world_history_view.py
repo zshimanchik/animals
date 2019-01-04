@@ -1,4 +1,5 @@
 import os
+import statistics
 import sys
 
 import numpy as np
@@ -52,9 +53,20 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         self.row = 0
 
     def plot_world(self, world):
-        self.plot_energy_for_birth(world, 1)
+        self.plot_metrics(world, 1)
+        self.plot_energy_for_birth(world, 2)
         # self.plot_new_animal_energy(world, 2)
         self.row += 1
+
+    def plot_metrics(self, world, column):
+        energies = [a.energy_for_birth for a in world.animals]
+        zeroes = len([x for x in energies if x == 0])
+        non_zeroes = len(world.animals) - zeroes
+        mean = statistics.mean(energies)
+        text = f'zeroes: {zeroes}\nrest:   {non_zeroes}\navg:    {mean:.2f}'
+
+        self.grid_layout.addWidget(QtWidgets.QLabel(text), self.row, column)
+
 
     def plot_energy_for_birth(self, world, column):
         energy_for_birth_plot = pyqtgraph.PlotWidget()
