@@ -33,6 +33,9 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         self.animals_deaths_plot = pyqtgraph.PlotWidget()
         self.animals_deaths_plot.enableAutoRange()
 
+        self.new_animals_energy_plot = pyqtgraph.PlotWidget()
+        self.new_animals_energy_plot.enableAutoRange()
+
         self.energy_for_birth_plot = pyqtgraph.PlotWidget()
         self.energy_for_birth_plot.setXRange(
             self.world.constants.ENERGY_FOR_BIRTH_MIN,
@@ -50,6 +53,7 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         self.centralwidget_layout.addWidget(self.food_plot)
         self.centralwidget_layout.addWidget(self.animals_plot)
         self.centralwidget_layout.addWidget(self.animals_deaths_plot)
+        self.centralwidget_layout.addWidget(self.new_animals_energy_plot)
         self.centralwidget_layout.addWidget(self.energy_for_birth_plot)
         self.centralwidget_layout.addWidget(self.useless_param_plot)
         self.setCentralWidget(self.centralwidget)
@@ -73,6 +77,7 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         self.food_curve.setData(self.food_history)
         self.animals_curve.setData(self.animals_history)
         self.animals_deaths_plot.plot([x[1] for x in self.world.animal_deaths], clear=True)
+        self.new_animals_energy_plot.plot([x[1] for x in self.world.new_animal_avg_energy], clear=True)
 
         vals = np.array([animal.energy_for_birth for animal in self.world.animals])
         y = pyqtgraph.pseudoScatter(vals, spacing=0.15)

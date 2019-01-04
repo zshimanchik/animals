@@ -40,6 +40,7 @@ class World(object):
         self.mammoths = []
         self.time = 0
         self.animal_deaths = deque()
+        self.new_animal_avg_energy = deque()
 
     def _make_random_food(self):
         if self.constants.FOOD_GAUSS_DISTRIBUTION_SIGMA:  # gauss distribution if sigma was set
@@ -177,6 +178,12 @@ class World(object):
         # remove entries that older than analysis period
         while self.animal_deaths and self.animal_deaths[0][0] < self.time - self.analysis_period:
             self.animal_deaths.popleft()
+
+        for animal in self.animals_to_add:
+            self.new_animal_avg_energy.append((self.time, animal.energy))
+        # remove entries that older than analysis period
+        while self.new_animal_avg_energy and self.new_animal_avg_energy[0][0] < self.time - self.analysis_period:
+            self.new_animal_avg_energy.popleft()
 
     def _add_new_animals(self):
         self.animals.extend(self.animals_to_add)
