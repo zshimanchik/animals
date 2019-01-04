@@ -123,12 +123,12 @@ if __name__ == '__main__':
 
     starter = NoUiStarter(
         process_count=4,
-        save_world_each=5_000,
+        save_world_each=100_000,
         max_cycle=0,
         path_for_snapshots='./snapshots/'
     )
 
-    for i in range(1):
+    for i in range(4):
         starter.add_new_world(WorldConstants(), f'world_n{i:02}')
 
     starter.start()
