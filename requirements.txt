@@ -1,5 +1,4 @@
 numpy
 scipy
 cached-property
-PyQt5
 wheel
