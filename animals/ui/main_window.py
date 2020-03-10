@@ -58,7 +58,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.on_timer_timeout)
         self.timer.start(self.TIMER_INTERVAL)
 
-        self._prev_time = time.clock()
+        self._prev_time = time.perf_counter()
 
     @Slot()
     def on_timer_button_clicked(self):
@@ -167,8 +167,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _measure_performance(self):
         if self.world.time % self._PERFORMANCE_CALC_INTERVAL == 0:
-            self.performance = (time.clock() - self._prev_time) / self._PERFORMANCE_CALC_INTERVAL
-            self._prev_time = time.clock()
+            self.performance = (time.perf_counter() - self._prev_time) / self._PERFORMANCE_CALC_INTERVAL
+            self._prev_time = time.perf_counter()
 
         if self.world.time == 200:
             print(self.performance)
