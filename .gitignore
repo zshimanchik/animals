@@ -4,3 +4,5 @@
 *.py[cod]
 __cache__
 /animals/snapshots/
+/google-credentials.json
+/development.env
