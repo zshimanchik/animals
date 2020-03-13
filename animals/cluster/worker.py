@@ -8,7 +8,7 @@ import time
 
 import pika
 
-import animals.cluster.google_serializer as serializer
+import cluster.google_serializer as serializer
 from engine.world import World
 from engine.world_constants import WorldConstants
 
