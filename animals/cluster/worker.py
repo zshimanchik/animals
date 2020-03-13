@@ -109,6 +109,15 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.WARNING, format=LOG_FORMAT, stream=sys.stdout)
     logger.setLevel(logging.DEBUG)
 
+    import google.cloud.logging
+
+    # Instantiates a client
+    client = google.cloud.logging.Client()
+
+    # Connects the logger to the root logging handler; by default this captures
+    # all logs at INFO level and higher
+    client.setup_logging()
+
     credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
     parameters = pika.ConnectionParameters(RABBITMQ_HOST, credentials=credentials, heartbeat=60)
     connection = pika.BlockingConnection(parameters)
