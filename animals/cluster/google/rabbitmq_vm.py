@@ -1,6 +1,6 @@
 COMPUTE_URL_BASE = 'https://www.googleapis.com/compute/v1/'
-REGION = 'europe-west4'
-ZONE = REGION + '-a'
+REGION = 'europe-west1'
+ZONE = REGION + '-b'
 
 container_manifest = '''
 spec:
