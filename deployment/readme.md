@@ -4,7 +4,7 @@ For local development you need to specify environment variables GOOGLE_APPLICATI
 
 0. Add project wide ssh key for `ubuntu` user.
 1. Set gcloud default project `gcloud config set project <my-project>`
-2. Deploy rabbitmq: `deploy_rabbitmq.sh`
+2. Deploy rabbitmq: `rabbitmq/deploy.sh`
 3. Create Metadata entry in Project. Compute Engine -> Metadata -> Edit -> Add
 Metadata:
     Name: `RABBITMQ`
