@@ -140,15 +140,21 @@ if __name__ == '__main__':
     import signal
     signal.signal(signal.SIGTERM, handle_sigterm)
 
+    import string
+    import random
+
+    worker_id = ''.join(random.choice(string.ascii_letters) for _ in range(10))
+
     import google.cloud.logging
     from google.cloud.logging.handlers.handlers import CloudLoggingHandler, EXCLUDED_LOGGER_DEFAULTS
     google_logging_client = google.cloud.logging.Client()
 
     stdout_handler = logging.StreamHandler(sys.stdout)
-    stdout_handler.setFormatter(Formatter('%(asctime)s [%(name)s:%(lineno)-3d] %(levelname)-7s: %(message)s'))
+    stdout_handler.setFormatter(Formatter(
+        f'%(asctime)s {worker_id} [%(name)s:%(lineno)-3d] %(levelname)-7s: %(message)s'))
 
     google_handler = CloudLoggingHandler(google_logging_client)
-    google_handler.setFormatter(Formatter('[%(name)s:%(lineno)-3d] %(levelname)-7s: %(message)s'))
+    google_handler.setFormatter(Formatter(f'{worker_id} [%(name)s:%(lineno)-3d] %(levelname)-7s: %(message)s'))
 
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
