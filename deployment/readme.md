@@ -1,3 +1,4 @@
+## Documentation (notes) for cluster deployment in google cloud
 
 For local development you need to specify environment variables GOOGLE_APPLICATION_CREDENTIALS, RABBITMQ_HOST
 
@@ -63,7 +64,11 @@ Autohealing: No health check
 12. Establish ssh tunnel to rabbitmq management server: `ssh -L 5672:localhost:5672 -L 15672:localhost:15672 ubuntu@<ip>`
 While this session open you can access RabbitMQ management WEB UI via http://localhost:15672/
 
-13. Add new task 
+13. Add new task
+Via script that will add job into task_queue and send command to pubsub to increate cluster size:
+`python publish.py gs://animals-cluster-1/world12/ 5000 1000`
+
+Or via rabbitmq WEB UI http://localhost:15672/, note it will not increase cluster size:
 Go to: Queues -> task_queue -> Publish message
 Example of body:
 `{"snapshot_dir": "gs://animals-cluster-1/world3/", "max_cycle": 5000, "cycle_amount": 1000}`
