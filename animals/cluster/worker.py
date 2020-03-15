@@ -9,6 +9,7 @@ import time
 import pika
 
 import cluster.google_serializer as serializer
+from cluster.publish import change_cluster_size
 from engine.world import World
 from engine.world_constants import WorldConstants
 
@@ -33,6 +34,8 @@ def ack_message(channel, delivery_tag, new_message=None):
                     delivery_mode=2,  # make message persistent
                 )
             )
+        else:
+            change_cluster_size(-1)
         channel.basic_ack(delivery_tag)
     else:
         # Channel is already closed, so we can't ACK this message;
