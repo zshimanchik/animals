@@ -19,6 +19,7 @@ RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', 'localhost')
 RABBITMQ_USER = os.environ.get('RABBITMQ_USER', 'guest')
 RABBITMQ_PASS = os.environ.get('RABBITMQ_PASS', 'guest')
 QUEUE_NAME = 'task_queue'
+SIGTERM = False
 
 
 def do_work_wrapper(connection, channel, delivery_tag, job):
@@ -30,6 +31,7 @@ def do_work_wrapper(connection, channel, delivery_tag, job):
 
 
 def do_work(connection, channel, delivery_tag, job):
+    global SIGTERM
     _LOGGER.info(f'Worker begin. Delivery tag: {delivery_tag}. Raw job: {job!r}')
     # Parse job
     job = json.loads(job)
@@ -60,11 +62,15 @@ def do_work(connection, channel, delivery_tag, job):
             stop_world = True
             break
 
+        if SIGTERM:
+            _LOGGER.warning("SIGTERM received in worker. Finishing it.")
+            break
+
     # Analyzing performance
     elapsed = time.time() - start_time
     performance = elapsed / ((world.time - world_start_time) or 1)
-    _LOGGER.info(f'World {save_path} calculated: {world.time} wtime, {elapsed:.3f}s elapsed, '
-                 f'{performance:.6f} performance')
+    _LOGGER.info(f'World: {save_path}, calculated: {world.time - world_start_time} ticks, '
+                 f'world.time: {world.time} ticks, elapsed: {elapsed:.3f}s, performance: {performance:.6f} s/tick')
     # Saving world
     save_path = os.path.join(snapshot_dir, f'{world.time}.wrld')
     _LOGGER.info(f'Saving {save_path}')
@@ -122,7 +128,18 @@ def harakiri():
     sys.exit(1)
 
 
+def handle_sigterm(signalNumber, frame):
+    global SIGTERM
+    _LOGGER.warning('Received SIGTERM: %s', signalNumber)
+    _LOGGER.info('Stopping consuming')
+    channel.stop_consuming()
+    SIGTERM = True
+
+
 if __name__ == '__main__':
+    import signal
+    signal.signal(signal.SIGTERM, handle_sigterm)
+
     import google.cloud.logging
     from google.cloud.logging.handlers.handlers import CloudLoggingHandler, EXCLUDED_LOGGER_DEFAULTS
     google_logging_client = google.cloud.logging.Client()
