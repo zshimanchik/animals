@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import subprocess as sp
+import sys
 
 from google.cloud import pubsub_v1
 import pika
@@ -18,7 +19,7 @@ def change_cluster_size(increment=1):
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path('animals-cluster-1', 'change-cluster-size')
     publisher.publish(topic_path, b'', increment=str(increment)).result()
-    print('Sent signal to increase cluster size')
+    logger.info('Sent signal to increase cluster size by %s', increment)
 
 
 def publish_job_to_queue(snapshot_dir, max_cycle, cycle_amount, latest_tick=None):
@@ -41,7 +42,7 @@ def publish_job_to_queue(snapshot_dir, max_cycle, cycle_amount, latest_tick=None
         properties=pika.BasicProperties(
             delivery_mode=2,  # make message persistent
         ))
-    print(" [x] Sent %r" % message)
+    logger.info("Sent message to rabbitmq: %s" % message)
     connection.close()
 
 
@@ -51,6 +52,10 @@ def get_git_hash():
 
 
 if __name__ == '__main__':
+    LOG_FORMAT = '%(asctime)s [%(name)s:%(lineno)-3d] %(levelname)-7s: %(message)s'
+    logging.basicConfig(level=logging.WARNING, format=LOG_FORMAT, stream=sys.stdout)
+    logger.setLevel(logging.INFO)
+
     parser = argparse.ArgumentParser()
     parser.add_argument("snapshot_dir", help="Path to bucket directory where results will be stored.")
     parser.add_argument("max_cycle", type=int, help="Limit of world time.")

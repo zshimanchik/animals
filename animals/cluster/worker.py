@@ -35,6 +35,7 @@ def ack_message(channel, delivery_tag, new_message=None):
                 )
             )
         else:
+            logger.info('Sending signal to decrease cluster size')
             change_cluster_size(-1)
         channel.basic_ack(delivery_tag)
     else:

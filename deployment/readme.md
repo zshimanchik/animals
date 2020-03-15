@@ -66,7 +66,7 @@ While this session open you can access RabbitMQ management WEB UI via http://loc
 
 13. Add new task
 Via script that will add job into task_queue and send command to pubsub to increate cluster size:
-`python publish.py gs://animals-cluster-1/world12/ 5000 1000`
+`python publish.py gs://animals-cluster-1/world_$(git rev-parse --short HEAD)_01/ 5000 1000`
 
 Or via rabbitmq WEB UI http://localhost:15672/, note it will not increase cluster size:
 Go to: Queues -> task_queue -> Publish message
