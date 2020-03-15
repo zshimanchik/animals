@@ -21,28 +21,12 @@ RABBITMQ_PASS = os.environ.get('RABBITMQ_PASS', 'guest')
 QUEUE_NAME = 'task_queue'
 
 
-def ack_message(channel, delivery_tag, new_message=None):
-    """Note that `channel` must be the same pika channel instance via which
-    the message being ACKed was retrieved (AMQP protocol constraint).
-    """
-    if channel.is_open:
-        if new_message is not None:
-            channel.basic_publish(
-                exchange='',
-                routing_key=QUEUE_NAME,
-                body=new_message,
-                properties=pika.BasicProperties(
-                    delivery_mode=2,  # make message persistent
-                )
-            )
-        else:
-            _LOGGER.info('Sending signal to decrease cluster size')
-            change_cluster_size(-1)
-        channel.basic_ack(delivery_tag)
-    else:
-        # Channel is already closed, so we can't ACK this message;
-        # log and/or do something that makes sense for your app in this case.
-        _LOGGER.error('Trying to ack_message, but channel is closed.')
+def do_work_wrapper(connection, channel, delivery_tag, job):
+    try:
+        return do_work(connection, channel, delivery_tag, job)
+    except Exception as ex:
+        _LOGGER.exception("Catched exception in do_work. %s. Doing harakiri.", ex, exc_info=ex)
+        connection.add_callback_threadsafe(harakiri)
 
 
 def do_work(connection, channel, delivery_tag, job):
@@ -103,15 +87,44 @@ def on_message(channel, method_frame, header_frame, body, args):
     (connection, threads) = args
     _LOGGER.info('on_message begin. delivery_tag=%r, body=%r', method_frame.delivery_tag, body)
     delivery_tag = method_frame.delivery_tag
-    t = threading.Thread(target=do_work, args=(connection, channel, delivery_tag, body))
+    t = threading.Thread(target=do_work_wrapper, args=(connection, channel, delivery_tag, body))
     t.start()
     threads.append(t)
     _LOGGER.info('on_message done. delivery_tag=%r', method_frame.delivery_tag)
 
 
+def ack_message(channel, delivery_tag, new_message=None):
+    """Note that `channel` must be the same pika channel instance via which
+    the message being ACKed was retrieved (AMQP protocol constraint).
+    """
+    if channel.is_open:
+        if new_message is not None:
+            channel.basic_publish(
+                exchange='',
+                routing_key=QUEUE_NAME,
+                body=new_message,
+                properties=pika.BasicProperties(
+                    delivery_mode=2,  # make message persistent
+                )
+            )
+        else:
+            _LOGGER.info('Sending signal to decrease cluster size')
+            change_cluster_size(-1)
+        channel.basic_ack(delivery_tag)
+    else:
+        # Channel is already closed, so we can't ACK this message;
+        # log and/or do something that makes sense for your app in this case.
+        _LOGGER.error('Trying to ack_message, but channel is closed.')
+
+
+def harakiri():
+    _LOGGER.error("Doing haraiki")
+    sys.exit(1)
+
+
 if __name__ == '__main__':
     import google.cloud.logging
-    from google.cloud.logging.handlers import CloudLoggingHandler, EXCLUDED_LOGGER_DEFAULTS
+    from google.cloud.logging.handlers.handlers import CloudLoggingHandler, EXCLUDED_LOGGER_DEFAULTS
     google_logging_client = google.cloud.logging.Client()
 
     stdout_handler = logging.StreamHandler(sys.stdout)
