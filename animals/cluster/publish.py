@@ -8,7 +8,7 @@ from google.cloud import pubsub_v1
 import pika
 import json
 
-logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 QUEUE = 'task_queue'
 RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', 'localhost')
 RABBITMQ_USER = os.environ.get('RABBITMQ_USER', 'guest')
@@ -19,7 +19,7 @@ def change_cluster_size(increment=1):
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path('animals-cluster-1', 'change-cluster-size')
     publisher.publish(topic_path, b'', increment=str(increment)).result()
-    logger.info('Sent signal to increase cluster size by %s', increment)
+    _LOGGER.info('Sent signal to increase cluster size by %s', increment)
 
 
 def publish_job_to_queue(snapshot_dir, max_cycle, cycle_amount, latest_tick=None):
@@ -42,7 +42,7 @@ def publish_job_to_queue(snapshot_dir, max_cycle, cycle_amount, latest_tick=None
         properties=pika.BasicProperties(
             delivery_mode=2,  # make message persistent
         ))
-    logger.info("Sent message to rabbitmq: %s" % message)
+    _LOGGER.info("Sent message to rabbitmq: %s" % message)
     connection.close()
 
 
@@ -54,7 +54,7 @@ def get_git_hash():
 if __name__ == '__main__':
     LOG_FORMAT = '%(asctime)s [%(name)s:%(lineno)-3d] %(levelname)-7s: %(message)s'
     logging.basicConfig(level=logging.WARNING, format=LOG_FORMAT, stream=sys.stdout)
-    logger.setLevel(logging.INFO)
+    _LOGGER.setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("snapshot_dir", help="Path to bucket directory where results will be stored.")

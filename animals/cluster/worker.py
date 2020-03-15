@@ -5,6 +5,7 @@ import os
 import sys
 import threading
 import time
+from logging import Formatter
 
 import pika
 
@@ -13,7 +14,7 @@ from cluster.publish import change_cluster_size
 from engine.world import World
 from engine.world_constants import WorldConstants
 
-logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', 'localhost')
 RABBITMQ_USER = os.environ.get('RABBITMQ_USER', 'guest')
 RABBITMQ_PASS = os.environ.get('RABBITMQ_PASS', 'guest')
@@ -35,17 +36,17 @@ def ack_message(channel, delivery_tag, new_message=None):
                 )
             )
         else:
-            logger.info('Sending signal to decrease cluster size')
+            _LOGGER.info('Sending signal to decrease cluster size')
             change_cluster_size(-1)
         channel.basic_ack(delivery_tag)
     else:
         # Channel is already closed, so we can't ACK this message;
         # log and/or do something that makes sense for your app in this case.
-        logger.error('Trying to ack_message, but channel is closed.')
+        _LOGGER.error('Trying to ack_message, but channel is closed.')
 
 
 def do_work(connection, channel, delivery_tag, job):
-    logger.info(f'Worker begin. Delivery tag: {delivery_tag}. Raw job: {job!r}')
+    _LOGGER.info(f'Worker begin. Delivery tag: {delivery_tag}. Raw job: {job!r}')
     # Parse job
     job = json.loads(job)
     snapshot_dir = job['snapshot_dir']
@@ -56,17 +57,17 @@ def do_work(connection, channel, delivery_tag, job):
     # Load or Create world
     if latest_tick:
         save_path = os.path.join(snapshot_dir, f'{latest_tick}.wrld')
-        logger.info(f'Loading from {save_path}')
+        _LOGGER.info(f'Loading from {save_path}')
         world = serializer.load(save_path)
     else:
-        logger.info(f'Creating new world {snapshot_dir}')
+        _LOGGER.info(f'Creating new world {snapshot_dir}')
         world = World(WorldConstants())
         save_path = os.path.join(snapshot_dir, '0.wrld')
         serializer.save(world, save_path)
 
     world_start_time = world.time
     stop_world = False
-    logger.info(f'World {save_path} calculating for {cycle_amount}. max_cycle {max_cycle}')
+    _LOGGER.info(f'World {save_path} calculating for {cycle_amount}. max_cycle {max_cycle}')
     start_time = time.time()
     # Calculate world
     for _ in range(cycle_amount):
@@ -78,11 +79,11 @@ def do_work(connection, channel, delivery_tag, job):
     # Analyzing performance
     elapsed = time.time() - start_time
     performance = elapsed / ((world.time - world_start_time) or 1)
-    logger.info(f'World {save_path} calculated: {world.time} wtime, {elapsed:.3f}s elapsed, '
+    _LOGGER.info(f'World {save_path} calculated: {world.time} wtime, {elapsed:.3f}s elapsed, '
                  f'{performance:.6f} performance')
     # Saving world
     save_path = os.path.join(snapshot_dir, f'{world.time}.wrld')
-    logger.info(f'Saving {save_path}')
+    _LOGGER.info(f'Saving {save_path}')
     serializer.save(world, save_path)
 
     # Preparing new job
@@ -90,37 +91,44 @@ def do_work(connection, channel, delivery_tag, job):
         job['latest_tick'] = world.time
         new_job = json.dumps(job)
     else:
-        logger.info(f'World {save_path} is finished')
+        _LOGGER.info(f'World {save_path} is finished')
         new_job = None
 
-    logger.info(f'Worker done. Delivery tag: {delivery_tag}. new_message: {new_job}')
+    _LOGGER.info(f'Worker done. Delivery tag: {delivery_tag}. new_message: {new_job}')
     cb = functools.partial(ack_message, channel, delivery_tag, new_message=new_job)
     connection.add_callback_threadsafe(cb)
 
 
 def on_message(channel, method_frame, header_frame, body, args):
     (connection, threads) = args
-    logger.info('on_message begin. delivery_tag=%r, body=%r', method_frame.delivery_tag, body)
+    _LOGGER.info('on_message begin. delivery_tag=%r, body=%r', method_frame.delivery_tag, body)
     delivery_tag = method_frame.delivery_tag
     t = threading.Thread(target=do_work, args=(connection, channel, delivery_tag, body))
     t.start()
     threads.append(t)
-    logger.info('on_message done. delivery_tag=%r', method_frame.delivery_tag)
+    _LOGGER.info('on_message done. delivery_tag=%r', method_frame.delivery_tag)
 
 
 if __name__ == '__main__':
-    LOG_FORMAT = '%(asctime)s [%(name)s:%(lineno)-3d] %(levelname)-7s: %(message)s'
-    logging.basicConfig(level=logging.WARNING, format=LOG_FORMAT, stream=sys.stdout)
-    logger.setLevel(logging.DEBUG)
-
     import google.cloud.logging
+    from google.cloud.logging.handlers import CloudLoggingHandler, EXCLUDED_LOGGER_DEFAULTS
+    google_logging_client = google.cloud.logging.Client()
 
-    # Instantiates a client
-    client = google.cloud.logging.Client()
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setFormatter(Formatter('%(asctime)s [%(name)s:%(lineno)-3d] %(levelname)-7s: %(message)s'))
 
-    # Connects the logger to the root logging handler; by default this captures
-    # all logs at INFO level and higher
-    client.setup_logging()
+    google_handler = CloudLoggingHandler(google_logging_client)
+    google_handler.setFormatter(Formatter('[%(name)s:%(lineno)-3d] %(levelname)-7s: %(message)s'))
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.addHandler(stdout_handler)
+    root_logger.addHandler(google_handler)
+
+    for logger_name in EXCLUDED_LOGGER_DEFAULTS:
+        logger = logging.getLogger(logger_name)
+        logger.propagate = False
+        logger.addHandler(stdout_handler)
 
     credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
     parameters = pika.ConnectionParameters(RABBITMQ_HOST, credentials=credentials, heartbeat=60)
@@ -134,13 +142,15 @@ if __name__ == '__main__':
     on_message_callback = functools.partial(on_message, args=(connection, threads))
     channel.basic_consume(queue=QUEUE_NAME, on_message_callback=on_message_callback)
 
-    logger.info('Listening for new messages from rabbitmq...')
+    _LOGGER.info('Listening for new messages from rabbitmq...')
     try:
         channel.start_consuming()
     except KeyboardInterrupt:
+        _LOGGER.info("KeyboardInterrupt sent. Stopping conusming RabbitMQ")
         channel.stop_consuming()
 
     # Wait for all to complete
+    _LOGGER.info("Waiting for all threads to finish")
     for thread in threads:
         thread.join()
 
