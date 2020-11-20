@@ -9,8 +9,7 @@ from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
 from analyzers import MammothAnalyzer
-from engine import world, serializer
-from engine.world_constants import WorldConstants
+from engine import serializer
 from ui.constants_window import ConstantsWindow
 from ui.graphics_window import GraphicsWindow
 from ui.main_window_ui import Ui_MainWindow
@@ -22,7 +21,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     _PERFORMANCE_CALC_INTERVAL = 100
     TIMER_INTERVAL = 1
 
-    def __init__(self, parent=None):
+    def __init__(self, world, parent=None):
         super().__init__(parent)
         self.info_text = []
         self.performance = 0
@@ -44,12 +43,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         snapshot_dir.mkpath('.')
         self.snapshot_directory_combobox.addItem(snapshot_dir.absolutePath())
 
-        world_constants = WorldConstants()
-        self.draw_widget.setFixedWidth(world_constants.WORLD_WIDTH)
-        self.draw_widget.setFixedHeight(world_constants.WORLD_HEIGHT)
+        self.world = world
 
-        self.world = world.World(constants=world_constants, save_genealogy=False)
-        self.mammoth_analyzer = MammothAnalyzer(self.world)
         self.draw_widget.paintEvent = self.on_draw_widget_paintEvent
         self.draw_widget.mousePressEvent = self.on_draw_widget_mousePressEvent
         self.draw_widget.mouseMoveEvent = self.on_draw_widget_mouseMoveEvent
@@ -59,6 +54,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.start(self.TIMER_INTERVAL)
 
         self._prev_time = time.perf_counter()
+
+    @property
+    def world(self):
+        return self._world
+
+    @world.setter
+    def world(self, new_world):
+        self._world = new_world
+
+        self.mammoth_analyzer = MammothAnalyzer(self.world)
+        if self.constants_window:
+            self.constants_window.constants = self.world.constants
+        if self.population_graph_window:
+            self.population_graph_window.world = self.world
+            self.population_graph_window.selected_animal = self.selected_animal
+
+        if self.graphics_window:
+            self.graphics_window.world = self.world
+
+        self.draw_widget.setFixedWidth(self.world.constants.WORLD_WIDTH)
+        self.draw_widget.setFixedHeight(self.world.constants.WORLD_HEIGHT)
 
     @Slot()
     def on_timer_button_clicked(self):
@@ -124,20 +140,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         new_world = serializer.load(filename)
-
         self.world = new_world
-        self.mammoth_analyzer = MammothAnalyzer(self.world)
-        if self.constants_window:
-            self.constants_window.constants = self.world.constants
-        if self.population_graph_window:
-            self.population_graph_window.world = self.world
-            self.population_graph_window.selected_animal = self.selected_animal
-
-        if self.graphics_window:
-            self.graphics_window.world = self.world
-
-        self.draw_widget.setFixedWidth(self.world.constants.WORLD_WIDTH)
-        self.draw_widget.setFixedHeight(self.world.constants.WORLD_HEIGHT)
 
     @Slot()
     def on_browse_snapshot_directory_button_clicked(self):
