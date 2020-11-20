@@ -79,7 +79,7 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtWidgets.QMainWindow):
             qp.drawEllipse(qcircle(*self.selected_animal._drawing_position, self.agent_size))
 
             qp.setPen(QPen(QColor(0, 0, 0), 1))
-            qp.setBrush(QBrush(QColor(100, 100, 250)))
+            qp.setBrush(QBrush(QColor(0, 0, 0)))
             qp.drawEllipse(qcircle(*self.selected_animal._drawing_position, 2))
             depth = self.depth_spinbox.value() or -1
             if self.ancestors_radio_button.isChecked():
@@ -103,7 +103,10 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtWidgets.QMainWindow):
         drawn[animal] = depth
         for parent in animal.parents:
             if hasattr(animal, '_drawing_position') and hasattr(parent, '_drawing_position'):
-                qp.drawLine(*animal._drawing_position, *parent._drawing_position)
+                if self.draw_lines_checkbox.isChecked():
+                    qp.setPen(QPen(QColor(125, 125, 125), 1))
+                    qp.drawLine(*animal._drawing_position, *parent._drawing_position)
+                qp.setPen(QPen(QColor(0, 0, 0), 1))
                 qp.drawEllipse(qcircle(*parent._drawing_position, 2))
                 if depth < 0 and parent in drawn:
                     continue
@@ -119,7 +122,9 @@ class PopulationGraphWindow(Ui_PopulationGraphWidget, QtWidgets.QMainWindow):
         for child in animal.children:
             if hasattr(animal, '_drawing_position') and hasattr(child, '_drawing_position'):
                 if self.draw_lines_checkbox.isChecked():
+                    qp.setPen(QPen(QColor(125, 125, 125), 1))
                     qp.drawLine(*animal._drawing_position, *child._drawing_position)
+                qp.setPen(QPen(QColor(0, 0, 0), 1))
                 qp.drawEllipse(qcircle(*child._drawing_position, 2))
                 if depth < 0 and child in drawn:
                     continue
