@@ -20,6 +20,7 @@ RABBITMQ_USER = os.environ.get('RABBITMQ_USER', 'guest')
 RABBITMQ_PASS = os.environ.get('RABBITMQ_PASS', 'guest')
 QUEUE_NAME = 'task_queue'
 SIGTERM = False
+SIGUSR1 = False
 
 
 def do_work_wrapper(connection, channel, delivery_tag, job):
@@ -32,6 +33,7 @@ def do_work_wrapper(connection, channel, delivery_tag, job):
 
 def do_work(connection, channel, delivery_tag, job):
     global SIGTERM
+    global SIGUSR1
     _LOGGER.info(f'Worker begin. Delivery tag: {delivery_tag}. Raw job: {job!r}')
     # Parse job
     job = json.loads(job)
@@ -62,9 +64,13 @@ def do_work(connection, channel, delivery_tag, job):
             stop_world = True
             break
 
-        if SIGTERM:
+        if SIGTERM is True:
             _LOGGER.warning("SIGTERM received in worker. Finishing it.")
             break
+
+        if SIGUSR1 is True:
+            _LOGGER.info(f"Current world {save_path} time is {world.time}")
+            SIGUSR1 = False
 
     # Analyzing performance
     elapsed = time.time() - start_time
@@ -136,9 +142,16 @@ def handle_sigterm(signalNumber, frame):
     SIGTERM = True
 
 
+def handle_sigusr1(signalNumber, frame):
+    global SIGUSR1
+    _LOGGER.warning('Received SIGUSR1: %s', signalNumber)
+    SIGUSR1 = True
+
+
 if __name__ == '__main__':
     import signal
     signal.signal(signal.SIGTERM, handle_sigterm)
+    signal.signal(signal.SIGUSR1, handle_sigusr1)
 
     import string
     import random
