@@ -63,6 +63,7 @@ Autohealing: No health check
 
 12. Establish ssh tunnel to rabbitmq management server: `ssh -L 5672:localhost:5672 -L 15672:localhost:15672 ubuntu@<ip>`
 While this session open you can access RabbitMQ management WEB UI via http://localhost:15672/
+Username and password: `guest`
 
 13. Add new task
 Via script that will add job into task_queue and send command to pubsub to increate cluster size:

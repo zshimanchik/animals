@@ -44,7 +44,7 @@ def GenerateConfig(context):
           'boot': True,
           'initializeParams': {
               'diskSizeGb': 10,
-              'sourceImage': 'projects/cos-cloud/global/images/cos-stable-80-12739-91-0',
+              'sourceImage': 'projects/cos-cloud/global/images/cos-stable-80-12739-104-0',
           },
       }],
       'networkInterfaces': [{
