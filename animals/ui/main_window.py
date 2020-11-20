@@ -262,11 +262,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def _draw_smells(self, painter):
-        for smeller in self.world.mammoths + self.world.food:
+        for smeller in self.world.mammoths + self.world.food + self.world.animals:
             self._draw_smell(painter, smeller)
 
     def _draw_smell(self, painter, smeller):
-        smell_color = QColor(0, smeller.smell[1] * 255, smeller.smell[0] * 255, 15)
+        smell_color = QColor(smeller.smell[2] * 255, smeller.smell[1] * 255, smeller.smell[0] * 255, 15)
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(smell_color))
         painter.drawEllipse(QRect(

@@ -123,7 +123,7 @@ class World(object):
             mammoth.update()
 
     def _calculate_values_of_animals_sensors(self):
-        smellers = self.food + self.mammoths
+        smellers = self.food + self.mammoths + self.animals
         smellers_pos = np.array([[smeller.x, smeller.y] for smeller in smellers], dtype=np.float64)
         smells_sizes = np.array([smeller.smell_size for smeller in smellers], dtype=np.float64)
         smells = np.array([smeller.smell for smeller in smellers], dtype=np.float64)
