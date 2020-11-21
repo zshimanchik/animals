@@ -71,7 +71,10 @@ Username and password: `guest`
 
 13. Add new task
 Via script that will add job into task_queue and send command to pubsub to increate cluster size:
-`python publish.py gs://animals-cluster-1/world_$(git rev-parse --short HEAD)_01/ 5000 1000`
+`python publish.py gs://animals-cluster-1/world_201121_$(git rev-parse --short HEAD)_01/ 5000 1000 -p animals-cluster-1 -z europe-west1-b -i instance-group-2`
+`python publish.py gs://animals-cluster-1/world_201121_$(git rev-parse --short HEAD)_02/ 10000 2000 -p animals-cluster-1 -z us-central1-a -i instance-group-3`
+or without scaling cluster:
+`python publish.py gs://animals-cluster-1/world_201121_$(git rev-parse --short HEAD)_03/ 10000 2000`
 
 Or via rabbitmq WEB UI http://localhost:15672/, note it will not increase cluster size:
 Go to: Queues -> task_queue -> Publish message
@@ -81,7 +84,8 @@ Example of body:
 14. You can check worker logs in stackdriver logging with filter `resource.type="global"`. However it works pretty bad.
 
 
-# todo: control autoscaling group via worker -> pubsub -> cloud function -> change autoscaling group
-# todo: or via custom metric in stackdriver deriving rabbitmq queue length (questionable). Autoscaling via CPU works bad
-# todo: or via cronjob, that will fetch queue length and resize instance group
-# todo: migrate workers to containers with COS VMs, so logging will be better and reliable, but will require buidling phase
+Done: autoscaling via worker -> pubsub -> cloud function -> change autoscaling group
+
+todo: or via custom metric in stackdriver deriving rabbitmq queue length (questionable). Autoscaling via CPU works bad
+todo: or via cronjob, that will fetch queue length and resize instance group
+todo: migrate workers to containers with COS VMs, so logging will be better and reliable, but will require buidling phase
