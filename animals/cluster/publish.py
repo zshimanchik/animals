@@ -13,12 +13,18 @@ QUEUE = 'task_queue'
 RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', 'localhost')
 RABBITMQ_USER = os.environ.get('RABBITMQ_USER', 'guest')
 RABBITMQ_PASS = os.environ.get('RABBITMQ_PASS', 'guest')
+PUBSUB_PROJECT = 'animals-cluster-1'
+PUBSUB_TOPIC = 'change-cluster-size'
 
 
-def change_cluster_size(increment=1):
+def change_cluster_size(increment, gce_project, gce_zone, gce_instance_group):
     publisher = pubsub_v1.PublisherClient()
-    topic_path = publisher.topic_path('animals-cluster-1', 'change-cluster-size')
-    publisher.publish(topic_path, b'', increment=str(increment)).result()
+    topic_path = publisher.topic_path(PUBSUB_PROJECT, PUBSUB_TOPIC)
+    publisher.publish(topic_path, b'',
+                      increment=str(increment),
+                      project=gce_project,
+                      zone=gce_zone,
+                      instance_group=gce_instance_group).result()
     _LOGGER.info('Sent signal to increase cluster size by %s', increment)
 
 
@@ -57,6 +63,9 @@ if __name__ == '__main__':
     _LOGGER.setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("project", help="GCE PROJECT where instance_group is located.")
+    parser.add_argument("zone", help="GCE ZONE where instance_group is located.")
+    parser.add_argument("instance_group", help="GCE Instance group where instance_group is located")
     parser.add_argument("snapshot_dir", help="Path to bucket directory where results will be stored.")
     parser.add_argument("max_cycle", type=int, help="Limit of world time.")
     parser.add_argument("cycle_amount",
@@ -69,4 +78,4 @@ if __name__ == '__main__':
                         default=None)
     args = parser.parse_args()
     publish_job_to_queue(args.snapshot_dir, args.max_cycle, args.cycle_amount, args.latest_tick)
-    change_cluster_size()
+    change_cluster_size(1, args.project, args.zone, args.instance_group)

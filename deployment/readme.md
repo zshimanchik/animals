@@ -43,11 +43,15 @@ Preemptibility: On
 Startup script:
 ```
 cd /home/ubuntu
-export RABBITMQ_HOST=$(curl http://metadata.google.internal/computeMetadata/v1/project/attributes/RABBITMQ_HOST  -H "Metadata-Flavor: Google")
+export RABBITMQ_HOST=$(curl -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/project/attributes/RABBITMQ_HOST)
+export GCE_PROJECT=$(curl -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/project/project-id)
+export GCE_ZONE=$(curl -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/zone | cut -d'/' -f4)
+export GCE_INSTANCE_GROUP=$(curl -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/attributes/created-by | cut -d'/' -f6)
+
 source venv/bin/activate
 cd animals
-git branch
-git pull origin
+git fetch origin
+git checkout origin/animals-with-smells
 pip install -r requirements.txt
 pip install -r requirements_cluster.txt
 cd animals

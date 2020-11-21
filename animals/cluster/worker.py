@@ -18,6 +18,9 @@ _LOGGER = logging.getLogger(__name__)
 RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', 'localhost')
 RABBITMQ_USER = os.environ.get('RABBITMQ_USER', 'guest')
 RABBITMQ_PASS = os.environ.get('RABBITMQ_PASS', 'guest')
+GCE_PROJECT = None
+GCE_ZONE = None
+GCE_INSTANCE_GROUP = None
 QUEUE_NAME = 'task_queue'
 SIGTERM = False
 SIGUSR1 = False
@@ -120,8 +123,12 @@ def ack_message(channel, delivery_tag, new_message=None):
                 )
             )
         else:
-            _LOGGER.info('Sending signal to decrease cluster size')
-            change_cluster_size(-1)
+            if GCE_INSTANCE_GROUP:
+                _LOGGER.info('Sending signal to decrease cluster size')
+                change_cluster_size(-1, GCE_PROJECT, GCE_ZONE, GCE_INSTANCE_GROUP)
+            else:
+                _LOGGER.info('This worker is not part of the instance_group. Skipping cluster size decrease.')
+
         channel.basic_ack(delivery_tag)
     else:
         # Channel is already closed, so we can't ACK this message;
@@ -178,6 +185,16 @@ if __name__ == '__main__':
         logger = logging.getLogger(logger_name)
         logger.propagate = False
         logger.addHandler(stdout_handler)
+
+    os.environ.get('RABBITMQ_HOST', 'localhost')
+
+    GCE_PROJECT = os.environ.get('GCE_PROJECT')
+    GCE_ZONE = os.environ.get('GCE_ZONE')
+    GCE_INSTANCE_GROUP = os.environ.get('GCE_INSTANCE_GROUP')
+    _LOGGER.info(f'Current GCE_PROJECT: {GCE_PROJECT} GCE_ZONE: {GCE_ZONE} GCE_INSTANCE_GROUP: {GCE_INSTANCE_GROUP}')
+    if any([GCE_PROJECT, GCE_ZONE, GCE_INSTANCE_GROUP]) and not all([GCE_PROJECT, GCE_ZONE, GCE_INSTANCE_GROUP]):
+        _LOGGER.exception('All GCE parameters must be provided')
+        sys.exit(1)
 
     credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
     parameters = pika.ConnectionParameters(RABBITMQ_HOST, credentials=credentials, heartbeat=60)
