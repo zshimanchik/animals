@@ -141,6 +141,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         new_world = serializer.load(filename)
         self.world = new_world
+        if filename.startswith(self.snapshot_directory_combobox.currentText()):
+            world_name = filename[len(self.snapshot_directory_combobox.currentText()) + 1:]
+            if world_name.endswith('.wrld'):
+                world_name = world_name[:-len('.wlrd')]
+            self.setWindowTitle(f'MainWindow - {world_name}')
 
     @Slot()
     def on_browse_snapshot_directory_button_clicked(self):
