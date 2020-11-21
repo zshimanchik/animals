@@ -148,7 +148,9 @@ class Animal(WorldObject):
         if self.is_ready_to_sex():
             self._search_partner_and_try_to_sex()
 
-        self.smell_size = (max(-1, self.answer[2]) + 1) / 2.0 * self.world.constants.MAX_ANIMAL_SMELL_SIZE
+        self.smell_size = max(0, self.answer[2]) * self.world.constants.MAX_ANIMAL_SMELL_SIZE
+        self.answer -= max(0, self.answer[2]) * self.world.constants.ENERGY_FOR_SMELL_RATIO
+
         self.move(self.answer[0], self.answer[1])
 
     def is_ready_to_sex(self):

@@ -6,6 +6,7 @@ from PyQt5 import QtWidgets
 class ConstantsWindow(QtWidgets.QMainWindow):
     EDITABLE_PROPERTIES = ['WORLD_HEIGHT', 'WORLD_WIDTH', 'FOOD_TIMER', 'ANIMAL_MAX_ENERGY', 'ANIMAL_SIZE',
                            'APPEAR_FOOD_COUNT', 'APPEAR_FOOD_SIZE_MAX', 'APPEAR_FOOD_SIZE_MIN', 'EATING_DISTANCE',
+                           'ENERGY_FOR_SMELL_RATIO',
                            'EATING_VALUE', 'ENERGY_FOR_BIRTH_MIN', 'ENERGY_FOR_BIRTH_MAX', 'ENERGY_FOR_EXIST',
                            'ENERGY_THRESHOLD_FOR_SEX', 'FOOD_FROM_MAMMOTH_COUNT',
                            'FOOD_SIZE_TO_ENERGY_RATIO', 'FOOD_SMELL_SIZE_RATIO', 'INITIAL_ANIMAL_COUNT',
