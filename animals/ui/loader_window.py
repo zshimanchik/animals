@@ -34,6 +34,8 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
                 subitem = QtWidgets.QTreeWidgetItem(item)
                 subitem.setText(0, filename)
 
+            # print(dirpath, filename)
+
     @Slot(QtWidgets.QTreeWidgetItem, int)
     def item_clicked(self, item: QtWidgets.QTreeWidgetItem, column):
         if not item.text(0).endswith('.wrld'):
