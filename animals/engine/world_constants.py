@@ -52,6 +52,7 @@ class WorldConstants(object):
         self.DNA_BRAIN_VALUE_LEN = 5
 
         self.ENERGY_THRESHOLD_FOR_SEX = 0.7
+        self.ENERGY_FOR_BIRTH_WASTE = 1
         self.ENERGY_FOR_BIRTH_MAX = 10
         self.ENERGY_FOR_BIRTH_MIN = 0
 

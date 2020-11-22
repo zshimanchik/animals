@@ -182,11 +182,13 @@ class Animal(WorldObject):
             child_count = int(father.energy / father.energy_for_birth)
             father.energy = 0
 
+        mother.energy -= mother.world.constants.ENERGY_FOR_BIRTH_WASTE
+        father.energy -= father.world.constants.ENERGY_FOR_BIRTH_WASTE
         for _ in range(child_count):
             Animal.make_child(mother, father)
 
     def can_make_n_children(self, child_count):
-        return child_count * self.energy_for_birth <= self.energy
+        return child_count * self.energy_for_birth + self.world.constants.ENERGY_FOR_BIRTH_WASTE <= self.energy
 
     @staticmethod
     def make_child(mother, father):
