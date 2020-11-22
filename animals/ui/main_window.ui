@@ -25,8 +25,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>945</width>
-         <height>374</height>
+         <width>929</width>
+         <height>363</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -260,6 +260,7 @@ Mammoth count 5
     <addaction name="network_viewer_action"/>
     <addaction name="action_population_graph"/>
     <addaction name="graphics_action"/>
+    <addaction name="loader_action"/>
    </widget>
    <widget class="QMenu" name="menuWorld">
     <property name="title">
@@ -305,6 +306,11 @@ Mammoth count 5
   <action name="graphics_action">
    <property name="text">
     <string>graphics</string>
+   </property>
+  </action>
+  <action name="loader_action">
+   <property name="text">
+    <string>loader</string>
    </property>
   </action>
  </widget>

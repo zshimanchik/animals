@@ -12,6 +12,7 @@ from analyzers import MammothAnalyzer
 from engine import serializer
 from ui.constants_window import ConstantsWindow
 from ui.graphics_window import GraphicsWindow
+from ui.loader_window import LoaderWindow
 from ui.main_window_ui import Ui_MainWindow
 from ui.neural_network_viewer import NeuralNetworkViewer
 from ui.population_graph_window import PopulationGraphWindow
@@ -36,6 +37,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.neural_network_viewer_window = None
         self.population_graph_window = None
         self.graphics_window = None
+        self.loader_window = None
 
         self.setupUi(self)
         self.horizontalLayout.insertWidget(0, self.draw_widget)
@@ -124,6 +126,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.graphics_window.show()
 
     @Slot()
+    def on_loader_action_triggered(self):
+        if not self.loader_window:
+            self.loader_window = LoaderWindow(parent=self)
+        if self.loader_window.isVisible():
+            self.loader_window.hide()
+        else:
+            self.loader_window.show()
+
+    @Slot()
     def on_save_action_triggered(self):
         self.make_snapshot()
 
@@ -139,6 +150,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not filename:
             return
 
+        self.load_world(filename)
+
+    def load_world(self, filename):
         new_world = serializer.load(filename)
         self.world = new_world
         if filename.startswith(self.snapshot_directory_combobox.currentText()):
