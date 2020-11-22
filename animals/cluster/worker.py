@@ -137,7 +137,8 @@ def ack_message(channel, delivery_tag, new_message=None):
 
 
 def harakiri():
-    _LOGGER.error("Doing haraiki")
+    _LOGGER.error("Doing haraiki. But sleeping for 10 sec firstly")
+    time.sleep(10)
     sys.exit(1)
 
 
