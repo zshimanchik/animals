@@ -22,6 +22,7 @@ GCE_PROJECT = None
 GCE_ZONE = None
 GCE_INSTANCE_GROUP = None
 QUEUE_NAME = 'task_queue'
+FAILED_QUEUE_NAME = 'failed_queue'
 SIGTERM = False
 SIGUSR1 = False
 
@@ -30,8 +31,10 @@ def do_work_wrapper(connection, channel, delivery_tag, job):
     try:
         return do_work(connection, channel, delivery_tag, job)
     except Exception as ex:
-        _LOGGER.exception("Catched exception in do_work. %s. Doing harakiri.", ex, exc_info=ex)
-        connection.add_callback_threadsafe(harakiri)
+        _LOGGER.exception("Caught exception in do_work. %s. Putting task to failed queue and scaling down.",
+                          ex, exc_info=ex)
+        cb = functools.partial(ack_message, channel, delivery_tag, failed_message=job, scale_down=True)
+        connection.add_callback_threadsafe(cb)
 
 
 def do_work(connection, channel, delivery_tag, job):
@@ -89,12 +92,14 @@ def do_work(connection, channel, delivery_tag, job):
     if not stop_world:
         job['latest_tick'] = world.time
         new_job = json.dumps(job)
+        scale_down = False
     else:
         _LOGGER.info(f'World {save_path} is finished')
         new_job = None
+        scale_down = True
 
     _LOGGER.info(f'Worker done. Delivery tag: {delivery_tag}. new_message: {new_job}')
-    cb = functools.partial(ack_message, channel, delivery_tag, new_message=new_job)
+    cb = functools.partial(ack_message, channel, delivery_tag, new_message=new_job, scale_down=scale_down)
     connection.add_callback_threadsafe(cb)
 
 
@@ -108,12 +113,13 @@ def on_message(channel, method_frame, header_frame, body, args):
     _LOGGER.info('on_message done. delivery_tag=%r', method_frame.delivery_tag)
 
 
-def ack_message(channel, delivery_tag, new_message=None):
+def ack_message(channel, delivery_tag, new_message=None, failed_message=None, scale_down=False):
     """Note that `channel` must be the same pika channel instance via which
     the message being ACKed was retrieved (AMQP protocol constraint).
     """
     if channel.is_open:
         if new_message is not None:
+            _LOGGER.info('Publishing new message: %s', new_message)
             channel.basic_publish(
                 exchange='',
                 routing_key=QUEUE_NAME,
@@ -122,7 +128,17 @@ def ack_message(channel, delivery_tag, new_message=None):
                     delivery_mode=2,  # make message persistent
                 )
             )
-        else:
+        if failed_message is not None:
+            _LOGGER.warning('Publishing message to failed queue: %s', failed_message)
+            channel.basic_publish(
+                exchange='',
+                routing_key=FAILED_QUEUE_NAME,
+                body=failed_message,
+                properties=pika.BasicProperties(
+                    delivery_mode=2,  # make message persistent
+                )
+            )
+        if scale_down:
             if GCE_INSTANCE_GROUP:
                 _LOGGER.info('Sending signal to decrease cluster size')
                 change_cluster_size(-1, GCE_PROJECT, GCE_ZONE, GCE_INSTANCE_GROUP)
@@ -136,8 +152,9 @@ def ack_message(channel, delivery_tag, new_message=None):
         _LOGGER.error('Trying to ack_message, but channel is closed.')
 
 
-def harakiri():
-    _LOGGER.error("Doing haraiki. But sleeping for 10 sec firstly")
+def harakiri():  # shouldn't be used
+    _LOGGER.error("Doing haraiki. But sleeping for 10 sec firstly")  # additional time is required for google logging
+    # to send the logs
     time.sleep(10)
     sys.exit(1)
 
@@ -203,6 +220,7 @@ if __name__ == '__main__':
 
     channel = connection.channel()
     channel.queue_declare(queue=QUEUE_NAME, durable=True)
+    channel.queue_declare(queue=FAILED_QUEUE_NAME, durable=True)
     channel.basic_qos(prefetch_count=1)  # having more than one will influence on random.state
 
     threads = []
