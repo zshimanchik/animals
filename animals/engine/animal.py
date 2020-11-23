@@ -140,6 +140,7 @@ class Animal(WorldObject):
     def update(self):
         if self.closest_food:
             self.eat(self.closest_food)
+        # todo idea: add boolean value to NN whether it's eating or not.
 
         self.answer = self.brain.calculate(self.sensor_values)
 
@@ -149,7 +150,7 @@ class Animal(WorldObject):
             self._search_partner_and_try_to_sex()
 
         self.smell_size = max(0, self.answer[2]) * self.world.constants.MAX_ANIMAL_SMELL_SIZE
-        self.answer -= max(0, self.answer[2]) * self.world.constants.ENERGY_FOR_SMELL_RATIO
+        self.energy -= max(0, self.answer[2]) * self.world.constants.ENERGY_FOR_SMELL_RATIO
 
         self.move(self.answer[0], self.answer[1])
 
