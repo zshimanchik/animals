@@ -40,6 +40,9 @@ class Ui_LoaderWindow(object):
         item = QtWidgets.QListWidgetItem()
         self.listWidget.addItem(item)
         self.gridLayout_2.addWidget(self.listWidget, 1, 0, 1, 1)
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setObjectName("pushButton")
+        self.gridLayout_2.addWidget(self.pushButton, 0, 1, 1, 1)
         self.centralwidget_layout.addLayout(self.gridLayout_2)
         LoaderWindow.setCentralWidget(self.centralwidget)
 
@@ -66,3 +69,4 @@ class Ui_LoaderWindow(object):
         item = self.listWidget.item(1)
         item.setText(_translate("LoaderWindow", "world 2"))
         self.listWidget.setSortingEnabled(__sortingEnabled)
+        self.pushButton.setText(_translate("LoaderWindow", "Print latest"))

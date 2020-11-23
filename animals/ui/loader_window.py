@@ -23,11 +23,11 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         self._db = {}
         self.init_db(self.parent().snapshot_directory_combobox.currentText())
         self.update_ui_with_new_db()
-        self.listWidget.currentItemChanged.connect(self.tw_current_item_changed)
+        self.listWidget.currentItemChanged.connect(self.list_widget_current_item_changed)
+        self.listWidget.itemDoubleClicked.connect(self.list_widget_item_double_clicked)
         self.listWidget2.currentItemChanged.connect(self.list_widget2_current_item_changed)
         self.lineEdit.textChanged.connect(self.line_edit_text_changed)
-
-        # self.print_latest('201122')
+        self.pushButton.clicked.connect(self.push_button_click)
 
     def init_db(self, snapshot_dir):
         self._db.clear()
@@ -50,7 +50,7 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
             item.setText(dirpath)
 
     @Slot(QtWidgets.QListWidgetItem, QtWidgets.QListWidgetItem)
-    def tw_current_item_changed(self, cur: QtWidgets.QListWidgetItem, prev: QtWidgets.QListWidgetItem):
+    def list_widget_current_item_changed(self, cur: QtWidgets.QListWidgetItem, prev: QtWidgets.QListWidgetItem):
         self.listWidget2.clear()
 
         if cur is None:
@@ -61,6 +61,14 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
             item = QtWidgets.QListWidgetItem()
             item.setText(world_time)
             self.listWidget2.addItem(item)
+
+    @Slot(QtWidgets.QListWidgetItem)
+    def list_widget_item_double_clicked(self, item: QtWidgets.QListWidgetItem):
+        world_name = item.text()
+        world_time = self._db[world_name][-1]
+        filename = os.path.join(self.parent().snapshot_directory_combobox.currentText(), world_name, world_time)
+        print('Loading filename: ', filename)
+        self.parent().load_world(filename)
 
     @Slot(QtWidgets.QListWidgetItem, QtWidgets.QListWidgetItem)
     def list_widget2_current_item_changed(self, cur: QtWidgets.QListWidgetItem, prev: QtWidgets.QListWidgetItem):
@@ -76,6 +84,10 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
     @Slot(str)
     def line_edit_text_changed(self, text):
         self.update_ui_with_new_db()
+
+    @Slot()
+    def push_button_click(self):
+        self.print_latest(self.lineEdit.text())
 
     def print_latest(self, filter_text=''):
         for dirname, worlds in self._db.items():
