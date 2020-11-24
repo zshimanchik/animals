@@ -90,7 +90,19 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         self.print_latest(self.lineEdit.text())
 
     def print_latest(self, filter_text=''):
+        table = []
+        table.append(['World name', 'Latest tick'])
         for dirname, worlds in self._db.items():
             if filter_text in dirname:
-                print(dirname, '-', worlds[-1][:-len('.wrld')])
+                latest_tick = worlds[-1][:-len('.wrld')]
+                try:
+                    latest_tick = '{:_}'.format(int(latest_tick))
+                except ValueError:
+                    pass
+                table.append([dirname, latest_tick])
 
+        col0_len = max(len(row[0]) for row in table)
+        col1_len = max(len(row[1]) for row in table)
+        table.insert(1, [':' + '-' * (col0_len-1), ':' + '-' * (col1_len-1)])
+        for col0, col1 in table:
+            print(f'| {col0:{col0_len}} | {col1:{col1_len}} |')
