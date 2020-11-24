@@ -47,6 +47,7 @@ def do_work(connection, channel, delivery_tag, job):
     latest_tick = job.get('latest_tick')
     cycle_amount = job.get('cycle_amount', 1000)
     max_cycle = job.get('max_cycle', 10_000)
+    world_constants_override = job.get('constants')
 
     # Load or Create world
     if latest_tick:
@@ -55,7 +56,11 @@ def do_work(connection, channel, delivery_tag, job):
         world = serializer.load(save_path)
     else:
         _LOGGER.info(f'Creating new world {snapshot_dir}')
-        world = World(WorldConstants())
+        world_constants = WorldConstants()
+        if world_constants_override:
+            new_dict = {**world_constants.to_dict(), **world_constants_override}
+            world_constants = WorldConstants.from_dict(new_dict)
+        world = World(world_constants)
         save_path = os.path.join(snapshot_dir, '0.wrld')
         serializer.save(world, save_path)
 
