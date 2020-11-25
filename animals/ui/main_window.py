@@ -5,7 +5,7 @@ import time
 from statistics import mean
 
 from PyQt5.QtCore import QTimer, pyqtSlot as Slot, QRect, Qt, QPointF, QDir
-from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
+from PyQt5.QtGui import QPainter, QBrush, QPen, QColor, QKeyEvent
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
 from analyzers import MammothAnalyzer
@@ -78,12 +78,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.draw_widget.setFixedWidth(self.world.constants.WORLD_WIDTH)
         self.draw_widget.setFixedHeight(self.world.constants.WORLD_HEIGHT)
 
-    @Slot()
-    def on_timer_button_clicked(self):
+    def run_pause(self):
         if self.timer.isActive():
             self.timer.stop()
         else:
             self.timer.start(self.TIMER_INTERVAL)
+
+    @Slot()
+    def on_timer_button_clicked(self):
+        self.run_pause()
+
+    def keyPressEvent(self, a0: QKeyEvent) -> None:
+        if a0.key() == Qt.Key_Space:
+            self.run_pause()
 
     @Slot()
     def on_constants_action_triggered(self):
