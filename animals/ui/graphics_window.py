@@ -6,6 +6,17 @@ from PyQt5 import QtWidgets
 
 from engine.world import World
 
+SYMBOL_PEN = (255, 255, 255, 100)
+SYMBOL_BRUSH = (0, 0, 255, 100)
+
+
+def history_to_points(history):
+    x, y = [], []
+    for tick, values in enumerate(history):
+        for value in values:
+            x.append(tick)
+            y.append(value)
+    return x, y
 
 class GraphicsWindow(QtWidgets.QMainWindow):
     def __init__(self, world, parent=None):
@@ -30,11 +41,13 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         self.animals_curve = self.animals_plot.plot(self.animals_history, pen=(255, 0, 0), name="Animals")
         self.animals_curve.setPos(self.world.time, 0)
 
-        self.animals_deaths_plot = pyqtgraph.PlotWidget()
-        self.animals_deaths_plot.enableAutoRange()
+        self.animals_lifetimes_plot = pyqtgraph.PlotWidget()
+        self.animals_lifetimes_plot.enableAutoRange('y')
+        self.animals_lifetimes_plot.setXRange(0, self.parent().animal_lifetime_analyzer.analysis_interval)
 
         self.new_animals_energy_plot = pyqtgraph.PlotWidget()
-        self.new_animals_energy_plot.enableAutoRange()
+        self.new_animals_energy_plot.enableAutoRange('y')
+        self.new_animals_energy_plot.setXRange(0, self.parent().new_animal_energy_analyzer.analysis_interval)
 
         self.energy_for_birth_plot = pyqtgraph.PlotWidget()
         self.energy_for_birth_plot.setXRange(
@@ -52,7 +65,7 @@ class GraphicsWindow(QtWidgets.QMainWindow):
 
         self.centralwidget_layout.addWidget(self.food_plot)
         self.centralwidget_layout.addWidget(self.animals_plot)
-        self.centralwidget_layout.addWidget(self.animals_deaths_plot)
+        self.centralwidget_layout.addWidget(self.animals_lifetimes_plot)
         self.centralwidget_layout.addWidget(self.new_animals_energy_plot)
         self.centralwidget_layout.addWidget(self.energy_for_birth_plot)
         self.centralwidget_layout.addWidget(self.useless_param_plot)
@@ -76,19 +89,25 @@ class GraphicsWindow(QtWidgets.QMainWindow):
     def redraw(self):
         self.food_curve.setData(self.food_history)
         self.animals_curve.setData(self.animals_history)
-        self.animals_deaths_plot.plot([x[1] for x in self.world.animal_deaths], clear=True)
-        self.new_animals_energy_plot.plot([x[1] for x in self.world.new_animal_avg_energy], clear=True)
+
+        x, y = history_to_points(self.parent().animal_lifetime_analyzer.animals_lifetimes_history)
+        self.animals_lifetimes_plot.plot(
+            x, y, pen=None, symbol='o', symbolSize=5, symbolPen=SYMBOL_PEN, symbolBrush=SYMBOL_BRUSH, clear=True
+        )
+
+        x, y = history_to_points(self.parent().new_animal_energy_analyzer.new_animal_energy_history)
+        self.new_animals_energy_plot.plot(
+            x, y, pen=None, symbol='o', symbolSize=5, symbolPen=SYMBOL_PEN, symbolBrush=SYMBOL_BRUSH, clear=True
+        )
 
         vals = np.array([animal.energy_for_birth for animal in self.world.animals])
         y = pyqtgraph.pseudoScatter(vals, spacing=0.15)
         self.energy_for_birth_plot.plot(
-            vals, y, pen=None, symbol='o', symbolSize=5, symbolPen=(255, 255, 255, 200), symbolBrush=(0, 0, 255, 150),
-            clear=True
+            vals, y, pen=None, symbol='o', symbolSize=5, symbolPen=SYMBOL_PEN, symbolBrush=SYMBOL_BRUSH, clear=True
         )
 
         vals = np.array([animal.useless_param for animal in self.world.animals])
         y = pyqtgraph.pseudoScatter(vals, spacing=0.15)
         self.useless_param_plot.plot(
-            vals, y, pen=None, symbol='o', symbolSize=5, symbolPen=(255, 255, 255, 200), symbolBrush=(0, 0, 255, 150),
-            clear=True
+            vals, y, pen=None, symbol='o', symbolSize=5, symbolPen=SYMBOL_PEN, symbolBrush=SYMBOL_BRUSH, clear=True
         )

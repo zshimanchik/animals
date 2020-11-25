@@ -24,6 +24,7 @@ class World(object):
         self.food = []
         self.mammoths = []
         self.time = 0
+        self.analyzers = []
         self.analysis_period = 20000
 
         self.restart()
@@ -39,8 +40,9 @@ class World(object):
         self.food = [self._make_random_food() for _ in range(self.constants.INITIAL_FOOD_COUNT)]
         self.mammoths = []
         self.time = 0
-        self.animal_deaths = deque()
-        self.new_animal_avg_energy = deque()
+
+        for analyzer in self.analyzers:
+            analyzer.reset()
 
     def _make_random_food(self):
         if self.constants.FOOD_GAUSS_DISTRIBUTION_SIGMA:  # gauss distribution if sigma was set
@@ -85,7 +87,8 @@ class World(object):
         self._calculate_animals_close_partners()
 
         self._update_animals()
-        self._analyze()
+
+        self._analyze_after_animals_update()
 
         self._add_new_animals()
         self._remove_dead_animals()
@@ -94,6 +97,8 @@ class World(object):
 
         self._add_food_if_necessary()
         self._add_mammoth_if_necessary()
+
+        self._analyze_in_the_end()
 
     def _check_all_in_bounds(self):
         for food in self.food:
@@ -171,19 +176,13 @@ class World(object):
         for animal in self.animals:
             animal.update()
 
-    def _analyze(self):
-        for animal in self.animals:
-            if animal.energy <= 0:
-                self.animal_deaths.append((self.time, self.time - animal.birth_time))
-        # remove entries that older than analysis period
-        while self.animal_deaths and self.animal_deaths[0][0] < self.time - self.analysis_period:
-            self.animal_deaths.popleft()
+    def _analyze_after_animals_update(self):
+        for analyzer in self.analyzers:
+            analyzer.analyze_after_animals_update(self)
 
-        for animal in self.animals_to_add:
-            self.new_animal_avg_energy.append((self.time, animal.energy))
-        # remove entries that older than analysis period
-        while self.new_animal_avg_energy and self.new_animal_avg_energy[0][0] < self.time - self.analysis_period:
-            self.new_animal_avg_energy.popleft()
+    def _analyze_in_the_end(self):
+        for analyzer in self.analyzers:
+            analyzer.analyze_in_the_end(self)
 
     def _add_new_animals(self):
         self.animals.extend(self.animals_to_add)

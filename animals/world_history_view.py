@@ -89,7 +89,7 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         plot_widget = pyqtgraph.PlotWidget()
         plot_widget.enableAutoRange('y')
         self.grid_layout.addWidget(plot_widget, self.row, column)
-        plot_widget.plot([x[1] for x in world.new_animal_avg_energy], clear=True)
+        plot_widget.plot([x[1] for x in world.new_animal_avg_energy], clear=True)  # todo fix it
 
 
 if __name__ == '__main__':

@@ -2,13 +2,12 @@ import datetime
 import math
 import os
 import time
-from statistics import mean
 
 from PyQt5.QtCore import QTimer, pyqtSlot as Slot, QRect, Qt, QPointF, QDir
 from PyQt5.QtGui import QPainter, QBrush, QPen, QColor, QKeyEvent
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
-from analyzers import MammothAnalyzer
+import analyzers
 from engine import serializer
 from ui.constants_window import ConstantsWindow
 from ui.graphics_window import GraphicsWindow
@@ -65,7 +64,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def world(self, new_world):
         self._world = new_world
 
-        self.mammoth_analyzer = MammothAnalyzer(self.world)
+        self.mammoth_analyzer = analyzers.MammothAnalyzer(self.world)
+        self._world.analyzers.append(self.mammoth_analyzer)
+
+        self.animal_lifetime_analyzer = analyzers.AnimalLifetimeAnalyzer(self.world)
+        self._world.analyzers.append(self.animal_lifetime_analyzer)
+
+        self.new_animal_energy_analyzer = analyzers.NewAnimalEnergyAnalyzer(self.world)
+        self._world.analyzers.append(self.new_animal_energy_analyzer)
+
         if self.constants_window:
             self.constants_window.constants = self.world.constants
         if self.population_graph_window:
@@ -187,7 +194,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_timer_timeout(self):
         self._measure_performance()
         self.world.update()
-        self.mammoth_analyzer.update()
         if self.graphics_window and not self.graphics_window.isHidden():
             self.graphics_window.update()
         self._update_text_info()
@@ -210,10 +216,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.info_text.append(("Food count", len(self.world.food)))
         self.info_text.append(("Mammoth count", len(self.world.mammoths)))
         self.info_text.append(("Mammoth kills", f'{self.mammoth_analyzer.amount_of_killings:.5f}'))
-        avg_lifetime = mean(x[1] for x in self.world.animal_deaths) if self.world.animal_deaths else 0
-        self.info_text.append(("Animal lifetime", f'{avg_lifetime:.0f}'))
-        new_avg_energy = mean(x[1] for x in self.world.new_animal_avg_energy) if self.world.new_animal_avg_energy else 0
-        self.info_text.append(("New animal energy", f'{new_avg_energy:.2f}'))
+        self.info_text.append(("Animal lifetime", f'{self.animal_lifetime_analyzer.average:.0f}'))
+        self.info_text.append(("New animal energy", f'{self.new_animal_energy_analyzer.average:.2f}'))
         self.info_label.setText('\n'.join('{}:   {:<10}'.format(*args) for args in self.info_text))
         self.info_text.clear()
 
