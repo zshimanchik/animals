@@ -207,7 +207,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.info_text.append(("Animal lifetime", f'{avg_lifetime:.0f}'))
         new_avg_energy = mean(x[1] for x in self.world.new_animal_avg_energy) if self.world.new_animal_avg_energy else 0
         self.info_text.append(("New animal energy", f'{new_avg_energy:.2f}'))
-        self.info_label.setText('\n'.join('{:<20} {:<10}'.format(*args) for args in self.info_text))
+        self.info_label.setText('\n'.join('{}:   {:<10}'.format(*args) for args in self.info_text))
         self.info_text.clear()
 
     def _evoke_repaint_event(self):

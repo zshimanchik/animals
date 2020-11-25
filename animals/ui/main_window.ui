@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1321</width>
-    <height>438</height>
+    <width>1294</width>
+    <height>344</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,23 +25,35 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>929</width>
-         <height>363</height>
+         <width>902</width>
+         <height>269</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
          <widget class="QWidget" name="draw_widget" native="true">
           <property name="minimumSize">
            <size>
-            <width>300</width>
-            <height>300</height>
+            <width>900</width>
+            <height>200</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
-            <height>300</height>
+            <width>900</width>
+            <height>200</height>
            </size>
           </property>
          </widget>
@@ -50,8 +62,8 @@
       </widget>
      </widget>
     </item>
-    <item alignment="Qt::AlignRight">
-     <widget class="QGroupBox" name="groupBox">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
       <property name="minimumSize">
        <size>
         <width>350</width>
@@ -64,181 +76,212 @@
         <height>16777215</height>
        </size>
       </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="8" column="4">
-        <widget class="QSpinBox" name="make_snapshots_spinbox">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>10000000</number>
-         </property>
-         <property name="singleStep">
-          <number>1000</number>
-         </property>
-         <property name="value">
-          <number>100000</number>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1" colspan="4">
-        <widget class="QPushButton" name="timer_button">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Run/Pause</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="4">
-        <widget class="QSlider" name="draw_each_times_slider">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>200</number>
-         </property>
-         <property name="value">
-          <number>1</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="4">
-        <widget class="QCheckBox" name="eat_distance_checkbox">
-         <property name="text">
-          <string>Eat distance</string>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="3">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="2" column="3">
-        <widget class="QLCDNumber" name="draw_each_times_lcd">
-         <property name="intValue" stdset="0">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="4">
-        <widget class="QPushButton" name="browse_snapshot_directory_button">
-         <property name="text">
-          <string>browse</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="4">
-        <widget class="QCheckBox" name="animal_direction_checkbox">
-         <property name="text">
-          <string>Animal direction</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="4">
-        <widget class="QCheckBox" name="smells_checkbox">
-         <property name="text">
-          <string>Smells</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="draw_each_times_label">
-         <property name="text">
-          <string>Draw each</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3" colspan="2">
-        <widget class="QLineEdit" name="world_name_lineedit"/>
-       </item>
-       <item row="11" column="1">
-        <widget class="QRadioButton" name="select_radiobutton">
-         <property name="text">
-          <string>Select</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="3">
-        <widget class="QRadioButton" name="move_radiobutton">
-         <property name="text">
-          <string>Move</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1" colspan="3">
-        <widget class="QCheckBox" name="make_snapshots_checkbox">
-         <property name="text">
-          <string>Make snapshot each</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1" colspan="4">
-        <widget class="QLabel" name="snapshot_directory_label">
-         <property name="text">
-          <string>Snapshots directory:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QLabel" name="world_name_lbl">
-         <property name="text">
-          <string>World name</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1" rowspan="4" colspan="3">
-        <widget class="QLabel" name="info_label">
-         <property name="font">
-          <font>
-           <family>Ubuntu Mono</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Performance   0.00312231
-World time    1231231   
-Food timer    55        
-Animal count  32        
-Food count    32        
-Mammoth count 5         
+      <property name="tabPosition">
+       <enum>QTabWidget::North</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Main</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="2" column="0" colspan="3">
+         <widget class="QPushButton" name="timer_button">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Run/Pause</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="0" colspan="3">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLCDNumber" name="draw_each_times_lcd">
+          <property name="intValue" stdset="0">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" rowspan="6" colspan="2">
+         <widget class="QLabel" name="info_label">
+          <property name="font">
+           <font>
+            <family>Ubuntu Mono</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string notr="true">Performance   0.00312231
+World time    1231231
+Food timer    55
+Animal count  32
+Food count    32
+Mammoth count 5
 </string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="1" colspan="3">
-        <widget class="QComboBox" name="snapshot_directory_combobox">
-         <property name="editable">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QRadioButton" name="select_radiobutton">
+          <property name="text">
+           <string>Select</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QCheckBox" name="smells_checkbox">
+          <property name="text">
+           <string>Smells</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="draw_each_times_label">
+          <property name="text">
+           <string>Draw each</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QSlider" name="draw_each_times_slider">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>200</number>
+          </property>
+          <property name="value">
+           <number>1</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QCheckBox" name="eat_distance_checkbox">
+          <property name="text">
+           <string>Eat distance</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="2">
+         <widget class="QCheckBox" name="animal_direction_checkbox">
+          <property name="text">
+           <string>Animal direction</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1">
+         <widget class="QRadioButton" name="move_radiobutton">
+          <property name="text">
+           <string>Move</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Autosave</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QLabel" name="world_name_lbl">
+          <property name="text">
+           <string>World name</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QComboBox" name="snapshot_directory_combobox">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QSpinBox" name="make_snapshots_spinbox">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>10000000</number>
+          </property>
+          <property name="singleStep">
+           <number>1000</number>
+          </property>
+          <property name="value">
+           <number>100000</number>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="3">
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QLabel" name="snapshot_directory_label">
+          <property name="text">
+           <string>Snapshots directory:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QPushButton" name="browse_snapshot_directory_button">
+          <property name="text">
+           <string>browse</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QCheckBox" name="make_snapshots_checkbox">
+          <property name="text">
+           <string>Make snapshot each</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QLineEdit" name="world_name_lineedit"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -248,7 +291,7 @@ Mammoth count 5
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1321</width>
+     <width>1294</width>
      <height>22</height>
     </rect>
    </property>
