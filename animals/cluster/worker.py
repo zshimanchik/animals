@@ -58,7 +58,7 @@ def do_work(connection, channel, delivery_tag, job):
         _LOGGER.info(f'Creating new world {snapshot_dir}')
         world_constants = WorldConstants()
         if world_constants_override:
-            new_dict = {**world_constants.to_dict(), **world_constants_override}
+            new_dict = {**world_constants.to_dict(False), **world_constants_override}
             world_constants = WorldConstants.from_dict(new_dict)
         world = World(world_constants)
         save_path = os.path.join(snapshot_dir, '0.wrld')

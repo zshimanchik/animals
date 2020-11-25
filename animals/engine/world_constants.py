@@ -1,4 +1,4 @@
-from cached_property import cached_property
+from functools import cached_property
 
 
 class WorldConstants(object):
@@ -96,14 +96,20 @@ class WorldConstants(object):
     def ENERGY_FOR_BIRTH_DIFF(self):
         return self.ENERGY_FOR_BIRTH_MAX - self.ENERGY_FOR_BIRTH_MIN
 
-    def to_dict(self):
-        result = {}
-        for attr in dir(self):
-            if not attr.startswith('_'):
-                value = getattr(self, attr)
-                if not callable(value):
-                    result[attr] = value
-        return result
+    def to_dict(self, with_cached_properties=True):
+        """
+        with_cached_properties - will work only if you didn't invoke them, otherwise they will be in instance dict
+        """
+        if with_cached_properties:
+            result = {}
+            for attr in dir(self):
+                if not attr.startswith('_'):
+                    value = getattr(self, attr)
+                    if not callable(value):
+                        result[attr] = value
+            return result
+        else:
+            return self.__dict__.copy()
 
     @classmethod
     def from_dict(cls, data):
