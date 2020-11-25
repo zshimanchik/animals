@@ -28,6 +28,7 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         self.listWidget2.currentItemChanged.connect(self.list_widget2_current_item_changed)
         self.lineEdit.textChanged.connect(self.line_edit_text_changed)
         self.pushButton.clicked.connect(self.push_button_click)
+        self.refresh_button.clicked.connect(self.refresh_button_click)
 
     def init_db(self, snapshot_dir):
         self._db.clear()
@@ -88,6 +89,11 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
     @Slot()
     def push_button_click(self):
         self.print_latest(self.lineEdit.text())
+
+    @Slot()
+    def refresh_button_click(self):
+        self.init_db(self.parent().snapshot_directory_combobox.currentText())
+        self.update_ui_with_new_db()
 
     def print_latest(self, filter_text=''):
         table = []
