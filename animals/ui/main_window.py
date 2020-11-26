@@ -355,11 +355,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._draw_eating_distance(painter, food)
 
     def _draw_mammoth(self, painter, mammoth):
-        r = 255 * (1.0 - mammoth.life)
-        g = 215 * (1.0 - mammoth.life)
-        b = 255 * mammoth.life
+        if not mammoth.bitten:
+            color = QColor(0, 0, 255)
+        else:
+            color = QColor(0, 180, 255)
+
         painter.setPen(Qt.NoPen)
-        painter.setBrush(QBrush(QColor(r,g,b)))
+        painter.setBrush(QBrush(color))
         size = mammoth.size * 2
         painter.drawEllipse(QRect(mammoth.x - mammoth.size, mammoth.y - mammoth.size, size, size))
 

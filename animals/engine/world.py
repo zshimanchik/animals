@@ -152,6 +152,9 @@ class World(object):
 
     def _calculate_animals_closest_food(self):
         eatable = self.food + self.mammoths
+        for food in eatable:
+            food.biting_animals_amount = 0
+
         food_positions = np.array([[food.x, food.y] for food in eatable], dtype=np.float64)
         animals_positions = np.array([[animal.x, animal.y] for animal in self.animals], dtype=np.float64)
         distances = cdist(animals_positions, food_positions)
@@ -159,6 +162,7 @@ class World(object):
         for animal_i, food_i in enumerate(closest_food_indexes):
             if distances[animal_i, food_i] <= self.constants.EATING_DISTANCE + self.animals[animal_i].size + eatable[food_i].size:
                 self.animals[animal_i].closest_food = eatable[food_i]
+                eatable[food_i].biting_animals_amount += 1
             else:
                 self.animals[animal_i].closest_food = None
 
@@ -196,7 +200,7 @@ class World(object):
 
     def _transform_dead_mammoths(self):
         for mammoth in self.mammoths[:]:
-            if mammoth.life <= 0:
+            if mammoth.size <= 0:
                 self.mammoths.remove(mammoth)
                 self._make_food_from_mammoth(mammoth)
 
