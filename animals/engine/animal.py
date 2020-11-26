@@ -70,7 +70,7 @@ class Mammoth(WorldObject):
         power_of_bite = 1/10 * min(10, self.biting_animals_amount)
         MAMMOTH_SIZE_TO_ENERGY_RATIO = 3
         energy = value * power_of_bite * MAMMOTH_SIZE_TO_ENERGY_RATIO
-        self.size -= value / 10  # contains 10 times more food in itself.
+        self.size -= value / 7  # contains 10 times more food in itself.
 
         return energy
 
