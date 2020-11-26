@@ -8,10 +8,10 @@ class ConstantsWindow(QtWidgets.QMainWindow):
                            'APPEAR_FOOD_COUNT', 'APPEAR_FOOD_SIZE_MAX', 'APPEAR_FOOD_SIZE_MIN', 'EATING_DISTANCE',
                            'ENERGY_FOR_SMELL_RATIO', 'EATING_VALUE', 'ENERGY_FOR_BIRTH_WASTE',
                            'ENERGY_FOR_BIRTH_MIN', 'ENERGY_FOR_BIRTH_MAX', 'ENERGY_FOR_EXIST',
-                           'ENERGY_THRESHOLD_FOR_SEX', 'FOOD_FROM_MAMMOTH_COUNT',
+                           'ENERGY_THRESHOLD_FOR_SEX',
                            'FOOD_SIZE_TO_ENERGY_RATIO', 'FOOD_SMELL_SIZE_RATIO', 'INITIAL_ANIMAL_COUNT',
-                           'INITIAL_FOOD_COUNT', 'MAMMOTH_BEAT_VALUE', 'MAMMOTH_COUNT',
-                           'MAMMOTH_MIN_DISTANCE_TO_OTHERS', 'MAMMOTH_REGENERATION_VALUE', 'MAMMOTH_SMELL_SIZE_RATIO',
+                           'INITIAL_FOOD_COUNT', 'MAMMOTH_COUNT',
+                           'MAMMOTH_MIN_DISTANCE_TO_OTHERS', 'MAMMOTH_SMELL_SIZE_RATIO',
                            'MAX_AMOUNT_OF_CHILDREN', 'MAX_ANIMAL_SMELL_SIZE', 'MIN_AMOUNT_OF_CHILDREN',
                            'MOVE_DISTANCE_TO_CONSUMED_ENERGY_RATIO', 'MUTATE_CHANCE', 'SEX_DISTANCE']
 

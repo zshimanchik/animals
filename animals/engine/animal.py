@@ -61,7 +61,6 @@ class Mammoth(WorldObject):
         self.size = size
         self.smell = (1.0, 0.0, 0.0)
         self.smell_size = self.size * self._world.constants.MAMMOTH_SMELL_SIZE_RATIO
-        self.life = 1
         self.bitten = False
         self.biting_animals_amount = 0
 
@@ -71,16 +70,12 @@ class Mammoth(WorldObject):
         power_of_bite = 1/10 * min(10, self.biting_animals_amount)
         MAMMOTH_SIZE_TO_ENERGY_RATIO = 3
         energy = value * power_of_bite * MAMMOTH_SIZE_TO_ENERGY_RATIO
-
-        # print(f'{self.biting_animals_amount=} {power_of_bite=} {energy=}')
-
         self.size -= value / 10  # contains 10 times more food in itself.
 
         return energy
 
     def update(self):
         self.bitten = False
-        self.life = min(1.0, self.life + self._world.constants.MAMMOTH_REGENERATION_VALUE)
 
 
 class Animal(WorldObject):

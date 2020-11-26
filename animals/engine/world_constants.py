@@ -26,9 +26,6 @@ class WorldConstants(object):
         self.MAMMOTH_COUNT = 5
         self.MAMMOTH_MIN_DISTANCE_TO_OTHERS = 80
         self.MAMMOTH_SMELL_SIZE_RATIO = 5.0
-        self.MAMMOTH_BEAT_VALUE = 0.007
-        self.MAMMOTH_REGENERATION_VALUE = 0.01
-        self.FOOD_FROM_MAMMOTH_COUNT = 10
 
         # Animal
 
