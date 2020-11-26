@@ -145,16 +145,6 @@ Mammoth count 5
           </property>
          </widget>
         </item>
-        <item row="10" column="0">
-         <widget class="QRadioButton" name="select_radiobutton">
-          <property name="text">
-           <string>Select</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
         <item row="5" column="2">
          <widget class="QCheckBox" name="smells_checkbox">
           <property name="text">
@@ -199,12 +189,26 @@ Mammoth count 5
           </property>
          </widget>
         </item>
-        <item row="10" column="1">
-         <widget class="QRadioButton" name="move_radiobutton">
-          <property name="text">
-           <string>Move</string>
-          </property>
-         </widget>
+        <item row="7" column="2">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QRadioButton" name="select_radiobutton">
+            <property name="text">
+             <string>Select</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="move_radiobutton">
+            <property name="text">
+             <string>Move</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>

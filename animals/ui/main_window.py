@@ -218,7 +218,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.info_text.append(("Mammoth kills", f'{self.mammoth_analyzer.amount_of_killings:.5f}'))
         self.info_text.append(("Animal lifetime", f'{self.animal_lifetime_analyzer.average:.0f}'))
         self.info_text.append(("New animal energy", f'{self.new_animal_energy_analyzer.average:.2f}'))
-        self.info_label.setText('\n'.join('{}:   {:<10}'.format(*args) for args in self.info_text))
+        if self.selected_animal:
+            self.info_text.append(("Animal energy:", f'{self.selected_animal.energy:.3f}'))
+        self.info_label.setText('\n'.join('{}:   {}'.format(*args) for args in self.info_text))
         self.info_text.clear()
 
     def _evoke_repaint_event(self):
