@@ -321,6 +321,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._draw_animal_energy_fullness(painter, animal)
         if self.animal_direction_checkbox.isChecked():
             self._draw_animal_direction(painter, animal)
+        if self.sensors_checkbox.isChecked():
+            self._draw_animal_sensors(painter, animal)
 
     def _draw_animal_energy_fullness(self, painter, animal):
         painter.setPen(Qt.NoPen)
@@ -341,6 +343,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 animal.y + math.sin(animal.angle) * animal.size
             )
         )
+
+    def _draw_animal_sensors(self, painter: QPainter, animal):
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QBrush(QColor(0, 0, 0)))
+
+        def get_color(b, g, r):
+            b = min(1, max(b, -1))
+            g = min(1, max(g, -1))
+            r = min(1, max(r, -1))
+            return QColor(r * 255, g * 255, b * 255)
+
+        sensor_values = animal.sensor_values[0:3], animal.sensor_values[3:6], animal.sensor_values[6:9]
+        for (sensor_x, sensor_y), values in zip(animal.sensors_positions, sensor_values):
+            painter.setBrush(QBrush(get_color(*values or (0, 0, 0))))
+            painter.drawEllipse(QPointF(sensor_x, sensor_y), 3, 3)
 
     def _draw_food(self, painter, food):
         painter.setPen(Qt.NoPen)
