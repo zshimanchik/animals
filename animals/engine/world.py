@@ -1,5 +1,4 @@
-﻿from collections import deque
-from math import hypot
+﻿from math import hypot
 from random import randint, random, gauss
 
 import numpy as np
@@ -202,13 +201,6 @@ class World(object):
         for mammoth in self.mammoths[:]:
             if mammoth.size <= 0:
                 self.mammoths.remove(mammoth)
-                self._make_food_from_mammoth(mammoth)
-
-    def _make_food_from_mammoth(self, mammoth):
-        for _ in range(self.constants.FOOD_FROM_MAMMOTH_COUNT):
-            x = mammoth.x + (mammoth.smell_size*random()*2 - mammoth.smell_size)*0.5
-            y = mammoth.y + (mammoth.smell_size*random()*2 - mammoth.smell_size)*0.5
-            self.food.append(Food(self, x, y, mammoth.size))
 
     def _add_food_if_necessary(self):
         if self.time % self.constants.FOOD_TIMER == 0:
