@@ -1,8 +1,10 @@
 import os
 
+import pyqtgraph
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot as Slot
 
+from engine import serializer
 from ui.loader_window_ui import Ui_LoaderWindow
 
 
@@ -27,8 +29,9 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         self.listWidget.itemDoubleClicked.connect(self.list_widget_item_double_clicked)
         self.listWidget2.currentItemChanged.connect(self.list_widget2_current_item_changed)
         self.lineEdit.textChanged.connect(self.line_edit_text_changed)
-        self.pushButton.clicked.connect(self.push_button_click)
+        self.print_latest_button.clicked.connect(self.print_latest_button_click)
         self.refresh_button.clicked.connect(self.refresh_button_click)
+        self.analyze_button.clicked.connect(self.analyze_button_click)
 
     def init_db(self, snapshot_dir):
         self._db.clear()
@@ -87,13 +90,23 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         self.update_ui_with_new_db()
 
     @Slot()
-    def push_button_click(self):
+    def print_latest_button_click(self):
         self.print_latest(self.lineEdit.text())
 
     @Slot()
     def refresh_button_click(self):
         self.init_db(self.parent().snapshot_directory_combobox.currentText())
         self.update_ui_with_new_db()
+
+    @Slot()
+    def analyze_button_click(self):
+        if self.listWidget.currentItem():
+            world_name = self.listWidget.currentItem().text()
+            self.draw_world_analysis(
+                self.parent().snapshot_directory_combobox.currentText(),
+                world_name,
+                self._db[world_name]
+            )
 
     def print_latest(self, filter_text=''):
         table = []
@@ -112,3 +125,26 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         table.insert(1, [':' + '-' * (col0_len-1), ':' + '-' * (col1_len-1)])
         for col0, col1 in table:
             print(f'| {col0:{col0_len}} | {col1:{col1_len}} |')
+
+    def draw_world_analysis(self, snapshot_dir, world_name, world_times):
+        animal_amount_history = []
+        for world_time in world_times:
+            world = serializer.load(os.path.join(snapshot_dir, world_name, world_time))
+            animal_amount_history.append(len(world.animals))
+
+        try:
+            x_axis = [int(world_time[:-len('.wrld')]) / 1000 for world_time in world_times]
+        except ValueError:
+            x_axis = None
+
+        self.show_graph(world_name, animal_amount_history, x_axis)
+
+    def show_graph(self, world_name, graph, x_axis=None):
+        window = QtWidgets.QMainWindow(parent=self)
+        animals_plot = pyqtgraph.PlotWidget()
+        animals_plot.plot(x=x_axis, y=graph)
+        animals_plot.enableAutoRange()
+        window.setCentralWidget(animals_plot)
+        window.resize(600, 200)
+        window.setWindowTitle(f'Animal amount for {world_name}')
+        window.show()
