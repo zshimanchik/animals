@@ -1,4 +1,5 @@
 import os
+import re
 
 import pyqtgraph
 from PyQt5 import QtWidgets
@@ -55,7 +56,7 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
     @property
     def filtered_db(self):
         filter_text = self.lineEdit.text()
-        return {dirname: worlds for dirname, worlds in self._db.items() if filter_text in dirname}
+        return {dirname: worlds for dirname, worlds in self._db.items() if re.search(filter_text, dirname)}
 
     @Slot(QtWidgets.QListWidgetItem, QtWidgets.QListWidgetItem)
     def list_widget_current_item_changed(self, cur: QtWidgets.QListWidgetItem, prev: QtWidgets.QListWidgetItem):
