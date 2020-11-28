@@ -20,6 +20,7 @@ from ui.population_graph_window import PopulationGraphWindow
 class MainWindow(QMainWindow, Ui_MainWindow):
     _PERFORMANCE_CALC_INTERVAL = 100
     TIMER_INTERVAL = 1
+    GRAPHICS_UPDATE_INTERVAL = 20
 
     def __init__(self, world, parent=None):
         super().__init__(parent)
@@ -230,7 +231,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.neural_network_viewer_window.repaint()
             if self.population_graph_window and self.population_graph_window.isVisible():
                 self.population_graph_window.redraw()
-            if self.graphics_window and self.graphics_window.isVisible():
+            if self.graphics_window and self.graphics_window.isVisible() \
+                    and self.world.time % self.GRAPHICS_UPDATE_INTERVAL == 0:
                 self.graphics_window.redraw()
 
     def _make_snapshot_if_need(self):

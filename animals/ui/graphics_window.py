@@ -18,6 +18,7 @@ def history_to_points(history):
             y.append(value)
     return x, y
 
+
 class GraphicsWindow(QtWidgets.QMainWindow):
     def __init__(self, world, parent=None):
         super().__init__(parent=parent)
@@ -26,7 +27,7 @@ class GraphicsWindow(QtWidgets.QMainWindow):
 
         self.centralwidget = QtWidgets.QWidget(self)
         self.setWindowTitle("Plots")
-        self.centralwidget_layout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.centralwidget_layout = QtWidgets.QGridLayout(self.centralwidget)
         self.centralwidget_layout.setObjectName("centralwidget_layout")
 
         self.food_history = deque(maxlen=5000)
@@ -63,12 +64,33 @@ class GraphicsWindow(QtWidgets.QMainWindow):
         )
         self.useless_param_plot.enableAutoRange('y')
 
-        self.centralwidget_layout.addWidget(self.food_plot)
+        food_label = QtWidgets.QLabel("Food")
+        self.centralwidget_layout.addWidget(food_label, 0, 0)
+        self.centralwidget_layout.addWidget(self.food_plot, 0, 1)
+
+        animals_label = QtWidgets.QLabel("Animals")
+        self.centralwidget_layout.addWidget(animals_label)
         self.centralwidget_layout.addWidget(self.animals_plot)
+
+        lifetimes_label = QtWidgets.QLabel("Lifetimes")
+        self.centralwidget_layout.addWidget(lifetimes_label)
         self.centralwidget_layout.addWidget(self.animals_lifetimes_plot)
+
+
+        new_energy_label = QtWidgets.QLabel("New Energy")
+        self.centralwidget_layout.addWidget(new_energy_label)
         self.centralwidget_layout.addWidget(self.new_animals_energy_plot)
+
+
+        energy_for_birth_label = QtWidgets.QLabel("Energy for birth")
+        self.centralwidget_layout.addWidget(energy_for_birth_label)
         self.centralwidget_layout.addWidget(self.energy_for_birth_plot)
+
+
+        useless_label = QtWidgets.QLabel("Useless")
+        self.centralwidget_layout.addWidget(useless_label)
         self.centralwidget_layout.addWidget(self.useless_param_plot)
+
         self.setCentralWidget(self.centralwidget)
 
     def showEvent(self, QShowEvent):
