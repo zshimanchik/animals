@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>476</width>
-    <height>422</height>
+    <width>576</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,13 +35,6 @@
           <string>world 2</string>
          </property>
         </item>
-       </widget>
-      </item>
-      <item row="2" column="2" colspan="2">
-       <widget class="QPushButton" name="analyze_button">
-        <property name="text">
-         <string>Analyze</string>
-        </property>
        </widget>
       </item>
       <item row="0" column="0" colspan="2">
@@ -87,6 +80,20 @@
        <widget class="QPushButton" name="refresh_button">
         <property name="text">
          <string>Refresh</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="analyze_button">
+        <property name="text">
+         <string>Analyze</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="analyze_all_button">
+        <property name="text">
+         <string>Analyze All</string>
         </property>
        </widget>
       </item>

@@ -32,6 +32,7 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         self.print_latest_button.clicked.connect(self.print_latest_button_click)
         self.refresh_button.clicked.connect(self.refresh_button_click)
         self.analyze_button.clicked.connect(self.analyze_button_click)
+        self.analyze_all_button.clicked.connect(self.analyze_all_button_click)
 
     def init_db(self, snapshot_dir):
         self._db.clear()
@@ -47,11 +48,14 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         self.listWidget.clear()
         self.listWidget2.clear()
 
-        filter = self.lineEdit.text()
-        filtered_db = (wn for wn in self._db if filter in wn)
-        for dirpath in filtered_db:
+        for dirpath in self.filtered_db:
             item = QtWidgets.QListWidgetItem(self.listWidget)
             item.setText(dirpath)
+
+    @property
+    def filtered_db(self):
+        filter_text = self.lineEdit.text()
+        return {dirname: worlds for dirname, worlds in self._db.items() if filter_text in dirname}
 
     @Slot(QtWidgets.QListWidgetItem, QtWidgets.QListWidgetItem)
     def list_widget_current_item_changed(self, cur: QtWidgets.QListWidgetItem, prev: QtWidgets.QListWidgetItem):
@@ -102,23 +106,35 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
     def analyze_button_click(self):
         if self.listWidget.currentItem():
             world_name = self.listWidget.currentItem().text()
-            self.draw_world_analysis(
+            data = self.get_data_for_plot(
                 self.parent().snapshot_directory_combobox.currentText(),
                 world_name,
                 self._db[world_name]
             )
+            self.show_graphs([data])
+
+    @Slot()
+    def analyze_all_button_click(self):
+        data = []
+        for world_name, world_times in self.filtered_db.items():
+            item = self.get_data_for_plot(
+                self.parent().snapshot_directory_combobox.currentText(),
+                world_name,
+                self._db[world_name]
+            )
+            data.append(item)
+        self.show_graphs(data)
 
     def print_latest(self, filter_text=''):
         table = []
         table.append(['World name', 'Latest tick'])
-        for dirname, worlds in self._db.items():
-            if filter_text in dirname:
-                latest_tick = worlds[-1][:-len('.wrld')]
-                try:
-                    latest_tick = '{:_}'.format(int(latest_tick))
-                except ValueError:
-                    pass
-                table.append([dirname, latest_tick])
+        for dirname, worlds in self.filtered_db.items():
+            latest_tick = worlds[-1][:-len('.wrld')]
+            try:
+                latest_tick = '{:_}'.format(int(latest_tick))
+            except ValueError:
+                pass
+            table.append([dirname, latest_tick])
 
         col0_len = max(len(row[0]) for row in table)
         col1_len = max(len(row[1]) for row in table)
@@ -126,7 +142,7 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         for col0, col1 in table:
             print(f'| {col0:{col0_len}} | {col1:{col1_len}} |')
 
-    def draw_world_analysis(self, snapshot_dir, world_name, world_times):
+    def get_data_for_plot(self, snapshot_dir, world_name, world_times):
         animal_amount_history = []
         for world_time in world_times:
             world = serializer.load(os.path.join(snapshot_dir, world_name, world_time))
@@ -137,14 +153,28 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         except ValueError:
             x_axis = None
 
-        self.show_graph(world_name, animal_amount_history, x_axis)
+        return world_name, x_axis, animal_amount_history
 
-    def show_graph(self, world_name, graph, x_axis=None):
+    def show_graphs(self, data: list):
         window = QtWidgets.QMainWindow(parent=self)
-        animals_plot = pyqtgraph.PlotWidget()
-        animals_plot.plot(x=x_axis, y=graph)
-        animals_plot.enableAutoRange()
-        window.setCentralWidget(animals_plot)
-        window.resize(600, 200)
-        window.setWindowTitle(f'Animal amount for {world_name}')
+        window.setWindowTitle(f'Animal amount')
+        scroll_area = QtWidgets.QScrollArea(window)
+        scroll_area.setWidgetResizable(True)
+        window.setCentralWidget(scroll_area)
+
+        scroll_area_widget = QtWidgets.QWidget()
+        grid_layout = QtWidgets.QGridLayout(scroll_area_widget)
+        scroll_area.setWidget(scroll_area_widget)
+
+        for world_name, x_axis, y_axis in data:
+            label = QtWidgets.QLabel(world_name)
+
+            grid_layout.addWidget(label)
+            animals_plot = pyqtgraph.PlotWidget(scroll_area)
+            animals_plot.plot(x=x_axis, y=y_axis)
+            animals_plot.enableAutoRange()
+            animals_plot.setMinimumSize(300, 100)
+            grid_layout.addWidget(animals_plot)
+
+        window.resize(600, 400)
         window.show()
