@@ -155,8 +155,11 @@ class Animal(WorldObject):
 
         self.energy -= self.world.constants.ENERGY_FOR_EXIST
 
+        success_sex = False
         if self.is_ready_to_sex():
-            self._search_partner_and_try_to_sex()
+            success_sex = self._search_partner_and_try_to_sex()
+        if self.world.constants.ANIMAL_CAN_CLONE and not success_sex and self.is_ready_to_clone():
+            self.sex(self, self)
 
         self.smell_size = max(0, self.answer[2]) * self.world.constants.MAX_ANIMAL_SMELL_SIZE
         self.energy -= max(0, self.answer[2]) * self.world.constants.ENERGY_FOR_SMELL_RATIO
@@ -166,11 +169,15 @@ class Animal(WorldObject):
     def is_ready_to_sex(self):
         return self.energy_fullness >= self.world.constants.ENERGY_THRESHOLD_FOR_SEX
 
+    def is_ready_to_clone(self):
+        return self.energy_fullness >= self.world.constants.ENERGY_THRESHOLD_FOR_CLONE
+
     def _search_partner_and_try_to_sex(self):
         for partner in self.close_partners:
             success = partner.be_requested_for_sex(self)
             if success:
-                break
+                return True
+        return False
 
     def be_requested_for_sex(self, partner):
         if self.is_ready_to_sex():
@@ -217,7 +224,8 @@ class Animal(WorldObject):
         mother.world.add_animal(child)
         if mother.save_genealogy:
             mother.children.append(child)
-            father.children.append(child)
+            if mother != father:
+                father.children.append(child)
 
     def eat(self, food):
         energy = food.to_be_bitten(self.world.constants.EATING_VALUE)
