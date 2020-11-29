@@ -191,7 +191,7 @@ class World(object):
     def _add_new_animals(self):
         if self.animals_to_add:
             self.animals.extend(self.animals_to_add)
-            self.max_generation = max(a.generation for a in self.animals_to_add)
+            self.max_generation = max(self.max_generation, max(a.generation for a in self.animals_to_add))
             self.animals_to_add = []
 
     def _remove_dead_animals(self):
