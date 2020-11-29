@@ -4,8 +4,10 @@ import re
 import pyqtgraph
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot as Slot
+import tabulate
 
 from engine import serializer
+from engine.world_constants import WorldConstants
 from ui.loader_window_ui import Ui_LoaderWindow
 
 
@@ -127,21 +129,25 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         self.show_graphs(data)
 
     def print_latest(self, filter_text=''):
+        table_header = ('World name', 'Latest tick', 'Constants diff')
         table = []
-        table.append(['World name', 'Latest tick'])
-        for dirname, worlds in self.filtered_db.items():
+        for world_name, worlds in self.filtered_db.items():
             latest_tick = worlds[-1][:-len('.wrld')]
             try:
                 latest_tick = '{:_}'.format(int(latest_tick))
             except ValueError:
                 pass
-            table.append([dirname, latest_tick])
+            filename = os.path.join(self.parent().snapshot_directory_combobox.currentText(), world_name, worlds[-1])
+            constants_diff = self.get_constants_diff(filename)
+            table.append([world_name, latest_tick, str(constants_diff or 'None')])
 
-        col0_len = max(len(row[0]) for row in table)
-        col1_len = max(len(row[1]) for row in table)
-        table.insert(1, [':' + '-' * (col0_len-1), ':' + '-' * (col1_len-1)])
-        for col0, col1 in table:
-            print(f'| {col0:{col0_len}} | {col1:{col1_len}} |')
+        print(tabulate.tabulate(table, headers=table_header, tablefmt='pipe'))
+
+    def get_constants_diff(self, filename):
+        cur_constants = WorldConstants().to_dict(False)
+        world = serializer.load(filename)
+        loaded_constants = world.constants.to_dict(False)
+        return {k: loaded_constants[k] for k, v in cur_constants.items() if loaded_constants[k] != v}
 
     def get_data_for_plot(self, snapshot_dir, world_name, world_times):
         animal_amount_history = []
