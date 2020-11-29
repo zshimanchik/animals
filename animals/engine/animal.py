@@ -1,4 +1,4 @@
-﻿import math
+import math
 from random import random, randint
 
 from engine.brain import create_brain
@@ -67,10 +67,11 @@ class Mammoth(WorldObject):
     def to_be_bitten(self, value):
         self.bitten = True
 
-        power_of_bite = 1/10 * min(10, self.biting_animals_amount)
-        MAMMOTH_SIZE_TO_ENERGY_RATIO = 3
-        energy = value * power_of_bite * MAMMOTH_SIZE_TO_ENERGY_RATIO
-        self.size -= value / 7  # contains 10 times more food in itself.
+        value = min(value, self.size)
+        self.size -= value / self._world.constants.MAMMOTH_BODY_DENSITY
+        power_of_bite = min(self._world.constants.MAMMOTH_MAX_ANIMAL_N, self.biting_animals_amount) \
+                        / self._world.constants.MAMMOTH_MAX_ANIMAL_N
+        energy = value * power_of_bite * self._world.constants.MAMMOTH_SIZE_TO_ENERGY_RATIO
 
         return energy
 
@@ -218,11 +219,7 @@ class Animal(WorldObject):
             father.children.append(child)
 
     def eat(self, food):
-        value = min(
-            self.world.constants.EATING_VALUE,
-            max(0, self.world.constants.ANIMAL_MAX_ENERGY - self.energy) / self.world.constants.FOOD_SIZE_TO_ENERGY_RATIO
-        )
-        energy = food.to_be_bitten(value)
+        energy = food.to_be_bitten(self.world.constants.EATING_VALUE)
         self.energy = min(self.energy + energy, self.world.constants.ANIMAL_MAX_ENERGY)
 
     def move(self, move, rotate):
