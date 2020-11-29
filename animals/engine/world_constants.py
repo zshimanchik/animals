@@ -11,7 +11,7 @@ class WorldConstants(object):
 
         self.EATING_DISTANCE = 20
         self.EATING_VALUE = 0.02
-        self.FOOD_SMELL_SIZE_RATIO = 21.0
+        self.FOOD_SMELL_SIZE_RATIO = 10.0
 
         self.FOOD_TIMER = 1000 * (100 * 100) // (self.WORLD_WIDTH * self.WORLD_HEIGHT)
         # Than more this value then more concentrated x_ratio will be
@@ -38,13 +38,13 @@ class WorldConstants(object):
         self.ENERGY_FOR_EXIST = 0.007
         self.MOVE_DISTANCE_TO_CONSUMED_ENERGY_RATIO = 0.01
 
-        self.ENERGY_FOR_SMELL_RATIO = 0.01  # multiplied on network output in range [0:1]
+        self.ENERGY_FOR_SMELL_RATIO = 0.002  # multiplied on network output in range [0:1]
 
         # neural_network shape
         self.ANIMAL_SENSOR_COUNT = 3
         self.ANIMAL_SENSOR_DIMENSION = 3  # how many values in one sensor
 
-        self.MIDDLE_LAYERS_SIZES = [4]
+        self.MIDDLE_LAYERS_SIZES = [6]
         self.OUTPUT_LAYER_SIZE = 3
 
         # DNA
