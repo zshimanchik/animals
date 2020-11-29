@@ -39,6 +39,7 @@ class World(object):
         self.food = [self._make_random_food() for _ in range(self.constants.INITIAL_FOOD_COUNT)]
         self.mammoths = []
         self.time = 0
+        self.max_generation = 0
 
         for analyzer in self.analyzers:
             analyzer.reset()
@@ -188,8 +189,10 @@ class World(object):
             analyzer.analyze_in_the_end(self)
 
     def _add_new_animals(self):
-        self.animals.extend(self.animals_to_add)
-        self.animals_to_add = []
+        if self.animals_to_add:
+            self.animals.extend(self.animals_to_add)
+            self.max_generation = max(a.generation for a in self.animals_to_add)
+            self.animals_to_add = []
 
     def _remove_dead_animals(self):
         self.animals = [animal for animal in self.animals if animal.energy > 0]
@@ -214,7 +217,7 @@ class World(object):
     def add_animal(self, animal):
         self.animals_to_add.append(animal)
 
-    def get_animal(self, x, y):
+    def get_animal(self, x, y) -> Animal:
         closest_animal = None
         closest_dist = self.constants.ANIMAL_SIZE + 10
         for animal in self.animals:

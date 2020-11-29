@@ -1,4 +1,4 @@
-import math
+﻿import math
 from random import random, randint
 
 from engine.brain import create_brain
@@ -80,10 +80,11 @@ class Mammoth(WorldObject):
 
 
 class Animal(WorldObject):
-    def __init__(self, world, energy, dna="", parents=None, save_genealogy=False):
+    def __init__(self, world, energy, dna="", generation=0, parents=None, save_genealogy=False):
         self.world = world
         self._dna = dna
         self.parents = parents or []
+        self.generation = generation
         self.save_genealogy = save_genealogy
         self.birth_time = self.world.time
         self.children = []
@@ -208,6 +209,7 @@ class Animal(WorldObject):
             mother.world,
             mother.energy_for_birth + father.energy_for_birth,
             mix_dna(mother.dna, father.dna, mother.world.constants),
+            generation=max(mother.generation, father.generation) + 1,
             parents=[mother, father] if mother.save_genealogy else None,
             save_genealogy=mother.save_genealogy,
         )

@@ -212,6 +212,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _update_text_info(self):
         self.info_text.append(('Performance', f'{self.performance:.6f}'))
         self.info_text.append(("World time", self.world.time))
+        self.info_text.append(("Generation", self.world.max_generation))
         self.info_text.append(("Food timer", self.world.constants.FOOD_TIMER))
         self.info_text.append(("Animal count", len(self.world.animals)))
         self.info_text.append(("Food count", len(self.world.food)))
@@ -279,6 +280,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def on_draw_widget_mousePressEvent(self, event):
         self.selected_animal = self.world.get_animal(event.x(), event.y())
+        if self.selected_animal:
+            print(self.selected_animal._dna)
         if self.neural_network_viewer_window:
             self.neural_network_viewer_window.network = self.selected_animal.brain if self.selected_animal else None
             self.neural_network_viewer_window.repaint()
