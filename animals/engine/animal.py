@@ -67,7 +67,6 @@ class Mammoth(WorldObject):
     def to_be_bitten(self, value):
         self.bitten = True
 
-        value = min(value, self.size)
         self.size -= value / self._world.constants.MAMMOTH_BODY_DENSITY
         power_of_bite = min(self._world.constants.MAMMOTH_MAX_ANIMAL_N, self.biting_animals_amount) \
                         / self._world.constants.MAMMOTH_MAX_ANIMAL_N
