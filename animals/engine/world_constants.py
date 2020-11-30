@@ -4,16 +4,16 @@ from functools import cached_property
 class WorldConstants(object):
     def __init__(self):
         self.WORLD_WIDTH = 900
-        self.WORLD_HEIGHT = 400
+        self.WORLD_HEIGHT = 200
 
-        self.INITIAL_ANIMAL_COUNT = 90
+        self.INITIAL_ANIMAL_COUNT = 55
         self.INITIAL_FOOD_COUNT = 200
 
         self.EATING_DISTANCE = 20
         self.EATING_VALUE = 0.02
-        self.FOOD_SMELL_SIZE_RATIO = 15.0
+        self.FOOD_SMELL_SIZE_RATIO = 10.0
 
-        self.FOOD_TIMER = 1000 * (100 * 100) // (self.WORLD_WIDTH * 200)
+        self.FOOD_TIMER = 1000 * (100 * 100) // (self.WORLD_WIDTH * self.WORLD_HEIGHT)
         # Than more this value then more concentrated x_ratio will be
         # Set 0 for uniform distribution
         self.FOOD_GAUSS_DISTRIBUTION_SIGMA = 2.5
@@ -26,13 +26,13 @@ class WorldConstants(object):
         self.MAMMOTH_COUNT = 5
         self.MAMMOTH_MIN_DISTANCE_TO_OTHERS = 80
         self.MAMMOTH_SMELL_SIZE_RATIO = 5.0
-        self.MAMMOTH_MAX_ANIMAL_N = 25  # How many animals can bite to increase energy by one bite
+        self.MAMMOTH_MAX_ANIMAL_N = 20  # How many animals can bite to increase energy by one bite
         self.MAMMOTH_SIZE_TO_ENERGY_RATIO = 2  # how much maximum energy they can get if all MAMMOTH_MAX_ANIMAL_N bite
         self.MAMMOTH_BODY_DENSITY = 7  # It can handle this times more bites than food with the same sizes
 
         # Animal
 
-        self.ANIMAL_CAN_CLONE = True
+        self.ANIMAL_CAN_CLONE = False
         self.ANIMAL_MAX_ENERGY = 30
         self.ANIMAL_WORLD_START_ENERGY = self.ANIMAL_MAX_ENERGY / 3
 
@@ -64,7 +64,7 @@ class WorldConstants(object):
         self.MUTATE_CHANCE = 0.05
 
         self.ANIMAL_SIZE = 10
-        self.MAX_ANIMAL_SMELL_SIZE = 130
+        self.MAX_ANIMAL_SMELL_SIZE = 100
 
         self.SEX_DISTANCE = 20 + self.ANIMAL_SIZE * 2
 
