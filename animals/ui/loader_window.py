@@ -129,7 +129,7 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
         self.show_graphs(data)
 
     def print_latest(self, filter_text=''):
-        table_header = ('World name', 'Latest tick', 'Constants diff')
+        table_header = ('World name', 'Latest tick', 'Generations', 'Constants diff')
         table = []
         for world_name, worlds in self.filtered_db.items():
             latest_tick = worlds[-1][:-len('.wrld')]
@@ -138,14 +138,14 @@ class LoaderWindow(Ui_LoaderWindow, QtWidgets.QMainWindow):
             except ValueError:
                 pass
             filename = os.path.join(self.parent().snapshot_directory_combobox.currentText(), world_name, worlds[-1])
-            constants_diff = self.get_constants_diff(filename)
-            table.append([world_name, latest_tick, str(constants_diff or 'None')])
+            world = serializer.load(filename)
+            constants_diff = self.get_constants_diff(world)
+            table.append([world_name, latest_tick, world.max_generation, str(constants_diff or 'None')])
 
         print(tabulate.tabulate(table, headers=table_header, tablefmt='pipe'))
 
-    def get_constants_diff(self, filename):
+    def get_constants_diff(self, world):
         cur_constants = WorldConstants().to_dict(False)
-        world = serializer.load(filename)
         loaded_constants = world.constants.to_dict(False)
         return {k: loaded_constants[k] for k, v in cur_constants.items() if loaded_constants[k] != v}
 
