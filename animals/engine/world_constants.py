@@ -26,8 +26,8 @@ class WorldConstants(object):
         self.MAMMOTH_COUNT = 5
         self.MAMMOTH_MIN_DISTANCE_TO_OTHERS = 80
         self.MAMMOTH_SMELL_SIZE_RATIO = 5.0
-        self.MAMMOTH_MAX_ANIMAL_N = 20  # How many animals can bite to increase energy by one bite
-        self.MAMMOTH_SIZE_TO_ENERGY_RATIO = 2  # how much maximum energy they can get if all MAMMOTH_MAX_ANIMAL_N bite
+        self.MAMMOTH_MAX_ANIMAL_N = 10  # How many animals can bite to increase energy by one bite
+        self.MAMMOTH_SIZE_TO_ENERGY_RATIO = 3  # how much maximum energy they can get if all MAMMOTH_MAX_ANIMAL_N bite
         self.MAMMOTH_BODY_DENSITY = 7  # It can handle this times more bites than food with the same sizes
 
         # Animal
