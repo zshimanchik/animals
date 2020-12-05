@@ -151,7 +151,7 @@ class Animal(WorldObject):
             self.eat(self.closest_food)
         # todo idea: add boolean value to NN whether it's eating or not.
 
-        self.answer = self.brain.calculate(self.sensor_values)
+        self.answer = self.brain.calculate(self.sensor_values + [self.energy_fullness])
 
         self.energy -= self.world.constants.ENERGY_FOR_EXIST
 

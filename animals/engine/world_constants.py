@@ -70,7 +70,7 @@ class WorldConstants(object):
 
     @cached_property
     def INPUT_LAYER_SIZE(self):
-        return self.ANIMAL_SENSOR_COUNT * self.ANIMAL_SENSOR_DIMENSION
+        return self.ANIMAL_SENSOR_COUNT * self.ANIMAL_SENSOR_DIMENSION + 1  # +1 energy level
 
     @cached_property
     def NEURAL_NETWORK_SHAPE(self):
