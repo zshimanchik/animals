@@ -140,7 +140,8 @@ class World(object):
         sensors_pos = np.array(sensors_pos, dtype=np.float64)
 
         incidence = cdist(sensors_pos, smellers_pos)
-        smells_strength = np.nan_to_num(np.maximum(0, 1 - incidence / smells_sizes)) ** 2
+        with np.errstate(divide='ignore'):
+            smells_strength = np.nan_to_num(np.maximum(0, 1 - incidence / smells_sizes)) ** 2
 
         for animal in self.animals:
             animal.sensor_values = []
