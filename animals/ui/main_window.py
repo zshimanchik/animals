@@ -8,6 +8,7 @@ from PyQt5.QtGui import QPainter, QBrush, QPen, QColor, QKeyEvent
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
 import analyzers
+from analyzers.dna_differ import DnaDiffer
 from engine import serializer
 from ui.constants_window import ConstantsWindow
 from ui.graphics_window import GraphicsWindow
@@ -56,6 +57,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.start(self.TIMER_INTERVAL)
 
         self._prev_time = time.perf_counter()
+        self.animal_colors = {}
 
     @property
     def world(self):
@@ -73,6 +75,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.new_animal_energy_analyzer = analyzers.NewAnimalEnergyAnalyzer(self.world)
         self._world.analyzers.append(self.new_animal_energy_analyzer)
+
+        self.dna_differ_analyzer = DnaDiffer(self.world)
+        self._world.analyzers.append(self.dna_differ_analyzer)
 
         if self.constants_window:
             self.constants_window.constants = self.world.constants
@@ -318,7 +323,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             painter.setPen(self._selected_animal_pen)
         else:
             painter.setPen(self._animal_pen)
-        painter.setBrush(QBrush(get_color(animal.energy_for_birth / self.world.constants.ENERGY_FOR_BIRTH_DIFF)))
+
+        if animal in self.dna_differ_analyzer.colors:
+            r, g, b = self.dna_differ_analyzer.colors[animal]
+            painter.setBrush(QBrush(QColor(r * 255, g*255, b*255)))
+        else:
+            painter.setBrush(QBrush(QColor(0,0,0)))
 
         size = animal.size * 2
         painter.drawEllipse(QRect(animal.x - animal.size, animal.y - animal.size, size, size))

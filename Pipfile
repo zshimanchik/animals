@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+numpy = "*"
+scipy = "*"
+cached-property = "*"
+pyqtgraph = "*"
+PyQt5 = "*"
+pika = "==1.1.0"
+google-cloud-storage = "==1.25.0"
+google-cloud-logging = "==1.15.0"
+google-cloud-pubsub = "==1.3.1"
+tabulate = "*"
+matplotlib = "*"
+
+[requires]
+python_version = "3.8"

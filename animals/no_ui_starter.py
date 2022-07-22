@@ -48,7 +48,7 @@ class NoUiStarter:
             world = World(args.world_constants)
         else:
             world = serializer.load(args.world_save)
-        analyzer = MammothAnalyzer(world)
+        # analyzer = MammothAnalyzer(world)
 
         world_start_time = world.time
         start_time = prev_save_time = time.perf_counter()
@@ -71,10 +71,10 @@ class NoUiStarter:
                 prev_save_time = now
 
             world.update()
-            analyzer.update()
-            if analyzer.amount_of_killings > 0.01:
-                logging.info(f'World {args.world_name} got reaction at {world.time}')
-                break
+            # analyzer.update()
+            # if analyzer.amount_of_killings > 0.01:
+            #     logging.info(f'World {args.world_name} got reaction at {world.time}')
+            #     break
 
             if self.max_cycle and world.time >= self.max_cycle:
                 break
@@ -118,17 +118,17 @@ if __name__ == '__main__':
     max_rec = 0x100000
 
     # May segfault without this line. 0x100 is a guess at the size of each stack frame.
-    resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
-    sys.setrecursionlimit(max_rec)
+    # resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
+    # sys.setrecursionlimit(max_rec)
 
     starter = NoUiStarter(
-        process_count=4,
-        save_world_each=100_000,
+        process_count=6,
+        save_world_each=50_000,
         max_cycle=0,
         path_for_snapshots='./snapshots/'
     )
 
-    for i in range(4):
+    for i in range(6):
         starter.add_new_world(WorldConstants(), f'world_n{i:02}')
 
     starter.start()

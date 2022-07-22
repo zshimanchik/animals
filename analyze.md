@@ -886,3 +886,14 @@ world_201202_cf95206_MSTER3_MMAN_15_MC3_02
 Попробую добавить уровень энергии во входной слой нейронов и посмотреть будут ли они привлекать других особей в момент,
 когда они репродуктивны. А также попробую MMAN_10_MC4
 
+
+{"snapshot_dir": "gs://animals-cluster-1/world_201202_f0041e5_MC_3_01/", "max_cycle": 200000000, "cycle_amount": 50000, "latest_tick": 20000000, "constants": {"MAMMOTH_COUNT": 3}}
+{"snapshot_dir": "gs://animals-cluster-1/world_201202_f0041e5_MC_4_01/", "max_cycle": 200000000, "cycle_amount": 50000, "latest_tick": 20000000, "constants": {"MAMMOTH_COUNT": 4}}
+{"snapshot_dir": "gs://animals-cluster-1/world_201202_f0041e5_MC_4_02/", "max_cycle": 200000000, "cycle_amount": 50000, "latest_tick": 20000000, "constants": {"MAMMOTH_COUNT": 4}}
+{"snapshot_dir": "gs://animals-cluster-1/world_201202_f0041e5_MC_4_03/", "max_cycle": 200000000, "cycle_amount": 50000, "latest_tick": 20000000, "constants": {"MAMMOTH_COUNT": 4}}
+{"snapshot_dir": "gs://animals-cluster-1/world_201202_f0041e5_MSTER2.5_01/", "max_cycle": 200000000, "cycle_amount": 50000, "latest_tick": 20000000, "constants": {"MAMMOTH_SIZE_TO_ENERGY_RATIO": 2.5}}
+{"snapshot_dir": "gs://animals-cluster-1/world_201202_f0041e5_MSTER2.5_02/", "max_cycle": 200000000, "cycle_amount": 50000, "latest_tick": 20000000, "constants": {"MAMMOTH_SIZE_TO_ENERGY_RATIO": 2.5}}
+{"snapshot_dir": "gs://animals-cluster-1/world_201202_f0041e5_MSTER2.5_03/", "max_cycle": 200000000, "cycle_amount": 50000, "latest_tick": 20000000, "constants": {"MAMMOTH_SIZE_TO_ENERGY_RATIO": 2.5}}
+
+
+f0041e5
